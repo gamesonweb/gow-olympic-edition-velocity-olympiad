@@ -12,7 +12,7 @@ import { BasicScene } from '@/BabylonCode/BasicScene';
 export default {
   name: 'BabylonExemple',
   mounted(){
-    const canvas = document.querySelector('canvas')!
+    const canvas = document.querySelector('canvas')!;
     new BasicScene(canvas);
   }
 }
