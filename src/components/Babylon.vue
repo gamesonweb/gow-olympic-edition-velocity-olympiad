@@ -1,37 +1,25 @@
 <template>
-  <div>
-    <h3>Velocity Olympiad</h3>
-    <canvas></canvas>
-  </div>
+  <canvas ref="bjsCanvas" width="500" height="500" />
 </template>
 
-<script lang="ts">
-
-import { BasicScene } from '@/BabylonCode/BasicScene';
+<script>
+import { ref, onMounted } from "@vue/runtime-core";
+import { createScene } from "../scenes/MyFirstScene";
 
 export default {
-  name: 'BabylonExemple',
-  mounted(){
-    const canvas = document.querySelector('canvas')!;
-    new BasicScene(canvas);
-  }
-}
-</script>
+  name: "BabylonScene",
+  setup() {
+    const bjsCanvas = ref(null);
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
-</style>
+    onMounted(() => {
+      if (bjsCanvas.value) {
+        createScene(bjsCanvas.value);
+      }
+    });
+
+    return {
+      bjsCanvas,
+    };
+  },
+};
+</script>

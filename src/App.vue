@@ -1,25 +1,27 @@
 <template>
-  <BabylonExemple />
+  <canvas ref="bjsCanvas" width="500" height="500" />
 </template>
 
 <script>
-import BabylonExemple from './components/Babylon.vue';
+
+
+import {onMounted, ref} from "@vue/runtime-core";
+import {createScene} from "@/scenes/MyFirstScene";
 
 export default {
-  name: 'App',
-  components: {
-    BabylonExemple
-  }
-}
-</script>
+  name: "BabylonScene",
+  setup() {
+    const bjsCanvas = ref(null);
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
+    onMounted(() => {
+      if (bjsCanvas.value) {
+        createScene(bjsCanvas.value);
+      }
+    });
+
+    return {
+      bjsCanvas,
+    };
+  },
+};
+</script>
