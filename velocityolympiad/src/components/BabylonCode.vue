@@ -9,13 +9,13 @@
   
   <script lang="ts">
   import { defineComponent } from 'vue';
-  import { BasicScene } from "@/BabylonCodes/BasicScene";
+  import { Main } from "@/BabylonCodes/Main";
   
   export default defineComponent({
     name: 'BabylonCode',
     mounted(){
         const canvas = document.querySelector('canvas')!;
-        const basicScene = new BasicScene(canvas);
+        const game = new Main(canvas);
     }
   });
   </script>
