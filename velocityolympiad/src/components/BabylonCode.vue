@@ -16,6 +16,7 @@
     mounted(){
         const canvas = document.querySelector('canvas')!;
         const game = new Main(canvas);
+        game.Run();
     }
   });
   </script>
@@ -35,6 +36,10 @@
   }
   a {
     color: #42b983;
+  }
+  canvas {
+    width: 100%;
+    height: 100%;
   }
   </style>
   
