@@ -14,7 +14,8 @@ export class SceneManager{
 
     CreateScene():Scene{
         const scene = new Scene(this.engine);
-        const ground = this.CreateGround(scene);
+        const ground = this.CreateGround(scene)
+        ground.position.y = -1;
         return scene;
     }
 

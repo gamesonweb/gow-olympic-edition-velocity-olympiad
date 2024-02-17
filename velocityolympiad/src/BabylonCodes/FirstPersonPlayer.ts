@@ -1,4 +1,4 @@
-import {Scene, Vector3, Camera, FreeCamera} from "@babylonjs/core";
+import {Scene, Vector3, Camera, FollowCamera} from "@babylonjs/core";
 
 export class FirstPersonPlayer{
     scene: Scene;
@@ -12,7 +12,7 @@ export class FirstPersonPlayer{
     }
 
     CreateCamera():Camera{
-        const camera = new FreeCamera("camera", new Vector3(0, 5, -10), this.scene);
+        const camera = new FollowCamera("camera", new Vector3(0, 5, -10), this.scene);
         camera.setTarget(Vector3.Zero());
         return camera;
     }
