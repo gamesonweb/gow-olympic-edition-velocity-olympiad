@@ -1,5 +1,6 @@
-import { Engine } from "@babylonjs/core";
-import { SceneManager } from "@/BabylonCodes/SceneManager";
+import {SceneManager} from "./SceneManager.ts";
+import {Engine} from "@babylonjs/core";
+
 
 export class Main{
     canvas: HTMLCanvasElement;

@@ -9,7 +9,7 @@
   
   <script lang="ts">
   import { defineComponent } from 'vue';
-  import { Main } from "@/BabylonCodes/Main";
+  import {Main} from "../BabylonCodes/Main.ts";
   
   export default defineComponent({
     name: 'BabylonCode',
