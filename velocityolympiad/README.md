@@ -1,4 +1,4 @@
-# velocity-olympiad
+# velocityolympiad
 
 ## Project setup
 ```
