@@ -16,12 +16,12 @@
     mounted(){
         const canvas = document.querySelector('canvas')!;
         const game = new Main(canvas);
-        console.log(game.sceneManager);
-        game.CreateScene().then(() => {
-            console.log("Scene created");
-            console.log(game.sceneManager);
+        game.Init().then(() => {
+          setTimeout(() => {
+            game.CreateScene();
             game.Run();
-        });
+          }, 1500);
+        }); 
     }
   });
   </script>

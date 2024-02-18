@@ -13,8 +13,13 @@ export class Main{
         this.sceneManager = new SceneManager(this.engine, this.canvas);
     }
     
-    async CreateScene(){
-        await this.sceneManager.createScene();
+    async Init(){
+        await this.sceneManager.createPhysicsEngine();
+        return;
+    }
+
+    CreateScene(){
+        this.sceneManager.createScene();
     }
 
     Run(){
