@@ -9,14 +9,19 @@
   
   <script lang="ts">
   import { defineComponent } from 'vue';
-  import { Main } from "@/BabylonCodes/Main";
+  import {Main} from "../BabylonCodes/Main.ts";
   
   export default defineComponent({
     name: 'BabylonCode',
     mounted(){
         const canvas = document.querySelector('canvas')!;
         const game = new Main(canvas);
-        game.Run();
+        game.Init().then(() => {
+          setTimeout(() => {
+            game.CreateScene();
+            game.Run();
+          }, 1500);
+        }); 
     }
   });
   </script>
