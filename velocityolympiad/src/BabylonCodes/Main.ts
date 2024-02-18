@@ -12,10 +12,14 @@ export class Main{
         this.engine = new Engine(this.canvas, true);
         this.sceneManager = new SceneManager(this.engine, this.canvas);
     }
+    
+    async CreateScene(){
+        await this.sceneManager.createScene();
+    }
 
     Run(){
         this.engine.runRenderLoop(()=>{
-            this.sceneManager.scene.render(); // possibilité de changer de scène en appelant une liste de scène de SceneManager au lieu d'un attribut scene
+            this.sceneManager.scenes[0].scene.render(); // possibilité de changer de scène en appelant une liste de scène de SceneManager au lieu d'un attribut scene
         });
     }
 }

@@ -3,49 +3,62 @@ import HavokPhysics from "@babylonjs/havok";
 import { FirstPersonPlayer } from './FirstPersonPlayer';
 
 export class SceneManager{
-    scene: Scene;
+    scenes: OurScene[] = [];
     engine: Engine;
-    player: FirstPersonPlayer;
-
+    canvas: HTMLCanvasElement;
+    pyhsicsEngine: HavokPlugin|void;
     constructor(engine: Engine, canvas: HTMLCanvasElement){
         this.engine = engine;
-        this.scene = this.CreateScene();
-        this.player = new FirstPersonPlayer(this.scene, canvas);
-        this.InitializePhysics();
+        this.canvas = canvas;
+        this.pyhsicsEngine = this.createPhysicsEngine();
     }
 
-    CreateScene():Scene{
-        const scene = new Scene(this.engine);
-        const ground = this.CreateGround(scene)
-        ground.position.y = -1;
-        const light = new HemisphericLight("light", new Vector3(0, 5, 0), scene);
-        console.log(light);
-
-        return scene;
+    async initPhysics(){
+        const havokPlugin = await HavokPhysics();
+        return havokPlugin;
     }
 
-    CreateGround(scene: Scene){
-        const ground = MeshBuilder.CreateGround("ground", {width: 6, height: 6}, scene);
-        return ground;
-    }
-
-    async InitializePhysics(){
-        const gravityVector = new Vector3(0, -9.81, 0);
-        this.getInitializedHavok().then((PyshicsPlugin) => {
-            console.log(PyshicsPlugin);
-            this.EnablePhysics(gravityVector, PyshicsPlugin);
-            this.player.CreatePlayer();
+    createPhysicsEngine(){
+        this.initPhysics().then((havokPlugin)=>{
+            const physicsEngine = new HavokPlugin(true, havokPlugin);
+            return physicsEngine;
+        }).catch((err)=>{
+            console.log(err);
+            return void 0;
         });
     }
 
-    EnablePhysics(gravityVector: Vector3, PyshicsPlugin: any){
-        const havok = new HavokPlugin(PyshicsPlugin);
-        this.scene.enablePhysics(gravityVector, havok);
+    createScene(){
+        if (this.pyhsicsEngine){
+            this.scenes.push(new OurScene(this.engine,this.canvas,this.pyhsicsEngine));
+        }
+        else{
+            console.log("Physics engine not initialized");
+        }
+    }
+    
+}
+
+class OurScene{
+    scene: Scene;
+    engine: Engine;
+    pyhsicsEngine: HavokPlugin;
+    player: FirstPersonPlayer;
+    constructor(engine: Engine, canvas: HTMLCanvasElement, physicsEngine: HavokPlugin){
+        this.engine = engine;
+        this.pyhsicsEngine = physicsEngine;
+        this.scene = this.createScene();
+        this.player = new FirstPersonPlayer(this.scene,canvas);
     }
 
-    async getInitializedHavok(): Promise<any> {
-        console.log("HavokPhysics");
-        console.log(WebAssembly);
-        return await HavokPhysics();
+    createScene(){
+        const scene = new Scene(this.engine);
+        const light = new HemisphericLight("light", new Vector3(0,1,0), scene);
+        const ground = MeshBuilder.CreateGround("ground", {width: 10, height: 10});
+        const gravity = new Vector3(0, -9.81, 0);
+        scene.enablePhysics(gravity, this.pyhsicsEngine);
+        console.log(light, ground);
+        return scene;
     }
+
 }
