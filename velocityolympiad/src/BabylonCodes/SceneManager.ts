@@ -1,6 +1,7 @@
 import {Engine, Scene , MeshBuilder , HemisphericLight, Vector3, HavokPlugin , PhysicsAggregate, PhysicsShapeType } from '@babylonjs/core';
 import HavokPhysics from "@babylonjs/havok";
 import { FirstPersonPlayer } from './FirstPersonPlayer';
+import { couldStartTrivia } from 'typescript';
 
 export class SceneManager{
     scenes: OurScene[] = [];
@@ -63,7 +64,7 @@ class OurScene{
     }
 
     createPlayer(canvas: HTMLCanvasElement){
-        const player = new FirstPersonPlayer(this.scene,canvas); 
+        const player = new FirstPersonPlayer(this.scene,canvas,this.engine); 
         player.CreatePlayer();
         return player;
     }
