@@ -1,6 +1,8 @@
-import {Engine, Scene , MeshBuilder , HemisphericLight, Vector3, HavokPlugin , PhysicsAggregate, PhysicsShapeType } from '@babylonjs/core';
+import {Engine, Scene , MeshBuilder , HemisphericLight, Vector3, HavokPlugin , PhysicsAggregate,
+    PhysicsShapeType } from '@babylonjs/core';
 import HavokPhysics from "@babylonjs/havok";
 import { FirstPersonPlayer } from './FirstPersonPlayer';
+import { Inspector } from '@babylonjs/inspector';
 
 export class SceneManager{
     scenes: OurScene[] = [];
@@ -35,7 +37,7 @@ export class SceneManager{
             this.scenes.push(new OurScene(this.engine,this.canvas,this.physicsEngine));
         }
     }
-    
+
 }
 
 class OurScene{
@@ -54,16 +56,21 @@ class OurScene{
         const scene = new Scene(this.engine);
         const gravity = new Vector3(0, -9.81, 0);
         scene.enablePhysics(gravity, this.physicsEngine);
-        
+
         const light = new HemisphericLight("light", new Vector3(0,1,0), scene);
         const ground = MeshBuilder.CreateGround("ground", {width: 10, height: 10});
         var groundPhysics = new PhysicsAggregate(ground, PhysicsShapeType.BOX, {mass: 0}, this.scene);
 
+        // Active scene inspector in DEV mode
+        if (import.meta.env.DEV) {
+            console.log("DEV MODE: Scene inspector enabled");
+            Inspector.Show(scene, {enablePopup: false});
+        }
         return scene;
     }
 
     createPlayer(canvas: HTMLCanvasElement){
-        const player = new FirstPersonPlayer(this.scene,canvas); 
+        const player = new FirstPersonPlayer(this.scene,canvas);
         player.CreatePlayer();
         return player;
     }
