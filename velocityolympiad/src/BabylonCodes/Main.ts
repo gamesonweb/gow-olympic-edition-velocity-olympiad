@@ -1,10 +1,13 @@
-import {SceneManager} from "./SceneManager.ts";
+import {SceneManager} from "./scenes/sceneManager.ts";
 import {Engine} from "@babylonjs/core";
-
+import {HavokPlugin} from "@babylonjs/core";
+import {OurScene} from "./scenes/ourScene.ts";
+import HavokPhysics from "@babylonjs/havok";
 
 export class Main {
     canvas: HTMLCanvasElement;
     engine: Engine;
+    physicsEngine: HavokPlugin;
     sceneManager: SceneManager;
 
     constructor(canvas: HTMLCanvasElement) {
@@ -13,20 +16,37 @@ export class Main {
         this.sceneManager = new SceneManager(this.engine, this.canvas);
     }
 
+    getEngine() : Engine {
+        return this.engine;
+    }
+
+    getCanvas() : HTMLCanvasElement {
+        return this.canvas;
+    }
+
+    getPhysicsEngine() : HavokPlugin {
+        if (this.physicsEngine === undefined) {
+            throw new Error("Physics engine not created");
+        }
+        return this.physicsEngine;
+    }
+
+    getSceneManager() : SceneManager {
+        return this.sceneManager;
+    }
+
+    async _createPhysicsEngine() {
+        this.physicsEngine = new HavokPlugin(true, await HavokPhysics());
+    }
+
     async Init() {
         // Create the physics engine
-        await this.sceneManager.createPhysicsEngine();
+        await this._createPhysicsEngine();
         return;
     }
 
-    CreateScene(empty_scene: boolean = false) {
-        // Create a scene
-        this.sceneManager.createScene(empty_scene);
-    }
-
     Run() {
-        this.engine.runRenderLoop(() => {
-            this.sceneManager.scenes[0].scene.render(); // possibilité de changer de scène en appelant une liste de scène de SceneManager au lieu d'un attribut scene
-        });
+        // Render the scenes
+        this.sceneManager.renderScenes();
     }
 }

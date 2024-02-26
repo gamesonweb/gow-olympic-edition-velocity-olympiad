@@ -10,20 +10,18 @@
   <script lang="ts">
   import { defineComponent } from 'vue';
   import {Main} from "../BabylonCodes/Main.ts";
-
+  import { FirstLevel } from "../BabylonCodes/scenes";
+  import {TestTemple} from "./GameObjects/Temple/testTemple";
   export default defineComponent({
     name: 'BabylonCode',
     async mounted(){
         const canvas = document.querySelector('canvas')!;
         const game = new Main(canvas);
         game.Init().then(() => {
-          // setTimeout(() => {
-          //   game.CreateScene();
-          //   game.Run();
-          // }, 1500);
-          game.CreateScene(true);
+          // let ourSceneLevel1: FirstLevel = new FirstLevel(game.getEngine(), game.getCanvas(), game.getPhysicsEngine());
+          let testTemple = new TestTemple(game.getEngine(), game.getCanvas(), game.getPhysicsEngine());
+          game.getSceneManager().addScene(testTemple.our_scene);
           game.Run();
-          game.test_water_fall()
         });
     }
   });
