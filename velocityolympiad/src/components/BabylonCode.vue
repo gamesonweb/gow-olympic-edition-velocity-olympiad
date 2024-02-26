@@ -19,6 +19,7 @@
         const game = new Main(canvas);
         game.Init().then(() => {
           // let ourSceneLevel1: FirstLevel = new FirstLevel(game.getEngine(), game.getCanvas(), game.getPhysicsEngine());
+          // game.getSceneManager().addScene(ourSceneLevel1);
           let testTemple = new TestTemple(game.getEngine(), game.getCanvas(), game.getPhysicsEngine());
           game.getSceneManager().addScene(testTemple.our_scene);
           game.Run();

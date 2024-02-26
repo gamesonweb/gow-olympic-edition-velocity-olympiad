@@ -19,7 +19,7 @@ export class FirstLevel extends OurScene {
     }
 
     setupScene() {
-        // you can pass a scene to the super.setupScene() method
+        /*  you can pass a scene to the super.setupScene() method to use an existing scene */
         super.setupScene();
         this._createPlayer();
 
