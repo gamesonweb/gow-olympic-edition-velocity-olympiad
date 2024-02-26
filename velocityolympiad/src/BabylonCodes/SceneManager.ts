@@ -5,6 +5,7 @@ import { FirstPersonPlayer } from './FirstPersonPlayer';
 import { Inspector } from '@babylonjs/inspector';
 
 export class SceneManager{
+    // Manage the scenes and Havok physics engine
     scenes: OurScene[] = [];
     engine: Engine;
     canvas: HTMLCanvasElement;
@@ -22,19 +23,20 @@ export class SceneManager{
     }
 
     async createPhysicsEngine(){
-        this.initPhysics().then((havokPlugin)=>{
-            const physicsEngine = new HavokPlugin(true, havokPlugin);
-            console.log(physicsEngine);
-            this.physicsEngine = physicsEngine;
-        });
+        this.physicsEngine = new HavokPlugin(true, await HavokPhysics());
+        // this.initPhysics().then((havokPlugin)=>{
+        //     const physicsEngine = new HavokPlugin(true, havokPlugin);
+        //     console.log(physicsEngine);
+        //     this.physicsEngine = physicsEngine;
+        // });
     }
 
-    createScene(){
+    createScene(empty_scene: boolean = false){
         if (this.physicsEngine === undefined){
             throw new Error("Physics engine not created");
         }
         else{
-            this.scenes.push(new OurScene(this.engine,this.canvas,this.physicsEngine));
+            this.scenes.push(new OurScene(this.engine,this.canvas,this.physicsEngine, empty_scene));
         }
     }
 
@@ -45,10 +47,14 @@ class OurScene{
     engine: Engine;
     physicsEngine: HavokPlugin;
     player: FirstPersonPlayer;
-    constructor(engine: Engine, canvas: HTMLCanvasElement, physicsEngine: HavokPlugin){
+    constructor(engine: Engine, canvas: HTMLCanvasElement, physicsEngine: HavokPlugin, empty_scene: boolean = false){
         this.engine = engine;
         this.physicsEngine = physicsEngine;
-        this.scene = this.createScene();
+        if (empty_scene){
+            this.scene = this.createEmptyScene();
+        } else {
+            this.scene = this.createScene();
+        }
         this.player = this.createPlayer(canvas);
     }
 
@@ -66,6 +72,13 @@ class OurScene{
             console.log("DEV MODE: Scene inspector enabled");
             Inspector.Show(scene, {enablePopup: false});
         }
+        return scene;
+    }
+
+    createEmptyScene(){
+        const scene = new Scene(this.engine);
+        const gravity = new Vector3(0, -9.81, 0);
+        scene.enablePhysics(gravity, this.physicsEngine);
         return scene;
     }
 
