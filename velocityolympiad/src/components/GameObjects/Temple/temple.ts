@@ -105,7 +105,7 @@ export class Temple {
             pillarRight.position.y = this.pillarHeight / 2 - this.boxHeight/2; // positionner au-dessus du sol
             pillarRight.parent = this.templeGroup;
 
-            if (i <= 2 || i == 3) continue; // laisser un espace pour les portes
+            if (i == 2 || i == 3) continue; // laisser un espace pour les portes
             let pillarLeft = this.createPillar(this.ourScene.scene, 'pillar_left' + i);
             pillarLeft.position.x = -(numberOfPillars / 2) * spacing;
             pillarLeft.position.z = (i - sidePillars / 2) * spacing;
