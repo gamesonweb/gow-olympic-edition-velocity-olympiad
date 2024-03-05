@@ -19,7 +19,6 @@ export class FirstPersonPlayer{
     CreateCamera():Camera{
         const camera = new UniversalCamera("FPS", new Vector3(0, 2, 0), this.scene);
         camera.attachControl(this.canvas, true);
-        camera.setTarget(Vector3.Zero());
         return camera;
     }
 
@@ -35,10 +34,11 @@ export class FirstPersonPlayer{
 class player{
     position: Vector3;
     rotation: Vector3;
-    mesh: object | null;  
+    mesh: any | null;  
     scene: Scene;
     playerNode: TransformNode;
     cameraNode: Node|null;
+    speed: number = 10;
     constructor(scene: Scene){
         this.position = new Vector3(0, 100, 0);
         this.rotation = new Vector3(0, 0, 0);
@@ -54,28 +54,36 @@ class player{
         const mesh = MeshBuilder.CreateBox("player", {size: 1});
         mesh.position = this.position;
         const aggregate = new PhysicsAggregate(mesh,PhysicsShapeType.BOX, {mass: 1}, this.scene);
-        console.log(aggregate);
         mesh.position = this.position;
+        this.rotation = mesh.rotation;
         return mesh;
     }
 
     updatePosition(keys: {left: boolean, right: boolean, forward: boolean, back: boolean}){
-        if (keys.forward){
-            var forward = Vector3.TransformCoordinates(new Vector3(0, 0, 0.1), Matrix.RotationY(this.rotation.y));
-            this.position.addInPlace(forward);
+        let tmp = this.position;
+        if (this.mesh!==null){
+            // if a key is pressed :
+            if (keys.left || keys.right || keys.forward || keys.back){
+                console.log(tmp);
+            }
+            if (keys.forward){
+                var forward = Vector3.TransformCoordinates(new Vector3(0, 0, this.speed), Matrix.RotationY(this.rotation.y));
+                this.mesh.applyImpulse(forward, this.mesh.getAbsolutePosition());
+            }
+            if (keys.back){
+                var back = Vector3.TransformCoordinates(new Vector3(0, 0, -this.speed), Matrix.RotationY(this.rotation.y));
+                tmp.addInPlace(back);
+            }
+            if (keys.left){
+                var left = Vector3.TransformCoordinates(new Vector3(this.speed, 0, 0), Matrix.RotationY(this.rotation.y));
+                tmp.addInPlace(left);
+            }
+            if (keys.right){
+                var right = Vector3.TransformCoordinates(new Vector3(this.speed, 0, 0), Matrix.RotationY(this.rotation.y));
+                tmp.addInPlace(right);
+            }
         }
-        if (keys.back){
-            var back = Vector3.TransformCoordinates(new Vector3(0, 0, -0.1), Matrix.RotationY(this.rotation.y));
-            this.position.addInPlace(back);
-        }
-        if (keys.left){
-            var left = Vector3.TransformCoordinates(new Vector3(0.1, 0, 0), Matrix.RotationY(this.rotation.y));
-            this.position.addInPlace(left);
-        }
-        if (keys.right){
-            var right = Vector3.TransformCoordinates(new Vector3(-0.1, 0, 0), Matrix.RotationY(this.rotation.y));
-            this.position.addInPlace(right);
-        }
-        this.playerNode.position = this.position;
+        this.position = tmp;
     };
+    
 }
