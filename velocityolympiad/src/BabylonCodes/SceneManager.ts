@@ -57,7 +57,7 @@ class OurScene{
         scene.enablePhysics(gravity, this.physicsEngine);
         
         const light = new HemisphericLight("light", new Vector3(0,1,0), scene);
-        const ground = MeshBuilder.CreateGround("ground", {width: 10, height: 10});
+        const ground = MeshBuilder.CreateGround("ground", {width: 100, height: 100});
         var groundPhysics = new PhysicsAggregate(ground, PhysicsShapeType.BOX, {mass: 0}, this.scene);
 
         return scene;

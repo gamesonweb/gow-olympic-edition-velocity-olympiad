@@ -35,15 +35,17 @@ class player{
     position: Vector3;
     rotation: Vector3;
     mesh: any | null;  
+    aggregate: PhysicsAggregate | null;
     scene: Scene;
     playerNode: TransformNode;
     cameraNode: Node|null;
-    speed: number = 10;
+    speed: number = 1;
     constructor(scene: Scene){
-        this.position = new Vector3(0, 100, 0);
+        this.position = new Vector3(0, 0, 0);
         this.rotation = new Vector3(0, 0, 0);
         this.scene = scene;
         this.mesh = null;
+        this.aggregate = null;
         this.playerNode = new TransformNode("player", this.scene);
         this.cameraNode = scene.getNodeByName("camera");
         this.playerNode.parent = this.cameraNode;
@@ -52,38 +54,36 @@ class player{
 
     CreateMesh(){
         const mesh = MeshBuilder.CreateBox("player", {size: 1});
-        mesh.position = this.position;
+        mesh.position = new Vector3(0, 50, 0);
         const aggregate = new PhysicsAggregate(mesh,PhysicsShapeType.BOX, {mass: 1}, this.scene);
-        mesh.position = this.position;
+        this.aggregate = aggregate;
         this.rotation = mesh.rotation;
         return mesh;
     }
 
     updatePosition(keys: {left: boolean, right: boolean, forward: boolean, back: boolean}){
-        let tmp = this.position;
         if (this.mesh!==null){
-            // if a key is pressed :
             if (keys.left || keys.right || keys.forward || keys.back){
-                console.log(tmp);
+                console.log(this.mesh);
             }
             if (keys.forward){
                 var forward = Vector3.TransformCoordinates(new Vector3(0, 0, this.speed), Matrix.RotationY(this.rotation.y));
-                this.mesh.applyImpulse(forward, this.mesh.getAbsolutePosition());
+                this.aggregate?.body.applyImpulse(forward, this.mesh.position);
             }
             if (keys.back){
                 var back = Vector3.TransformCoordinates(new Vector3(0, 0, -this.speed), Matrix.RotationY(this.rotation.y));
-                tmp.addInPlace(back);
+                this.aggregate?.body.applyImpulse(back, this.mesh.position);
             }
             if (keys.left){
                 var left = Vector3.TransformCoordinates(new Vector3(this.speed, 0, 0), Matrix.RotationY(this.rotation.y));
-                tmp.addInPlace(left);
+                this.aggregate?.body.applyImpulse(left, this.mesh.position);
             }
             if (keys.right){
                 var right = Vector3.TransformCoordinates(new Vector3(this.speed, 0, 0), Matrix.RotationY(this.rotation.y));
-                tmp.addInPlace(right);
+                this.aggregate?.body.applyImpulse(right, this.mesh.position);
             }
         }
-        this.position = tmp;
+        this.playerNode.position = this.mesh.position;
     };
     
 }
