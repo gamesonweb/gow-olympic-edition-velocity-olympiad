@@ -2,7 +2,7 @@ import {Scene, Vector3, Color3, StandardMaterial, ArcRotateCamera, MeshBuilder, 
     FreeCamera, TransformNode, Camera
 } from "@babylonjs/core";
 import {OurScene} from "../../../BabylonCodes/scenes";
-
+import {Stairs} from "../Stairs";
 
 export class Temple {
     camera: Camera;
@@ -117,6 +117,18 @@ export class Temple {
         // Ajouter un toit incliné au temple
         this.buildRoof();
 
+        // Créer des escaliers devant le temple
+        const stairStep = 5; // Nombre de marches
+        const stepHeight = 0.2; // Hauteur de chaque marche
+        const stepWidth = this.boxDepth; // Largeur de chaque marche (pourrait correspondre à la largeur de l'entrée du temple)
+        const stepDepth = 0.5; // Profondeur de chaque marche
+        const stairs = new Stairs(this.ourScene.scene, "temple_stairs", stairStep, stepHeight, stepWidth,
+            stepDepth, this.position);
+        stairs.rotation.y = -Math.PI/2; // Pivoter pour être face au temple
+        const stairsPositionZ = - this.boxDepth - stairStep/2*stepDepth ;
+        const stairsHeightAdjustment = - this.boxHeight/2;
+        stairs.position = new Vector3(stairsPositionZ, stairsHeightAdjustment, 0);
+
     }
 
     createPillar(scene, pillarName=undefined) {
@@ -132,6 +144,7 @@ export class Temple {
     }
 
     buildRoof() {
+        // utilise une box pour le toit
         // Créer les pentes du toit
         const roofHeight = this.boxDepth; // Profondeur de la box
         const roofDepth = this.boxDepth / 2; // Profondeur de chaque pente
