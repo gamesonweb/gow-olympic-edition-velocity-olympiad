@@ -7,12 +7,16 @@ export class Stairs extends TransformNode {
     stepDepth: number;
     stairsMaterial: StandardMaterial;
 
-    constructor(scene: Scene, name: string, steps: number, stepHeight: number, stepWidth: number, stepDepth: number, position: Vector3) {
+    constructor(scene: Scene, name: string, steps: number, stepHeight: number, stepWidth: number, stepDepth: number,
+                position: Vector3|undefined = undefined) {
         super(name, scene);
         this.steps = steps;
         this.stepHeight = stepHeight;
         this.stepWidth = stepWidth;
         this.stepDepth = stepDepth;
+        if (position === undefined) {
+            position = new Vector3(0, 0, 0);
+        }
         this.position = position; // Position définie grâce à l'héritage de TransformNode
 
         this.stairsMaterial = new StandardMaterial(name + "Material", scene);

@@ -9,7 +9,7 @@ export class TestTemple {
 
     constructor(engine: Engine, canvas: HTMLCanvasElement, physicsEngine: HavokPlugin) {
         this.our_scene = new OurScene(engine, canvas, physicsEngine);
-        this.temple = new Temple(this.our_scene);
+        this.temple = new Temple(this.our_scene, 1, 10, 5);
         const ground = MeshBuilder.CreateGround('ground', {width: 50, height: 50}, this.our_scene.scene);
 
     }

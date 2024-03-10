@@ -1,6 +1,6 @@
 import {
     Vector3, Color3, StandardMaterial, ArcRotateCamera, MeshBuilder, HemisphericLight,
-    TransformNode, Camera, Mesh
+    TransformNode, Camera, Mesh, VertexData
 } from "@babylonjs/core";
 import {OurScene} from "../../../BabylonCodes/scenes";
 import {Stairs} from "../Stairs";
@@ -20,6 +20,7 @@ export class Temple {
     private _numberOfPillars: number;
     private _spacingPillars: number;
     private _wallMaterial: StandardMaterial;
+    private _roofMaterial: StandardMaterial;
 
     constructor(ourScene: OurScene, boxHeight: number = 1, boxWidth: number = 10, boxDepth: number = 5) {
         this.ourScene = ourScene;
@@ -27,13 +28,19 @@ export class Temple {
         this.boxWidth = boxWidth;
         this.boxDepth = boxDepth;
         this.pillarHeight = 6; // hauteur des piliers
+
         this.templeGroup = new TransformNode('templeGroup', this.ourScene.scene);
+
         this._doorIndexes = [2, 3];
         this._doorPositions = {x: [], y: [], z: []};
         this._numberOfPillars = this.boxWidth; // nombre de piliers sur un côté
         this._spacingPillars = 1; // espacement entre les piliers
+
         this._wallMaterial =  new StandardMaterial("wallMaterial", this.ourScene.scene)
         this._wallMaterial.diffuseColor = new Color3(0.8, 0.8, 0.7); // Exemple de couleur
+
+        this._roofMaterial = new StandardMaterial("roofMaterial", this.ourScene.scene);
+        this._roofMaterial.diffuseColor = new Color3(1, 0.5, 0); // Couleur tuile
         this.setup();
     }
 
@@ -163,7 +170,8 @@ export class Temple {
         }
 
         // Ajouter un toit incliné au temple
-        this.buildRoof();
+        // this.buildRoof();
+        this.buildRoofV2();
 
         // Créer des escaliers devant le temple
         this.createStairs();
@@ -178,11 +186,11 @@ export class Temple {
         const stepWidth = this.boxDepth; // Largeur de chaque marche (pourrait correspondre à la largeur de l'entrée du temple)
         const stepDepth = 0.5; // Profondeur de chaque marche
         const stairs = new Stairs(this.ourScene.scene, "temple_stairs", stairStep, stepHeight, stepWidth,
-            stepDepth, this.position);
+            stepDepth);
         stairs.rotation.y = -Math.PI/2; // Pivoter pour être face au temple
-        const stairsPositionZ = - this.boxDepth - stairStep/2*stepDepth ;
+        const stairsPositionX = - this.boxWidth/2 - stairStep/2*stepDepth ;
         const stairsHeightAdjustment = - this.boxHeight/2;
-        stairs.position = new Vector3(stairsPositionZ, stairsHeightAdjustment, 0);
+        stairs.position = new Vector3(stairsPositionX, stairsHeightAdjustment, 0);
     }
 
     createPillar(scene, pillarName=undefined) {
@@ -196,44 +204,100 @@ export class Temple {
         return pillar;
     }
 
-    buildRoof() {
-        // utilise une box pour le toit
-        // Créer les pentes du toit
-        const roofHeight = this.boxDepth; // Profondeur de la box
-        const roofDepth = this.boxDepth / 2; // Profondeur de chaque pente
+    buildRoofV2() {
+        const roofAngle = Math.PI / 6; // Angle d'inclinaison du toit
+        const roofHeight = (this.boxDepth/2) / Math.cos(roofAngle); // Profondeur de chaque pente
 
-        // Calcul de l'hypoténuse (côté incliné du toit)
-        const hypotenuse = roofDepth / Math.cos(Math.PI / 6);
-
-        const roofLeft = MeshBuilder.CreateBox('roofLeft', { width: this.boxWidth, height: hypotenuse, depth: 0.001 },
+        const roofBack = MeshBuilder.CreateBox('roofBack', { width: this.boxWidth, height: roofHeight, depth: 0.001 },
             this.ourScene.scene);
-        roofLeft.rotation.x = Math.PI / 2;
-        roofLeft.rotation.x = -Math.PI / 3; // Incliner le toit
-        roofLeft.position.y = this.pillarHeight + this.boxHeight / 4;
-        roofLeft.position.z = roofDepth / 2;
-        roofLeft.parent = this.templeGroup;
+        roofBack.rotation.x = roofAngle - Math.PI / 2 ;  // Incliner le toit
+        roofBack.position.y = this.pillarHeight + this.boxHeight / 4;
+        roofBack.position.z = this.boxDepth / 4;
+        roofBack.parent = this.templeGroup;
 
-        const roofRight = MeshBuilder.CreateBox('roofRight', { width: this.boxWidth, height: hypotenuse, depth: 0.001 },
+        const roofRight = MeshBuilder.CreateBox('roofRight', { width: this.boxWidth, height: roofHeight, depth: 0.001 },
             this.ourScene.scene);
-        roofRight.rotation.x = Math.PI / 2;
-        roofRight.rotation.x = Math.PI / 3; // Incliner le toit
+        roofRight.rotation.x = Math.PI / 2 - roofAngle;  // Incliner le toit
         roofRight.position.y = this.pillarHeight + this.boxHeight / 4;
-        roofRight.position.z = -roofDepth / 2;
+        roofRight.position.z = -this.boxDepth / 4;
         roofRight.parent = this.templeGroup;
 
-        // Créer le fronton triangulaire
-        const fronton = MeshBuilder.CreateBox('fronton', { width: this.boxWidth, height: roofHeight, depth: 0.1 },
+        const fronton = MeshBuilder.CreateBox('fronton', { width: this.boxWidth, height: this.boxDepth, depth: 0.001 },
             this.ourScene.scene);
         fronton.rotation.x = Math.PI / 2; // Pivoter pour être vertical
         fronton.position.y = this.pillarHeight - this.boxHeight / 2; // Positionner en hauteur
         fronton.parent = this.templeGroup;
 
-        // Ajouter des matériaux (à personnaliser)
-        const roofMaterial = new StandardMaterial('roofMaterial', this.ourScene.scene);
-        roofMaterial.diffuseColor = new Color3(1, 0.5, 0); // Couleur tuile
-        roofLeft.material = roofMaterial;
-        roofRight.material = roofMaterial;
-        fronton.material = roofMaterial;
+        roofBack.material = this._roofMaterial;
+        roofRight.material = this._roofMaterial;
+        fronton.material = this._roofMaterial;
+
+        let frontonLeftCornerPositions = [
+            new Vector3(- this.boxWidth/2, this.boxHeight, this.boxDepth/2), // Sommet 1
+            new Vector3(- this.boxWidth/2, this.boxHeight, this.boxDepth/2), // Sommet 2
+            new Vector3(- this.boxWidth/2, this.boxHeight, this.boxDepth/2) // Sommet 3
+        ];
+
+        // Créer le fronton triangulaire gauche
+        const frontonCloseTriangleHeight = Math.sin(roofAngle) * roofHeight; // roofHeight mean Hypotenuse
+        const frontonLeftTriangle = this.createTriangularPrism("frontonLeftTriangle", this.boxDepth, 0.001, frontonCloseTriangleHeight );
+        frontonLeftTriangle.material = this._roofMaterial;
+        frontonLeftTriangle.parent = this.templeGroup;
+        frontonLeftTriangle.position.x = - this.boxWidth/2;
+        frontonLeftTriangle.position.y = this.pillarHeight - this.boxHeight / 2;
+        frontonLeftTriangle.position.z = this.boxDepth/2;
+        frontonLeftTriangle.rotation.x = -Math.PI/2;
+        frontonLeftTriangle.rotation.y = Math.PI/2;
+
+        // Créer le fronton triangulaire droit
+        const frontonRightTriangle = this.createTriangularPrism("frontonRightTriangle", this.boxDepth, 0.001, frontonCloseTriangleHeight );
+        frontonRightTriangle.material = this._roofMaterial;
+        frontonRightTriangle.parent = this.templeGroup;
+        frontonRightTriangle.position.x = this.boxWidth/2;
+        frontonRightTriangle.position.y = this.pillarHeight - this.boxHeight / 2;
+        frontonRightTriangle.position.z = this.boxDepth/2;
+        frontonRightTriangle.rotation.x = -Math.PI/2;
+        frontonRightTriangle.rotation.y = Math.PI/2;
+
+
+    }
+
+    createTriangularPrism(name, width, height, depth) {
+        // Créer un maillage vide
+        let customMesh = new Mesh(name, this.ourScene.scene);
+
+        // Les sommets du prisme triangulaire
+        let positions = [
+            0, 0, 0, // Bas arrière gauche 0
+            width, 0, 0, // Bas arrière droite 1
+            width / 2, 0, depth, // Bas avant centre 2
+            0, height, 0, // Haut arrière gauche 3
+            width, height, 0, // Haut arrière droite 4
+            width / 2, height, depth // Haut avant centre 5
+        ];
+
+        // Les faces du prisme
+        let indices = [
+            0, 1, 2, // Base
+            3, 5, 4, // Haut
+            0, 2, 5, 0, 5, 3, // Côté gauche
+            1, 4, 5, 1, 5, 2, // Côté droit
+            0, 3, 4, 0, 4, 1 // Arrière
+        ];
+
+        // Appliquer les sommets et les indices au maillage
+        let vertexData = new VertexData();
+        vertexData.positions = positions;
+        vertexData.indices = indices;
+
+        // let normals = [];
+        // VertexData.ComputeNormals(positions, indices, normals);
+        // vertexData.normals = normals;
+
+
+        vertexData.applyToMesh(customMesh, true);
+
+        return customMesh;
     }
 
     createTempleWalls(templeBox: Mesh) {
@@ -313,42 +377,6 @@ export class Temple {
         wall.parent = this.templeGroup;
 
         return wall;
-    }
-
-
-    createWall(pillar1: TransformNode, pillar2: TransformNode, rotationY: number = 0, positionXMinus = 0, positionXManus = 0) {
-        // Dimensions et position du mur
-        const height = this.pillarHeight; // Hauteur du mur égale à la hauteur des piliers
-        const depth = 0.02; // Épaisseur du mur, ajustez selon vos besoins
-
-        // Calculer la largeur du mur en fonction des piliers de début et de fin
-        // Supposons que `pillarLeft` et `pillarRight` sont les piliers extrêmes de votre structure
-        // const pillarLeft = this.templeGroup.getChildMeshes().find(mesh => mesh.name === "pillar_left0");
-        // const pillarRight = this.templeGroup.getChildMeshes().find(mesh => mesh.name === "pillar_right0");
-        const width = Vector3.Distance(pillar1.position, pillar2.position);
-
-        // Créer le mur
-        const wall = MeshBuilder.CreateBox("templeWall", {
-            height: height,
-            width: width,
-            depth: depth
-        }, this.ourScene.scene);
-
-        // Positionner le mur
-        wall.position = new Vector3(
-            (pillar1.position.x + pillar2.position.x) / 2 + positionXManus - positionXMinus, // Position X moyenne des piliers de début et de fin
-            this.boxHeight / 2, // Hauteur basée sur la hauteur de la boîte du temple
-            (pillar1.position.z + pillar2.position.z) / 2  // Position Z moyenne des piliers de début et de fin
-        );
-
-        // Affecter un matériau au mur
-        const wallMaterial = new StandardMaterial("wallMaterial", this.ourScene.scene);
-        wallMaterial.diffuseColor = new Color3(0.8, 0.8, 0.7); // Exemple de couleur
-        wall.material = wallMaterial;
-        wall.position.y = pillar1.position.y;
-        wall.rotation.y = rotationY;
-        // Faire du mur un enfant du groupe du temple pour qu'il suive les transformations du temple
-        wall.parent = this.templeGroup;
     }
 
 }
