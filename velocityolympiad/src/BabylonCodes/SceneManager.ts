@@ -60,6 +60,9 @@ class OurScene{
         const ground = MeshBuilder.CreateGround("ground", {width: 100, height: 100});
         var groundPhysics = new PhysicsAggregate(ground, PhysicsShapeType.BOX, {mass: 0}, this.scene);
 
+        const pîllar = MeshBuilder.CreateBox("pillar", {size: 10});
+        pîllar.position = new Vector3(10, 0, 10);
+
         return scene;
     }
 

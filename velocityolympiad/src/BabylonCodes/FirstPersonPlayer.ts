@@ -1,4 +1,4 @@
-import {Matrix, Scene, Vector3, Camera, UniversalCamera ,MeshBuilder,PhysicsAggregate, PhysicsShapeType, TransformNode,Engine, Node} from "@babylonjs/core";
+import {Matrix, Scene, Vector3, Camera, UniversalCamera ,MeshBuilder,PhysicsAggregate, PhysicsShapeType, TransformNode,Engine, StandardMaterial, Color3} from "@babylonjs/core";
 
 export class FirstPersonPlayer{
     scene: Scene;
@@ -12,7 +12,7 @@ export class FirstPersonPlayer{
         this.canvas = canvas;
         this.engine = engine;
         this.camera = this.CreateCamera();
-        this.player = new player(scene);
+        this.player = new player(scene,this.camera);
         this.scene.activeCamera = this.camera;
     }
 
@@ -38,24 +38,25 @@ class player{
     aggregate: PhysicsAggregate | null;
     scene: Scene;
     playerNode: TransformNode;
-    cameraNode: Node|null;
-    speed: number = 1;
-    constructor(scene: Scene){
+    camera: Camera;
+    speed: number = 0.1;
+    constructor(scene: Scene, camera: Camera){
         this.position = new Vector3(0, 0, 0);
         this.rotation = new Vector3(0, 0, 0);
         this.scene = scene;
         this.mesh = null;
         this.aggregate = null;
         this.playerNode = new TransformNode("player", this.scene);
-        this.cameraNode = scene.getNodeByName("camera");
-        this.playerNode.parent = this.cameraNode;
-        
+        this.camera = camera;
     }
 
     CreateMesh(){
         const mesh = MeshBuilder.CreateBox("player", {size: 1});
         mesh.position = new Vector3(0, 50, 0);
-        const aggregate = new PhysicsAggregate(mesh,PhysicsShapeType.BOX, {mass: 1}, this.scene);
+        const playerMaterial = new StandardMaterial("playerMaterial", this.scene);
+        playerMaterial.diffuseColor = new Color3(0, 0, 1);
+        mesh.material = playerMaterial;
+        const aggregate = new PhysicsAggregate(mesh,PhysicsShapeType.BOX, {mass: 1,friction: 0.5}, this.scene);
         this.aggregate = aggregate;
         this.rotation = mesh.rotation;
         return mesh;
@@ -84,6 +85,8 @@ class player{
             }
         }
         this.playerNode.position = this.mesh.position;
+        this.camera.position.x = this.mesh.position.x;
+        this.camera.position.y = this.mesh.position.y+1;
+        this.camera.position.z = this.mesh.position.z;
     };
-    
 }
