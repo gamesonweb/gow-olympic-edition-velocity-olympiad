@@ -34,6 +34,7 @@ export class FirstPersonPlayer{
 class player{
     position: Vector3;
     rotation: Vector3;
+    frontVector: Vector3;
     mesh: any | null;  
     aggregate: PhysicsAggregate | null;
     scene: Scene;
@@ -86,7 +87,8 @@ class player{
         }
         this.playerNode.position = this.mesh.position;
         this.camera.position.x = this.mesh.position.x;
-        this.camera.position.y = this.mesh.position.y+1;
+        this.camera.position.y = this.mesh.position.y+2;
         this.camera.position.z = this.mesh.position.z;
+        this.mesh.rotation = this.rotation;
     };
 }
