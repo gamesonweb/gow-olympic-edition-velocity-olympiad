@@ -1,6 +1,6 @@
 import {Scene, Vector3, Camera, FreeCamera,MeshBuilder,PhysicsAggregate, PhysicsShapeType} from "@babylonjs/core";
 import {Player} from "./player";
-import {OurScene} from "../scenes/ourScene";
+import {OurScene} from "../../scenes";
 
 export class FirstPersonPlayer{
     our_scene: OurScene;

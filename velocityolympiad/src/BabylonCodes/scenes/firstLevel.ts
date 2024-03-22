@@ -9,7 +9,7 @@ import {
     Vector3
 } from "@babylonjs/core";
 import {OurScene} from "./ourScene";
-import {FirstPersonPlayer} from "../players/firstPersonPlayer";
+import {FirstPersonPlayer} from "../Character/players/firstPersonPlayer";
 
 export class FirstLevel extends OurScene {
     player: FirstPersonPlayer;

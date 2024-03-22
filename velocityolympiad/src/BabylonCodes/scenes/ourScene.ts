@@ -10,6 +10,7 @@ import {
 } from "@babylonjs/core";
 import {FirstPersonPlayer} from "../players/firstPersonPlayer";
 import {Inspector} from "@babylonjs/inspector";
+import {Debug} from "@babylonjs/core/Legacy/legacy";
 
 export class OurScene {
     scene: Scene;
@@ -39,6 +40,7 @@ export class OurScene {
         if (import.meta.env.DEV) {
             console.log("DEV MODE: Scene inspector enabled");
             Inspector.Show(this.scene, {enablePopup: false});
+            new Debug.AxesViewer(this.scene, 10);
         }
         this.isSceneSetup = true;
     }
