@@ -11,6 +11,7 @@
   import { defineComponent } from 'vue';
   import {Main} from "../BabylonCodes/Main.ts";
   import { FirstLevel } from "../BabylonCodes/scenes";
+  import { WelcomeLevel } from "../BabylonCodes/levels/WelcomeLevel";
   import {TestTemple} from "./GameObjects/Temple/testTemple";
   export default defineComponent({
     name: 'BabylonCode',
@@ -18,10 +19,10 @@
         const canvas = document.querySelector('canvas')!;
         const game = new Main(canvas);
         game.Init().then(() => {
-          // let ourSceneLevel1: FirstLevel = new FirstLevel(game.getEngine(), game.getCanvas(), game.getPhysicsEngine());
-          // game.getSceneManager().addScene(ourSceneLevel1);
-          let testTemple = new TestTemple(game.getEngine(), game.getCanvas(), game.getPhysicsEngine());
-          game.getSceneManager().addScene(testTemple.our_scene);
+          // let testTemple = new TestTemple(game.getEngine(), game.getCanvas(), game.getPhysicsEngine());
+          // game.getSceneManager().addScene(testTemple.our_scene);
+          let welcomeLevel: WelcomeLevel = new WelcomeLevel(game.getEngine(), game.getCanvas(), game.getPhysicsEngine());
+          game.getSceneManager().addScene(welcomeLevel.ourScene);
           game.Run();
         });
     }
