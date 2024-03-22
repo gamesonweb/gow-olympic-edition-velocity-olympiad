@@ -1,4 +1,4 @@
-import {Matrix, Scene, Vector3, Camera, UniversalCamera ,MeshBuilder,PhysicsAggregate, PhysicsShapeType, TransformNode,Engine, StandardMaterial, Color3 , Quaternion} from "@babylonjs/core";
+import {Matrix, Scene, Vector3, Camera, UniversalCamera ,MeshBuilder,PhysicsAggregate, PhysicsShapeType, TransformNode,Engine, StandardMaterial, Color3 ,Axis} from "@babylonjs/core";
 
 export class FirstPersonPlayer{
     scene: Scene;
@@ -35,6 +35,7 @@ class player{
     position: Vector3;
     rotation: Vector3;
     frontVector: Vector3;
+    rightVector: Vector3;
     mesh: any | null;  
     aggregate: PhysicsAggregate | null;
     scene: Scene;
@@ -45,6 +46,7 @@ class player{
         this.position = new Vector3(0, 0, 0);
         this.rotation = new Vector3(0, 0, 0);
         this.frontVector = new Vector3(0, 0, 1);
+        this.rightVector = new Vector3(1, 0, 0);
         this.scene = scene;
         this.mesh = null;
         this.aggregate = null;
@@ -66,30 +68,22 @@ class player{
 
     updatePosition(keys: {left: boolean, right: boolean, forward: boolean, back: boolean}){
 
-        this.frontVector.x = Math.sin(this.rotation.y) * -1;
-        this.frontVector.z = Math.cos(this.rotation.y) * -1;
-        this.frontVector.y = 0;
-
-        const frictionForce = this.aggregate?.body.getLinearVelocity().scale(-0.1);
-        if (frictionForce) {
-            this.aggregate?.body.applyImpulse(frictionForce, this.mesh.position);
-        }
-
+        // Utilisez la direction de la caméra pour déterminer le frontVector
+        this.frontVector = this.camera.getDirection(Axis.Z);
+        this.rightVector = this.camera.getDirection(Axis.X);
+    
         if (this.mesh!==null){
-            if (keys.left || keys.right || keys.forward || keys.back){
-                console.log(this.mesh);
+            if (keys.forward){
+                this.aggregate?.body.applyImpulse(this.frontVector.scale(this.speed), this.mesh.position);
             }
             if (keys.back){
-                this.aggregate?.body.applyImpulse(this.frontVector.multiplyByFloats(this.speed,this.speed,this.speed), this.mesh.position);
-            }
-            if (keys.forward){
-                this.aggregate?.body.applyImpulse(this.frontVector.multiplyByFloats(-this.speed,-this.speed,-this.speed), this.mesh.position);
-            }
-            if (keys.left){
-                this.aggregate?.body.applyImpulse(this.frontVector.rotateByQuaternionToRef(Quaternion.RotationAxis(new Vector3(0, 1, 0), Math.PI / 2), new Vector3()).multiplyByFloats(this.speed, this.speed, this.speed), this.mesh.position);
+                this.aggregate?.body.applyImpulse(this.frontVector.scale(-this.speed), this.mesh.position);
             }
             if (keys.right){
-                this.aggregate?.body.applyImpulse(this.frontVector.rotateByQuaternionToRef(Quaternion.RotationAxis(new Vector3(0, 1, 0), -Math.PI / 2), new Vector3()).multiplyByFloats(this.speed, this.speed, this.speed), this.mesh.position);
+                this.aggregate?.body.applyImpulse(this.rightVector.scale(this.speed), this.mesh.position);
+            }
+            if (keys.left){
+                this.aggregate?.body.applyImpulse(this.rightVector.scale(-this.speed), this.mesh.position);
             }
         }
         this.playerNode.position = this.mesh.position;
@@ -98,8 +92,6 @@ class player{
         this.camera.position.x = this.mesh.position.x;
         this.camera.position.y = this.mesh.position.y+2;
         this.camera.position.z = this.mesh.position.z;
-
-
     };
 
 }
