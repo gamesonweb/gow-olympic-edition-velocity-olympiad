@@ -1,4 +1,4 @@
-import {Matrix, Scene, Vector3, Camera, UniversalCamera ,MeshBuilder,PhysicsAggregate, PhysicsShapeType, TransformNode,Engine, StandardMaterial, Color3} from "@babylonjs/core";
+import {Matrix, Scene, Vector3, Camera, UniversalCamera ,MeshBuilder,PhysicsAggregate, PhysicsShapeType, TransformNode,Engine, StandardMaterial, Color3 , Quaternion} from "@babylonjs/core";
 
 export class FirstPersonPlayer{
     scene: Scene;
@@ -40,10 +40,11 @@ class player{
     scene: Scene;
     playerNode: TransformNode;
     camera: Camera;
-    speed: number = 0.1;
+    speed: number = 0.5;
     constructor(scene: Scene, camera: Camera){
         this.position = new Vector3(0, 0, 0);
         this.rotation = new Vector3(0, 0, 0);
+        this.frontVector = new Vector3(0, 0, 1);
         this.scene = scene;
         this.mesh = null;
         this.aggregate = null;
@@ -64,31 +65,41 @@ class player{
     }
 
     updatePosition(keys: {left: boolean, right: boolean, forward: boolean, back: boolean}){
+
+        this.frontVector.x = Math.sin(this.rotation.y) * -1;
+        this.frontVector.z = Math.cos(this.rotation.y) * -1;
+        this.frontVector.y = 0;
+
+        const frictionForce = this.aggregate?.body.getLinearVelocity().scale(-0.1);
+        if (frictionForce) {
+            this.aggregate?.body.applyImpulse(frictionForce, this.mesh.position);
+        }
+
         if (this.mesh!==null){
             if (keys.left || keys.right || keys.forward || keys.back){
                 console.log(this.mesh);
             }
-            if (keys.forward){
-                var forward = Vector3.TransformCoordinates(new Vector3(0, 0, this.speed), Matrix.RotationY(this.rotation.y));
-                this.aggregate?.body.applyImpulse(forward, this.mesh.position);
-            }
             if (keys.back){
-                var back = Vector3.TransformCoordinates(new Vector3(0, 0, -this.speed), Matrix.RotationY(this.rotation.y));
-                this.aggregate?.body.applyImpulse(back, this.mesh.position);
+                this.aggregate?.body.applyImpulse(this.frontVector.multiplyByFloats(this.speed,this.speed,this.speed), this.mesh.position);
+            }
+            if (keys.forward){
+                this.aggregate?.body.applyImpulse(this.frontVector.multiplyByFloats(-this.speed,-this.speed,-this.speed), this.mesh.position);
             }
             if (keys.left){
-                var left = Vector3.TransformCoordinates(new Vector3(this.speed, 0, 0), Matrix.RotationY(this.rotation.y));
-                this.aggregate?.body.applyImpulse(left, this.mesh.position);
+                this.aggregate?.body.applyImpulse(this.frontVector.rotateByQuaternionToRef(Quaternion.RotationAxis(new Vector3(0, 1, 0), Math.PI / 2), new Vector3()).multiplyByFloats(this.speed, this.speed, this.speed), this.mesh.position);
             }
             if (keys.right){
-                var right = Vector3.TransformCoordinates(new Vector3(this.speed, 0, 0), Matrix.RotationY(this.rotation.y));
-                this.aggregate?.body.applyImpulse(right, this.mesh.position);
+                this.aggregate?.body.applyImpulse(this.frontVector.rotateByQuaternionToRef(Quaternion.RotationAxis(new Vector3(0, 1, 0), -Math.PI / 2), new Vector3()).multiplyByFloats(this.speed, this.speed, this.speed), this.mesh.position);
             }
         }
         this.playerNode.position = this.mesh.position;
+        this.rotation.x = this.camera.absoluteRotation.x;
+        this.rotation.y = this.camera.absoluteRotation.y;
         this.camera.position.x = this.mesh.position.x;
         this.camera.position.y = this.mesh.position.y+2;
         this.camera.position.z = this.mesh.position.z;
-        this.mesh.rotation = this.rotation;
+
+
     };
+
 }
