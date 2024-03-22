@@ -42,6 +42,9 @@ export class Player implements Character{
 
     }
 
+    setupCharacter(): void {
+    }
+
 
 
 }
