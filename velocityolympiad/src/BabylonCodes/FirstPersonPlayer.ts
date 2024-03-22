@@ -26,7 +26,7 @@ export class FirstPersonPlayer{
         this.player.mesh = this.player.CreateMesh();
     }
 
-    UpdatePlayerPosition(keys: {left: boolean, right: boolean, forward: boolean, back: boolean}){ 
+    UpdatePlayerPosition(keys: {left: boolean, right: boolean, forward: boolean, back: boolean,jump: boolean}){ 
         this.player.updatePosition(keys);
     }
 }
@@ -66,7 +66,7 @@ class player{
         return mesh;
     }
 
-    updatePosition(keys: {left: boolean, right: boolean, forward: boolean, back: boolean}){
+    updatePosition(keys: {left: boolean, right: boolean, forward: boolean, back: boolean,jump: boolean}){
 
         // Utilisez la direction de la caméra pour déterminer le frontVector
         this.frontVector = this.camera.getDirection(Axis.Z);
@@ -85,6 +85,8 @@ class player{
             if (keys.left){
                 this.aggregate?.body.applyImpulse(this.rightVector.scale(-this.speed), this.mesh.position);
             }
+            if (keys.jump){
+                this.aggregate?.body.applyImpulse(new Vector3(0, 1, 0).scale(this.speed*2.75), this.mesh.position);
         }
         this.playerNode.position = this.mesh.position;
         this.rotation.x = this.camera.absoluteRotation.x;
@@ -92,6 +94,6 @@ class player{
         this.camera.position.x = this.mesh.position.x;
         this.camera.position.y = this.mesh.position.y+2;
         this.camera.position.z = this.mesh.position.z;
-    };
-
+        };
+    }
 }

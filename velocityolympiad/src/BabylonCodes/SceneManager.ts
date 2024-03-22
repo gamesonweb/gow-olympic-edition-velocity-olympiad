@@ -57,7 +57,7 @@ class OurScene{
         
         const light = new HemisphericLight("light", new Vector3(0,1,0), scene);
         const ground = MeshBuilder.CreateGround("ground", {width: 100, height: 100});
-        var groundPhysics = new PhysicsAggregate(ground, PhysicsShapeType.BOX, {mass: 0,friction:0.5,restitution: 0.1}, this.scene);
+        var groundPhysics = new PhysicsAggregate(ground, PhysicsShapeType.BOX, {mass: 0,friction:1,restitution: 0.1}, this.scene);
 
         const pîllar = MeshBuilder.CreateBox("pillar", {size: 10});
         pîllar.position = new Vector3(10, 0, 10);

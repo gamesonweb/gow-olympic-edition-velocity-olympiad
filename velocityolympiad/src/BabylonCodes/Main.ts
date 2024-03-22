@@ -1,7 +1,7 @@
 import {SceneManager} from "./SceneManager.ts";
 import {Engine} from "@babylonjs/core";
 import { FirstPersonPlayer } from "./FirstPersonPlayer.ts";
-var keys = { left: false, right: false, forward: false, back: false, };
+var keys = { left: false, right: false, forward: false, back: false,jump: false};
 
 export class Main{
     canvas: HTMLCanvasElement;
@@ -100,6 +100,9 @@ function handleKeyDown(evt: KeyboardEvent) {
         keys.back = true;
         console.log('S: ' + keys.back);
     }
+    if (evt.key == ' ') {
+        keys.jump = true;
+    }
 }
 
 function handleKeyUp(evt: KeyboardEvent) {
@@ -115,5 +118,8 @@ function handleKeyUp(evt: KeyboardEvent) {
     }
     if (evt.key == 's') {
         keys.back = false;
+    }
+    if (evt.key == ' ') {
+        keys.jump = false;
     }
 }
