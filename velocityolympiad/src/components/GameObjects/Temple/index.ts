@@ -191,6 +191,7 @@ export class Temple {
         const stairsPositionX = - this.boxWidth/2 - stairStep/2*stepDepth ;
         const stairsHeightAdjustment = - this.boxHeight/2;
         stairs.position = new Vector3(stairsPositionX, stairsHeightAdjustment, 0);
+        stairs.parent = this.templeGroup;
     }
 
     createPillar(scene, pillarName=undefined) {
