@@ -1,6 +1,6 @@
 import {OurScene} from "../../../BabylonCodes/scenes";
 import {SceneManager} from "../../../BabylonCodes/scenes/sceneManager";
-import {Engine, HavokPlugin, MeshBuilder} from "@babylonjs/core";
+import {Engine, HavokPlugin, MeshBuilder, Vector3} from "@babylonjs/core";
 import {Temple} from "./index";
 
 export class TestTemple {

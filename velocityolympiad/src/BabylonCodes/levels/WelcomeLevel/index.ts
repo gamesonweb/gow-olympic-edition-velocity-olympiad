@@ -1,6 +1,14 @@
 import {OurScene} from "../../scenes";
-import {ArcRotateCamera, Camera, Engine, HavokPlugin, Vector3} from "@babylonjs/core";
-import {Temple} from "../../../components/GameObjects/Temple";
+import {
+    Engine,
+    FreeCamera,
+    HavokPlugin,
+    HemisphericLight,
+    MeshBuilder,
+    PhysicsAggregate, PhysicsShapeType,
+    Vector3
+} from "@babylonjs/core";
+import {MeleeEnemy} from "../../Character/Enemy/melee.ts";
 
 export class WelcomeLevel {
     ourScene: OurScene
@@ -12,13 +20,16 @@ export class WelcomeLevel {
     setup() {
         // Set up the welcome level
 
-        // create a player
-
-        let camera = new ArcRotateCamera('camera', -Math.PI / 2, Math.PI / 2.5, 10,
-            new Vector3(0, 0, 0), this.ourScene.scene);
+        let camera = new FreeCamera('camera', new Vector3(0, 5, 10), this.ourScene.scene);
         camera.attachControl(this.ourScene.canvas, true);
-        let temple = new Temple(this.ourScene, 1, 15, 7, camera);
 
+        const light = new HemisphericLight("light", new Vector3(0, 1, 0), this.ourScene.scene);
+        const ground = MeshBuilder.CreateGround("ground", {width: 100, height: 100});
+        var groundPhysics = new PhysicsAggregate(ground, PhysicsShapeType.BOX, {mass: 0}, this.ourScene.scene);
+
+    //     add and MeleeEnemy
+        const meleeEnemy = new MeleeEnemy(this.ourScene.scene, new Vector3(0, 10, 0));
+        meleeEnemy.setupCharacter();
 
 
     }
