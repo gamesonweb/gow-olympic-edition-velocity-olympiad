@@ -60,7 +60,7 @@ class player{
         const playerMaterial = new StandardMaterial("playerMaterial", this.scene);
         playerMaterial.diffuseColor = new Color3(0, 0, 1);
         mesh.material = playerMaterial;
-        const aggregate = new PhysicsAggregate(mesh,PhysicsShapeType.BOX, {mass: 1,friction: 0.5}, this.scene);
+        const aggregate = new PhysicsAggregate(mesh,PhysicsShapeType.BOX, {mass: 1,friction: 0.5,restitution:0.1}, this.scene);
         this.aggregate = aggregate;
         this.rotation = mesh.rotation;
         return mesh;
@@ -73,6 +73,12 @@ class player{
         this.rightVector = this.camera.getDirection(Axis.X);
     
         if (this.mesh!==null){
+            if (!keys.left && !keys.right && !keys.forward && !keys.back && !keys.jump){
+                const frictionForce = this.aggregate?.body.getLinearVelocity().scale(-0.1); // Adjust the friction factor as needed
+                if (frictionForce) {
+                    this.aggregate?.body.applyImpulse(frictionForce, this.mesh.position);
+                }
+            }
             if (keys.forward){
                 this.aggregate?.body.applyImpulse(this.frontVector.scale(this.speed), this.mesh.position);
             }
@@ -87,7 +93,9 @@ class player{
             }
             if (keys.jump){
                 this.aggregate?.body.applyImpulse(new Vector3(0, 1, 0).scale(this.speed*2.75), this.mesh.position);
-        }
+            }
+
+        this.aggregate?.body.setAngularVelocity(new Vector3(0, 0, 0));
         this.playerNode.position = this.mesh.position;
         this.rotation.x = this.camera.absoluteRotation.x;
         this.rotation.y = this.camera.absoluteRotation.y;
