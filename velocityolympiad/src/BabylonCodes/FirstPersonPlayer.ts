@@ -98,10 +98,10 @@ class player{
                 this.aggregate?.body.applyImpulse(this.frontVector.scale(-this.speed), this.mesh.position);
             }
             if (keys.right){
-                this.aggregate?.body.applyImpulse(this.rightVector.scale(this.speed), this.mesh.position);
+                this.aggregate?.body.applyImpulse(this.rightVector.scale(this.speed*0.5), this.mesh.position);
             }
             if (keys.left){
-                this.aggregate?.body.applyImpulse(this.rightVector.scale(-this.speed), this.mesh.position);
+                this.aggregate?.body.applyImpulse(this.rightVector.scale(-this.speed*0.5), this.mesh.position);
             }
             if (keys.jump){
                 if (this.grounded){
