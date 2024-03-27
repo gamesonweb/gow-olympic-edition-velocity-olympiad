@@ -1,4 +1,4 @@
-import {Matrix, Scene, Vector3, Camera, UniversalCamera ,MeshBuilder,PhysicsAggregate, PhysicsShapeType, TransformNode,Engine, StandardMaterial, Color3 ,Axis} from "@babylonjs/core";
+import {Matrix, Scene, Vector3, Camera, UniversalCamera ,MeshBuilder,PhysicsAggregate, PhysicsShapeType, TransformNode,Engine, StandardMaterial, Color3 ,Axis,Observable} from "@babylonjs/core";
 
 export class FirstPersonPlayer{
     scene: Scene;
@@ -42,6 +42,7 @@ class player{
     playerNode: TransformNode;
     camera: Camera;
     speed: number = 0.5;
+    grounded: boolean = true;
     constructor(scene: Scene, camera: Camera){
         this.position = new Vector3(0, 0, 0);
         this.rotation = new Vector3(0, 0, 0);
@@ -63,6 +64,7 @@ class player{
         const aggregate = new PhysicsAggregate(mesh,PhysicsShapeType.BOX, {mass: 1,friction: 0.5,restitution:0.1}, this.scene);
         this.aggregate = aggregate;
         this.rotation = mesh.rotation;
+        aggregate.body.setCollisionCallbackEnabled(true);
         return mesh;
     }
 
@@ -71,9 +73,19 @@ class player{
         // Utilisez la direction de la caméra pour déterminer le frontVector
         this.frontVector = this.camera.getDirection(Axis.Z);
         this.rightVector = this.camera.getDirection(Axis.X);
-    
+        
+        const observable = this.aggregate?.body.getCollisionObservable();
+        if (observable) {
+            const observer = observable.add((collisionEvent) => {
+                if (collisionEvent.collidedAgainst.transformNode.name === "ground" || collisionEvent.collider.transformNode.name === "ground") {
+                    this.grounded = true;
+                }
+            });
+        }
+            
+
         if (this.mesh!==null){
-            if (!keys.left && !keys.right && !keys.forward && !keys.back && !keys.jump){
+            if (!keys.left && !keys.right && !keys.forward && !keys.back && !keys.jump && this.grounded){
                 const frictionForce = this.aggregate?.body.getLinearVelocity().scale(-0.1); // Adjust the friction factor as needed
                 if (frictionForce) {
                     this.aggregate?.body.applyImpulse(frictionForce, this.mesh.position);
@@ -92,7 +104,10 @@ class player{
                 this.aggregate?.body.applyImpulse(this.rightVector.scale(-this.speed), this.mesh.position);
             }
             if (keys.jump){
-                this.aggregate?.body.applyImpulse(new Vector3(0, 1, 0).scale(this.speed*2.75), this.mesh.position);
+                if (this.grounded){
+                    this.aggregate?.body.applyImpulse(new Vector3(0, 1, 0).scale(this.speed*30), this.mesh.position);
+                    this.grounded = false;
+                }
             }
 
         this.aggregate?.body.setAngularVelocity(new Vector3(0, 0, 0));
