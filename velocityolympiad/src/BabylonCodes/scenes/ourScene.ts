@@ -1,16 +1,5 @@
-import {
-    Engine,
-    HavokPlugin,
-    HemisphericLight,
-    MeshBuilder,
-    PhysicsAggregate,
-    PhysicsShapeType,
-    Scene,
-    Vector3
-} from "@babylonjs/core";
-import {FirstPersonPlayer} from "../players/firstPersonPlayer";
-import {Inspector} from "@babylonjs/inspector";
-import {Debug} from "@babylonjs/core/Legacy/legacy";
+import {Engine, HavokPlugin, Scene, Vector3} from "@babylonjs/core";
+import {FirstPersonPlayer} from "../FirstPersonPlayer.ts";
 
 export class OurScene {
     scene: Scene;
@@ -35,12 +24,15 @@ export class OurScene {
         if (scene === undefined) this.scene = this._createScene();
         else this.scene = scene;
         // Add the player to the scene, etc ... for inherited classes
+        //  verify if a camera is already in the scene else add a new one
 
+            const player = new FirstPersonPlayer(this.scene, this.canvas, this.engine);
+            player.CreatePlayer();
         // show the inspector in DEV mode
         if (import.meta.env.DEV) {
             console.log("DEV MODE: Scene inspector enabled");
-            Inspector.Show(this.scene, {enablePopup: false});
-            new Debug.AxesViewer(this.scene, 10);
+            // Inspector.Show(this.scene, {enablePopup: false});
+            // new Debug.AxesViewer(this.scene, 10);
         }
         this.isSceneSetup = true;
     }

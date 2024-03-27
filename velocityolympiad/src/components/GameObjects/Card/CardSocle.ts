@@ -1,4 +1,4 @@
-import {Engine, Scene, Vector3} from "@babylonjs/core";
+import {Engine, PhysicsImpostor, Scene, Vector3} from "@babylonjs/core";
 import {ICard} from "./ICard.ts";
 
 
@@ -13,6 +13,7 @@ export class CardSocle {
         this.engine = engine;
         this.card = card;
         this.position = position;
+        var physicsImpostor = new PhysicsImpostor(this.card.mesh, PhysicsImpostor.BoxImpostor, { mass: 1, restitution: 0.9 }, this.scene);
     }
 
     setup() {

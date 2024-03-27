@@ -1,5 +1,6 @@
 import {ICard} from "../ICard.ts";
-import {Mesh} from "@babylonjs/core";
+import {Mesh, MeshBuilder, PhysicsImpostor} from "@babylonjs/core";
+import {RareteCard} from "../RareteCard.ts";
 
 
 export class FlammeCard implements ICard{
@@ -14,9 +15,11 @@ export class FlammeCard implements ICard{
     name: string = 'Flamme';
     description: string = 'Une carte de flamme';
     mesh: Mesh;
+    rarete: RareteCard = RareteCard.RARE;
 
     setup() {
         // Setup the card
-        this.mesh = new Mesh('flamme', null);
+        this.mesh =  MeshBuilder.CreateBox('box', {size: 100});
     }
+
 }

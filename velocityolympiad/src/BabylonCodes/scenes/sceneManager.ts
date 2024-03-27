@@ -4,6 +4,7 @@ import {
 } from '@babylonjs/core';
 
 import { OurScene } from "./ourScene";
+import {TestCard} from "../../components/GameObjects/Card/TestCard.ts";
 
 export class SceneManager {
     // Manage the scenes and Havok physics engine
@@ -16,7 +17,7 @@ export class SceneManager {
         this.canvas = canvas;
     }
 
-    addScene(scene: OurScene){
+    addScene(scene: TestCard){
         if(!scene.isSceneSetup) scene.setupScene();
         this.scenes.push(scene);
     }

@@ -1,3 +1,4 @@
+import {RareteCard} from "./RareteCard.ts";
 
 
 export interface ICard {
@@ -6,5 +7,6 @@ export interface ICard {
     name: string;
     description: string;
     mesh: any;
+    rarete: RareteCard;
 
 }
