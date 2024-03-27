@@ -21,8 +21,8 @@
         game.Init().then(() => {
           // let testTemple = new TestTemple(game.getEngine(), game.getCanvas(), game.getPhysicsEngine());
           // game.getSceneManager().addScene(testTemple.our_scene);
-          let welcomeLevel: WelcomeLevel = new WelcomeLevel(game.getEngine(), game.getCanvas(), game.getPhysicsEngine());
-          game.getSceneManager().addScene(welcomeLevel.ourScene);
+          // let welcomeLevel: WelcomeLevel = new WelcomeLevel(game.getEngine(), game.getCanvas(), game.getPhysicsEngine());
+          // game.getSceneManager().addScene(welcomeLevel.ourScene);
           game.Run();
         });
     }
