@@ -42,7 +42,7 @@ class player{
     playerNode: TransformNode;
     camera: Camera;
     speed: number = 0.5;
-    grounded: boolean = true;
+    grounded: boolean =false;
     constructor(scene: Scene, camera: Camera){
         this.position = new Vector3(0, 0, 0);
         this.rotation = new Vector3(0, 0, 0);
