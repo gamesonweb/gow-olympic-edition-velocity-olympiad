@@ -1,4 +1,12 @@
-import {Engine, PhysicsImpostor, Scene, Vector3} from "@babylonjs/core";
+import {
+    Engine,
+    ISceneLoaderPlugin,
+    ISceneLoaderPluginAsync, Nullable,
+    PhysicsImpostor,
+    Scene,
+    SceneLoader,
+    Vector3
+} from "@babylonjs/core";
 import {ICard} from "./ICard.ts";
 
 
@@ -7,17 +15,26 @@ export class CardSocle {
     scene: Scene;
     engine: Engine;
     card : ICard;
+    private mesh: Nullable<ISceneLoaderPlugin | ISceneLoaderPluginAsync>;
 
     constructor(scene: Scene, engine: Engine, card: ICard,position: Vector3) {
         this.scene = scene;
         this.engine = engine;
         this.card = card;
         this.position = position;
-        var physicsImpostor = new PhysicsImpostor(this.card.mesh, PhysicsImpostor.BoxImpostor, { mass: 1, restitution: 0.9 }, this.scene);
+        this.setup();
+
     }
 
     setup() {
         // Setup the socle
+        this.mesh = SceneLoader.ImportMesh("", "assets/", this.card.mesh, this.scene, function (meshes) {
+            meshes[0].position = this.position;
+            meshes[0].scaling = new Vector3(0.1, 0.1, 0.1);
+            meshes[0].physicsImpostor = new PhysicsImpostor(meshes[0], PhysicsImpostor.BoxImpostor, {mass: 1}, this.scene);
+        }
+        );
+
     }
 
     firstSpell() {

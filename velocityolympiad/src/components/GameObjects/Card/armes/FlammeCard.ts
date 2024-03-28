@@ -1,5 +1,4 @@
 import {ICard} from "../ICard.ts";
-import {Mesh, MeshBuilder, PhysicsImpostor} from "@babylonjs/core";
 import {RareteCard} from "../RareteCard.ts";
 
 
@@ -14,12 +13,14 @@ export class FlammeCard implements ICard{
 
     name: string = 'Flamme';
     description: string = 'Une carte de flamme';
-    mesh: Mesh;
+    mesh: "TorchCard.glb";
     rarete: RareteCard = RareteCard.RARE;
 
     setup() {
         // Setup the card
-        this.mesh =  MeshBuilder.CreateBox('box', {size: 100});
     }
+
+
+
 
 }

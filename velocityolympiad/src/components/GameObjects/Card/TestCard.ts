@@ -22,7 +22,7 @@ export class TestCard {
         // ajout de la carte flamme
         const flamespell = new FlammeCard();
         //  construction de la carte
-        const flammeCard = new CardSocle(this.our_scene.scene, engine, flamespell, new Vector3(10, 10, 0));
+        const flammeCard = new CardSocle(this.our_scene.scene, engine, flamespell, new Vector3(0, 20, 0));
         flammeCard.setup();
 
         const light = new HemisphericLight("light", new Vector3(0, 1, 0), this.our_scene.scene);

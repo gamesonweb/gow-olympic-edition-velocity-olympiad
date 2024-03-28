@@ -9,4 +9,5 @@ export interface ICard {
     mesh: any;
     rarete: RareteCard;
 
+    setup(): void;
 }
