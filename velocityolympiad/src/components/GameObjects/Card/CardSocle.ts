@@ -29,7 +29,7 @@ export class CardSocle {
 
     setup() {
         // Setup the socle
-        SceneLoader.ImportMesh("", "assets", "TorchCard.glb", this.scene, (meshes) => {
+        SceneLoader.ImportMesh("", "./models/", "TorchCard.glb", this.scene, (meshes) => {
             console.log(meshes);
         });
     }
