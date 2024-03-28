@@ -8,7 +8,7 @@ export class Stairs extends TransformNode {
     stairsMaterial: StandardMaterial;
 
     constructor(scene: Scene, name: string, steps: number, stepHeight: number, stepWidth: number, stepDepth: number,
-                position: Vector3|undefined = undefined) {
+                position: Vector3|undefined = undefined, stairsMaterial: StandardMaterial|undefined = undefined) {
         super(name, scene);
         this.steps = steps;
         this.stepHeight = stepHeight;
@@ -19,9 +19,12 @@ export class Stairs extends TransformNode {
         }
         this.position = position; // Position définie grâce à l'héritage de TransformNode
 
-        this.stairsMaterial = new StandardMaterial(name + "Material", scene);
-        this.stairsMaterial.diffuseColor = new Color3(0.75, 0.75, 0.75); // Couleur gris clair pour les marches
+        if (stairsMaterial === undefined) {
+            stairsMaterial = new StandardMaterial(`${name}_material`, scene);
+            stairsMaterial.diffuseColor = new Color3(0.75, 0.75, 0.75); // Couleur gris clair pour les marches
 
+        }
+        this.stairsMaterial = stairsMaterial;
         this.createStairs();
     }
 
