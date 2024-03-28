@@ -8,11 +8,10 @@
 </template>
   
   <script lang="ts">
-  import { defineComponent } from 'vue';
+  import {defineComponent} from 'vue';
   import {Main} from "../BabylonCodes/Main.ts";
-  import {OurScene} from "../BabylonCodes/scenes";
   import {TestCard} from "./GameObjects/Card/TestCard.ts";
-  
+
   export default defineComponent({
     name: 'BabylonCode',
     mounted(){

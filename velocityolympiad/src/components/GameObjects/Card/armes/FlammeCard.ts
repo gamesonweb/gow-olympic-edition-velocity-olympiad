@@ -13,8 +13,26 @@ export class FlammeCard implements ICard{
 
     name: string = 'Flamme';
     description: string = 'Une carte de flamme';
-    mesh: "TorchCard.glb";
-    rarete: RareteCard = RareteCard.RARE;
+    meshname: string;
+    rarete: RareteCard ;
+
+    constructor(rarete: RareteCard) {
+        this.rarete = rarete;
+        switch (rarete) {
+            case RareteCard.COMMON:
+                this.meshname = "TorchCardGray.glb";
+                break;
+            case RareteCard.RARE:
+                this.meshname = "TorchCardBlue.glb"
+                break;
+            case RareteCard.EPIC:
+                this.meshname = "TorchCardPurple.glb";
+                break;
+            case RareteCard.LEGENDARY:
+                this.meshname = "TorchCardGold.glb";
+                break;
+        }
+    }
 
     setup() {
         // Setup the card

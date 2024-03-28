@@ -6,7 +6,7 @@ export interface ICard {
     secondSpell(): void;
     name: string;
     description: string;
-    mesh: any;
+    meshname: any;
     rarete: RareteCard;
 
     setup(): void;
