@@ -7,6 +7,7 @@ import {
     SceneLoader,
     Vector3
 } from "@babylonjs/core";
+import "@babylonjs/loaders/glTF";
 import {ICard} from "./ICard.ts";
 
 
@@ -28,13 +29,9 @@ export class CardSocle {
 
     setup() {
         // Setup the socle
-        this.mesh = SceneLoader.ImportMesh("", "assets/", this.card.mesh, this.scene, function (meshes) {
-            meshes[0].position = this.position;
-            meshes[0].scaling = new Vector3(0.1, 0.1, 0.1);
-            meshes[0].physicsImpostor = new PhysicsImpostor(meshes[0], PhysicsImpostor.BoxImpostor, {mass: 1}, this.scene);
-        }
-        );
-
+        SceneLoader.ImportMesh("", "assets", "TorchCard.glb", this.scene, (meshes) => {
+            console.log(meshes);
+        });
     }
 
     firstSpell() {
