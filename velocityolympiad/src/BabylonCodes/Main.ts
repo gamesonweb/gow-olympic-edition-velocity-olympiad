@@ -1,34 +1,62 @@
-import {SceneManager} from "./SceneManager.ts";
+import {SceneManager} from "./scenes/sceneManager.ts";
 import {Engine} from "@babylonjs/core";
-import { FirstPersonPlayer } from "./FirstPersonPlayer.ts";
+import { FirstPersonPlayer } from "./Character/players/firstPersonPlayer.ts";
 var keys = { left: false, right: false, forward: false, back: false,jump: false};
 
-export class Main{
+import {HavokPlugin} from "@babylonjs/core";
+import {OurScene} from "./scenes/ourScene.ts";
+import HavokPhysics from "@babylonjs/havok";
+
+export class Main {
     canvas: HTMLCanvasElement;
     engine: Engine;
+    physicsEngine: HavokPlugin;
     sceneManager: SceneManager;
 
-    constructor(canvas: HTMLCanvasElement){
+    constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
         this.engine = new Engine(this.canvas, true);
         this.sceneManager = new SceneManager(this.engine, this.canvas);
     }
-    
-    async Init(){
-        await this.sceneManager.createPhysicsEngine();
+
+    getEngine() : Engine {
+        return this.engine;
+    }
+
+    getCanvas() : HTMLCanvasElement {
+        return this.canvas;
+    }
+
+    getPhysicsEngine() : HavokPlugin {
+        if (this.physicsEngine === undefined) {
+            throw new Error("Physics engine not created");
+        }
+        return this.physicsEngine;
+    }
+
+    getSceneManager() : SceneManager {
+        return this.sceneManager;
+    }
+
+    async _createPhysicsEngine() {
+        this.physicsEngine = new HavokPlugin(true, await HavokPhysics());
+    }
+
+    async Init() {
+        // Create the physics engine
+        await this._createPhysicsEngine();
         return;
     }
 
-    CreateScene(){
-        this.sceneManager.createScene();
-    }
-
-    Run(){
+    Run() {
         SetupPointerLock(this.canvas,this.sceneManager.scenes[0].player);
-
-        this.engine.runRenderLoop(()=>{
-            this.sceneManager.scenes[0].scene.render(); // possibilité de changer de scène en appelant une liste de scène de SceneManager au lieu d'un attribut scene
-            this.sceneManager.scenes[0].player.UpdatePlayerPosition(keys);
+        // Render the scenes
+        //this.sceneManager.renderScenes();
+        this.engine.runRenderLoop(() => {
+            this.sceneManager.scenes.forEach(scene => {
+                scene.scene.render(); // possibilité de changer de scène en appelant une liste de scène de SceneManager au lieu d'un attribut scene
+                scene.player.UpdatePlayerPosition(keys);
+            });
         });
     }
 }

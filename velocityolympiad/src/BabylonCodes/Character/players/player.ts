@@ -1,50 +1,29 @@
-import {Matrix, Scene, Vector3, Camera, UniversalCamera ,MeshBuilder,PhysicsAggregate, PhysicsShapeType, TransformNode,Engine, StandardMaterial, Color3 ,Axis,Observable} from "@babylonjs/core";
+import {Scene, Vector3, Camera ,MeshBuilder,PhysicsAggregate, PhysicsShapeType, TransformNode, StandardMaterial, Color3 ,Axis,Observable} from "@babylonjs/core";
 
-export class FirstPersonPlayer{
-    scene: Scene;
-    camera: Camera;
-    canvas: HTMLCanvasElement;
-    engine: Engine;
-    player: player;
-    mouseSensitivity: number =  0.0002;
-    constructor(scene: Scene, canvas: HTMLCanvasElement,engine: Engine){
-        this.scene = scene;
-        this.canvas = canvas;
-        this.engine = engine;
-        this.camera = this.CreateCamera();
-        this.player = new player(scene,this.camera);
-        this.scene.activeCamera = this.camera;
-    }
+import {Character} from "../Character.ts";
+import * as console from "console";
 
-    CreateCamera():Camera{
-        const camera = new UniversalCamera("FPS", new Vector3(0, 2, 0), this.scene);
-        camera.attachControl(this.canvas, true);
-        return camera;
-    }
-
-    CreatePlayer(){
-        this.player.mesh = this.player.CreateMesh();
-    }
-
-    UpdatePlayerPosition(keys: {left: boolean, right: boolean, forward: boolean, back: boolean,jump: boolean}){ 
-        this.player.updatePosition(keys);
-    }
-}
-
-class player{
+export class Player implements Character{
     position: Vector3;
+    scene: Scene;
+    hp: number;
+    isFlying: boolean;
     rotation: Vector3;
     frontVector: Vector3;
     rightVector: Vector3;
     mesh: any | null;  
     aggregate: PhysicsAggregate | null;
-    scene: Scene;
     playerNode: TransformNode;
     camera: Camera;
     speed: number = 0.5;
     grounded: boolean =false;
-    constructor(scene: Scene, camera: Camera){
-        this.position = new Vector3(0, 0, 0);
+
+    constructor(scene: Scene,camera: Camera){
+        this.position = new Vector3(0, 100, 0);
+        this.mesh = null;
+        this.scene = scene;
+        this.hp = 100
+        this.isFlying = false
         this.rotation = new Vector3(0, 0, 0);
         this.frontVector = new Vector3(0, 0, 1);
         this.rightVector = new Vector3(1, 0, 0);
@@ -53,6 +32,10 @@ class player{
         this.aggregate = null;
         this.playerNode = new TransformNode("player", this.scene);
         this.camera = camera;
+    }
+
+    setupCharacter(){
+        this.mesh = this.CreateMesh();
     }
 
     CreateMesh(){
@@ -66,6 +49,11 @@ class player{
         this.rotation = mesh.rotation;
         aggregate.body.setCollisionCallbackEnabled(true);
         return mesh;
+    }
+
+    takeDamage(amount: number): void {
+        this.hp -= amount;
+
     }
 
     updatePosition(keys: {left: boolean, right: boolean, forward: boolean, back: boolean,jump: boolean}){
