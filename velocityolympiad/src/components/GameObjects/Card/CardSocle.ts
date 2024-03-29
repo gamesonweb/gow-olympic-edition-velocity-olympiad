@@ -64,7 +64,7 @@ export class CardSocle {
 
     checkCollisionWithCamera(): boolean {
         // Check if the distance between camera and mesh is less than a threshold
-        const distanceThreshold = 2; // Adjust as needed
+        const distanceThreshold = 3; // Adjust as needed
         if (this.scene.activeCamera) {
             const cameraPosition = this.scene.activeCamera.position;
             const meshPosition = this.mesh.position;
