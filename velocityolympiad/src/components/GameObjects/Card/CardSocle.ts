@@ -63,15 +63,22 @@ export class CardSocle {
     }
 
     checkCollisionWithCamera(): boolean {
-        // Check if the distance between camera and mesh is less than a threshold
-        const distanceThreshold = 3; // Adjust as needed
-        if (this.scene.activeCamera) {
+        const distance = 2
+        // Ensure camera exists and mesh is loaded
+        if (this.scene.activeCamera && this.mesh) {
+            // Calculate direction from mesh to camera
             const cameraPosition = this.scene.activeCamera.position;
             const meshPosition = this.mesh.position;
-            const distance = Vector3.Distance(cameraPosition, meshPosition);
-            return distance < distanceThreshold;
+
+            // Calculate direction without height component (Y axis)
+            const directionXZ = cameraPosition.subtract(meshPosition);
+            directionXZ.y = 0; // Ignore the Y component
+
+            // Check if the distance between the camera and the mesh is less than a threshold
+            if (directionXZ.length() < distance) {
+                return true;
+            }
         }
-        return false;
     }
 
 }
