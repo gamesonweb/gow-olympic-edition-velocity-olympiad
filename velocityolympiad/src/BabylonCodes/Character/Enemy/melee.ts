@@ -1,8 +1,7 @@
 import {Character} from "../Character.ts";
-import {Scene, SceneLoader, Vector3} from "@babylonjs/core";
-import {FBXLoader} from "babylon-fbx-loader";
+import {MeshBuilder, PhysicsAggregate, PhysicsShapeType, Scene, SceneLoader, Vector3} from "@babylonjs/core";
+import console from "console";
 
-// SceneLoader.RegisterPlugin(new FBXLoader());
 
 export class MeleeEnemy implements Character{
     position: Vector3;
@@ -20,23 +19,20 @@ export class MeleeEnemy implements Character{
     }
 
     setupCharacter(){
+    //     box
         this.mesh = this.CreateMesh();
     }
 
-    async CreateMesh() {
-        // import mesh with an animation from velocityolympiad/src/assets/Idle.fbx
-        await SceneLoader.ImportMeshAsync("", "velocityolympiad/src/assets/", "Remy.fbx", this.scene);
-        const mesh = this.scene.getMeshByName("Remy");
-        if (mesh) {
-            mesh.position = this.position;
-            return mesh;
-        }
-        return null;
-
-
-
-
+    CreateMesh(){
+        const mesh = MeshBuilder.CreateBox("player", {size: 1});
+        mesh.position = this.position;
+        const aggregate = new PhysicsAggregate(mesh,PhysicsShapeType.BOX, {mass: 1}, this.scene);
+        mesh.position = this.position;
+        return mesh;
     }
+
+
+
 
     takeDamage(amount: number): void {
         this.hp -= amount;
