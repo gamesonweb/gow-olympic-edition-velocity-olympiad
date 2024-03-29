@@ -32,11 +32,12 @@ export class OurScene {
     setupScene(scene: Scene = undefined){
         if (this.isSceneSetup) return;
         if (scene === undefined) this.scene = this._createScene();
+       
         else this.scene = scene;
         // Add the player to the scene, etc ... for inherited classes
         //  verify if a camera is already in the scene else add a new one
-
-            const player = new FirstPersonPlayer(this.scene, this.canvas, this.engine);
+            console.log(this.scene);
+            const player = new FirstPersonPlayer(this, this.engine, this.canvas);
             player.CreatePlayer();
         // show the inspector in DEV mode
         if (import.meta.env.DEV) {
