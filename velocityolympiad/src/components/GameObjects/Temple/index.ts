@@ -1,14 +1,16 @@
 import {
     Vector3, Color3, StandardMaterial, ArcRotateCamera, MeshBuilder, HemisphericLight,
-    TransformNode, Camera, Mesh, VertexData
+    TransformNode, Camera, Mesh, VertexData, Texture, PhysicsImpostor
 } from "@babylonjs/core";
 import {OurScene} from "../../../BabylonCodes/scenes";
 import {Stairs} from "../Stairs";
 
 export class Temple {
+    static templeCount: number = 0;
+
+    private _isSetup: boolean = false;
     camera: Camera | undefined;
     ourScene: OurScene;
-    _pillarMaterial: StandardMaterial | undefined;
     boxHeight: number; // hauteur du temple
     boxWidth: number; // largeur du temple
     boxDepth: number; // profondeur du temple
@@ -19,29 +21,44 @@ export class Temple {
     private _doorIndexes: number[];
     private _numberOfPillars: number;
     private _spacingPillars: number;
-    private _wallMaterial: StandardMaterial;
-    private _roofMaterial: StandardMaterial;
+    private _pillarMaterial: StandardMaterial | undefined;
+    private _wallMaterial: StandardMaterial | undefined;
+    private _roofMaterial: StandardMaterial | undefined;
+    private _stairsMaterial: StandardMaterial | undefined;
+    private _templeMaterial: StandardMaterial | undefined;
+    private _frontonMaterial: StandardMaterial | undefined;
+    private _id: string;
+    private prefix: string;
 
-    constructor(ourScene: OurScene, boxHeight: number = 1, boxWidth: number = 10, boxDepth: number = 5) {
+    constructor(ourScene: OurScene, boxHeight: number = 1, boxWidth: number = 10, boxDepth: number = 5, camera?: Camera,
+                onlyConfigure: boolean = true) {
+
+        this.id = (Temple.templeCount++).toString();
         this.ourScene = ourScene;
         this.boxHeight = boxHeight;
         this.boxWidth = boxWidth;
         this.boxDepth = boxDepth;
         this.pillarHeight = 6; // hauteur des piliers
 
-        this.templeGroup = new TransformNode('templeGroup', this.ourScene.scene);
+        this.templeGroup = new TransformNode(`templeGroup_${this._id}`, this.ourScene.scene);
 
         this._doorIndexes = [2, 3];
         this._doorPositions = {x: [], y: [], z: []};
         this._numberOfPillars = this.boxWidth; // nombre de piliers sur un côté
         this._spacingPillars = 1; // espacement entre les piliers
 
-        this._wallMaterial =  new StandardMaterial("wallMaterial", this.ourScene.scene)
-        this._wallMaterial.diffuseColor = new Color3(0.8, 0.8, 0.7); // Exemple de couleur
+        if (camera !== undefined) { this.camera = camera;}
+        if (!onlyConfigure) this.setup();
 
-        this._roofMaterial = new StandardMaterial("roofMaterial", this.ourScene.scene);
-        this._roofMaterial.diffuseColor = new Color3(1, 0.5, 0); // Couleur tuile
-        this.setup();
+    }
+
+    get id(): string {
+        return this._id;
+    }
+
+    set id(value: string) {
+        this._id = value;
+        this.prefix = `temple_${this._id}_`;
     }
 
     set doorIndexes(value: number[]) {
@@ -77,49 +94,112 @@ export class Temple {
     }
 
     get wallMaterial(): StandardMaterial {
-        return this._wallMaterial;
+        return <StandardMaterial>this._wallMaterial;
+    }
+
+    set roofMaterial(value: StandardMaterial) {
+        this._roofMaterial = value;
+    }
+
+    get roofMaterial(): StandardMaterial {
+        return <StandardMaterial>this._roofMaterial;
+    }
+
+    set pillarMaterial(value: StandardMaterial) {
+        this._pillarMaterial = value;
+    }
+
+    get pillarMaterial(): StandardMaterial {
+        return <StandardMaterial>this._pillarMaterial;
+    }
+
+    set stairsMaterial(value: StandardMaterial) {
+        this._stairsMaterial = value;
+    }
+
+    get stairsMaterial(): StandardMaterial {
+        return <StandardMaterial>this._stairsMaterial;
+    }
+
+    set templeMaterial(value: StandardMaterial) {
+        this._templeMaterial = value;
+    }
+
+    get templeMaterial(): StandardMaterial {
+        return <StandardMaterial>this._templeMaterial;
+    }
+
+    set frontonMaterial(value: StandardMaterial) {
+        this._frontonMaterial = value;
+    }
+
+    get frontonMaterial(): StandardMaterial {
+        return <StandardMaterial>this._frontonMaterial;
     }
 
     setCamera(camera: Camera) {
         this.camera = camera;
     }
 
+    setPillarHeight(pillarHeight: number) {
+        this.pillarHeight = pillarHeight;
+    }
     _createCamera() {
         if (!this.camera) {
             // const camera = new FreeCamera('camera', new Vector3(0, 5, 10), this.ourScene.scene);
-            const camera = new ArcRotateCamera('camera', -Math.PI / 2, Math.PI / 2.5, 10,
+            const camera = new ArcRotateCamera(this.prefix + 'camera', -Math.PI / 2, Math.PI / 2.5, 10,
                 new Vector3(0, 0, 0), this.ourScene.scene);
             camera.attachControl(this.ourScene.canvas, true);
             this.camera = camera;
         }
     }
 
-    setPillarHeight(pillarHeight: number) {
-        this.pillarHeight = pillarHeight;
+    _createMissingMaterials() {
+        if(!this._wallMaterial) {
+            this._wallMaterial =  new StandardMaterial(this.prefix + "wallMaterial", this.ourScene.scene)
+            this._wallMaterial.diffuseTexture = new Texture("src/assets/textures/wall.jpg");
+        }
+
+        if (!this._roofMaterial) {
+            this._roofMaterial = new StandardMaterial(this.prefix + "roofMaterial", this.ourScene.scene);
+            this._roofMaterial.diffuseTexture = new Texture("src/assets/textures/roof.jpg");
+        }
+
+        if (!this._pillarMaterial) {
+            this._pillarMaterial = new StandardMaterial(this.prefix + 'pillarMaterial', this.ourScene.scene);
+            this._pillarMaterial.diffuseTexture = new Texture("src/assets/textures/pillar.jpg");
+        }
+
+        if (!this._stairsMaterial) {
+            this._stairsMaterial = new StandardMaterial(this.prefix + 'templeMaterial', this.ourScene.scene);
+            this._stairsMaterial.diffuseTexture = new Texture("src/assets/textures/wall.jpg");
+        }
+
+        if(!this._frontonMaterial) {
+            this._frontonMaterial = new StandardMaterial(this.prefix + 'frontonMaterial', this.ourScene.scene);
+            this._frontonMaterial.diffuseColor = new Color3(0.8, 0.5, 0); // Couleur tuile
+        }
+
     }
 
     setup() {
-
+        if (this._isSetup) return;
         // Set up the temple
+        this._createMissingMaterials();
         this._createCamera();
 
         // Ajouter une lumière
-        const light = new HemisphericLight('light', new Vector3(0, 1, 0), this.ourScene.scene);
+        const light = new HemisphericLight(this.prefix + 'light', new Vector3(0, 1, 0), this.ourScene.scene);
         light.parent = this.templeGroup;
 
         // Créer une forme de base pour le temple (à remplacer par un modèle détaillé)
-        const templeBox = MeshBuilder.CreateBox('templeBox', {height: this.boxHeight,
+        const templeBox = MeshBuilder.CreateBox(this.prefix + 'templeBox', {height: this.boxHeight,
             width: this.boxWidth, depth: this.boxDepth}, this.ourScene.scene);
         templeBox.parent = this.templeGroup;
 
         // Ajouter une texture ou une matière au temple
-        const templeMaterial = new StandardMaterial('templeMaterial', this.ourScene.scene);
-        templeMaterial.diffuseColor = new Color3(1, 0.8, 0.6); // Couleur sable
-        templeBox.material = templeMaterial;
+        templeBox.material = <StandardMaterial>this._templeMaterial;
 
-        // setup pillar material
-        this._pillarMaterial = new StandardMaterial('pillarMaterial', this.ourScene.scene);
-        this._pillarMaterial.diffuseColor = new Color3(1, 0.9, 0.8); // couleur de la pierre
 
         let numberOfPillars = this._numberOfPillars // nombre de piliers sur un côté
         let spacing = this._spacingPillars; // espacement entre les piliers
@@ -130,7 +210,7 @@ export class Temple {
 
         let wallPillars = [];
         for (let i = 0; i < numberOfPillars + 1; i++) {
-            let pillar = this.createPillar(this.ourScene.scene, 'pillar_front' + i);
+            let pillar = this.createPillar(this.ourScene.scene, this.prefix + 'pillar_front' + i);
             pillar.position.x = (i - numberOfPillars / 2) * spacing;
             pillar.position.z = this.boxDepth/2; // positionner devant
             pillar.position.y = this.pillarHeight / 2 - this.boxHeight/2; // positionner au-dessus du sol
@@ -139,7 +219,7 @@ export class Temple {
 
         // Côté arrière du temple
         for (let i = 0; i < numberOfPillars; i++) {
-            let pillar = this.createPillar(this.ourScene.scene, 'pillar_back' + i);
+            let pillar = this.createPillar(this.ourScene.scene, this.prefix + 'pillar_back' + i);
             pillar.position.x = (i - numberOfPillars / 2) * spacing;
             pillar.position.z = -this.boxDepth/2; // positionner derrière
             pillar.position.y = this.pillarHeight / 2 - this.boxHeight/2; // positionner au-dessus du sol
@@ -149,7 +229,7 @@ export class Temple {
 
         let sidePillars = this.boxDepth;
         for (let i = 0; i < sidePillars; i++) {
-            let pillarRight = this.createPillar(this.ourScene.scene, 'pillar_right' + i);
+            let pillarRight = this.createPillar(this.ourScene.scene, this.prefix + 'pillar_right' + i);
             pillarRight.position.x = (numberOfPillars / 2) * spacing;
             pillarRight.position.z = (i - sidePillars / 2) * spacing;
             pillarRight.position.y = this.pillarHeight / 2 - this.boxHeight/2; // positionner au-dessus du sol
@@ -162,7 +242,7 @@ export class Temple {
                 this._doorPositions.z.push(pillarRight.position.z);
                 continue;
             }
-            let pillarLeft = this.createPillar(this.ourScene.scene, 'pillar_left' + i);
+            let pillarLeft = this.createPillar(this.ourScene.scene, this.prefix + 'pillar_left' + i);
             pillarLeft.position.x = -(numberOfPillars / 2) * spacing;
             pillarLeft.position.z = (i - sidePillars / 2) * spacing;
             pillarLeft.position.y = this.pillarHeight / 2 - this.boxHeight/2; // positionner au-dessus du sol
@@ -178,6 +258,16 @@ export class Temple {
 
         this.createTempleWalls(templeBox);
 
+        const templeMesh = new Mesh("templeMesh", this.ourScene.scene);
+
+        // 2. Ajoutez les meshes contenus dans le TransformNode en tant qu'enfants du Mesh conteneur
+        this.templeGroup.getChildren().forEach(child => {
+            if (child instanceof Mesh) {
+                templeMesh.addChild(child);
+            }
+        });
+        // let physicsAggregate =
+        this._isSetup = true;
     }
 
     createStairs() {
@@ -185,12 +275,13 @@ export class Temple {
         const stepHeight = 0.2; // Hauteur de chaque marche
         const stepWidth = this.boxDepth; // Largeur de chaque marche (pourrait correspondre à la largeur de l'entrée du temple)
         const stepDepth = 0.5; // Profondeur de chaque marche
-        const stairs = new Stairs(this.ourScene.scene, "temple_stairs", stairStep, stepHeight, stepWidth,
-            stepDepth);
+        const stairs = new Stairs(this.ourScene.scene, this.prefix + "stairs", stairStep, stepHeight, stepWidth,
+            stepDepth, undefined, this._stairsMaterial);
         stairs.rotation.y = -Math.PI/2; // Pivoter pour être face au temple
         const stairsPositionX = - this.boxWidth/2 - stairStep/2*stepDepth ;
         const stairsHeightAdjustment = - this.boxHeight/2;
         stairs.position = new Vector3(stairsPositionX, stairsHeightAdjustment, 0);
+        stairs.parent = this.templeGroup;
     }
 
     createPillar(scene, pillarName=undefined) {
@@ -205,32 +296,44 @@ export class Temple {
     }
 
     buildRoofV2() {
-        const roofAngle = Math.PI / 6; // Angle d'inclinaison du toit
-        const roofHeight = (this.boxDepth/2) / Math.cos(roofAngle); // Profondeur de chaque pente
+        // const roofAngle = Math.PI / 6; // Angle d'inclinaison du toit
+        // const roofHeight = (this.boxDepth/2) / Math.cos(roofAngle); // Profondeur de chaque pente
+        const frontonHeight = 3; // Hauteur du fronton
+        const roofHeight = Math.sqrt(Math.pow(frontonHeight, 2) + Math.pow(this.boxDepth/2, 2)); // Hauteur du toit
+        const roofAngle = Math.atan(frontonHeight / (this.boxDepth / 2));
 
-        const roofBack = MeshBuilder.CreateBox('roofBack', { width: this.boxWidth, height: roofHeight, depth: 0.001 },
+
+        const roofBack = MeshBuilder.CreateBox(this.prefix + 'roofBack', { width: this.boxWidth, height: roofHeight, depth: 0.001 },
             this.ourScene.scene);
         roofBack.rotation.x = roofAngle - Math.PI / 2 ;  // Incliner le toit
-        roofBack.position.y = this.pillarHeight + this.boxHeight / 4;
+        roofBack.position.y = this.pillarHeight + this.boxHeight;
         roofBack.position.z = this.boxDepth / 4;
         roofBack.parent = this.templeGroup;
 
-        const roofRight = MeshBuilder.CreateBox('roofRight', { width: this.boxWidth, height: roofHeight, depth: 0.001 },
+        const roofFront = MeshBuilder.CreateBox(this.prefix + 'roofFront', { width: this.boxWidth, height: roofHeight, depth: 0.001 },
             this.ourScene.scene);
-        roofRight.rotation.x = Math.PI / 2 - roofAngle;  // Incliner le toit
-        roofRight.position.y = this.pillarHeight + this.boxHeight / 4;
-        roofRight.position.z = -this.boxDepth / 4;
-        roofRight.parent = this.templeGroup;
+        roofFront.rotation.x = Math.PI / 2 - roofAngle;  // Incliner le toit
+        roofFront.position.y = this.pillarHeight + this.boxHeight;
+        roofFront.position.z = -this.boxDepth / 4;
+        roofFront.parent = this.templeGroup;
 
-        const fronton = MeshBuilder.CreateBox('fronton', { width: this.boxWidth, height: this.boxDepth, depth: 0.001 },
+        const fronton = MeshBuilder.CreateBox(this.prefix + 'fronton', { width: this.boxWidth, height: this.boxDepth, depth: 0.001 },
             this.ourScene.scene);
-        fronton.rotation.x = Math.PI / 2; // Pivoter pour être vertical
+        fronton.rotation.x = Math.PI / 2 ; // Pivoter pour être vertical
         fronton.position.y = this.pillarHeight - this.boxHeight / 2; // Positionner en hauteur
         fronton.parent = this.templeGroup;
 
-        roofBack.material = this._roofMaterial;
-        roofRight.material = this._roofMaterial;
-        fronton.material = this._roofMaterial;
+        roofBack.material = <StandardMaterial>this._roofMaterial;
+        roofFront.material = <StandardMaterial>this._roofMaterial;
+        fronton.material = this.frontonMaterial;
+
+        // Inverser les normales du fronton pour qu'il soit visible de l'intérieur
+        let vertexData = VertexData.ExtractFromMesh(fronton);
+        let normals = vertexData.normals;
+        // Inverser chaque normale
+        if (normals) {vertexData.normals = normals.map((n) => -n);}
+        // Appliquer les normales inversées au mesh
+        vertexData.applyToMesh(fronton, true);
 
         let frontonLeftCornerPositions = [
             new Vector3(- this.boxWidth/2, this.boxHeight, this.boxDepth/2), // Sommet 1
@@ -240,24 +343,26 @@ export class Temple {
 
         // Créer le fronton triangulaire gauche
         const frontonCloseTriangleHeight = Math.sin(roofAngle) * roofHeight; // roofHeight mean Hypotenuse
-        const frontonLeftTriangle = this.createTriangularPrism("frontonLeftTriangle", this.boxDepth, 0.001, frontonCloseTriangleHeight );
-        frontonLeftTriangle.material = this._roofMaterial;
+        const frontonLeftTriangle = this.createTriangularPrism(this.prefix + "frontonLeftTriangle", this.boxDepth, 0.001, frontonCloseTriangleHeight );
+        frontonLeftTriangle.material = <StandardMaterial>this._roofMaterial;
         frontonLeftTriangle.parent = this.templeGroup;
         frontonLeftTriangle.position.x = - this.boxWidth/2;
         frontonLeftTriangle.position.y = this.pillarHeight - this.boxHeight / 2;
         frontonLeftTriangle.position.z = this.boxDepth/2;
         frontonLeftTriangle.rotation.x = -Math.PI/2;
         frontonLeftTriangle.rotation.y = Math.PI/2;
+        frontonLeftTriangle.material = <StandardMaterial>this._wallMaterial;
 
         // Créer le fronton triangulaire droit
-        const frontonRightTriangle = this.createTriangularPrism("frontonRightTriangle", this.boxDepth, 0.001, frontonCloseTriangleHeight );
-        frontonRightTriangle.material = this._roofMaterial;
+        const frontonRightTriangle = this.createTriangularPrism(this.prefix + "frontonRightTriangle", this.boxDepth, 0.001, frontonCloseTriangleHeight );
+        frontonRightTriangle.material = <StandardMaterial>this._roofMaterial;
         frontonRightTriangle.parent = this.templeGroup;
         frontonRightTriangle.position.x = this.boxWidth/2;
         frontonRightTriangle.position.y = this.pillarHeight - this.boxHeight / 2;
         frontonRightTriangle.position.z = this.boxDepth/2;
         frontonRightTriangle.rotation.x = -Math.PI/2;
         frontonRightTriangle.rotation.y = Math.PI/2;
+        frontonRightTriangle.material = <StandardMaterial>this._wallMaterial;
 
 
     }
@@ -307,14 +412,14 @@ export class Temple {
             templeBox.position.y + this.pillarHeight - this.boxHeight/2, templeBox.position.z + this.boxDepth/2);
         let lowerLeftCorner = new Vector3(templeBox.position.x - this.boxWidth/2,
             templeBox.position.y - this.boxHeight/2,templeBox.position.z + this.boxDepth/2);
-        this.createWallV2("wall_back", upperRightCorner, lowerLeftCorner);
+        this.createWallV2(this.prefix + "wall_back", upperRightCorner, lowerLeftCorner);
 
         // Calculer les coins supérieur droit et inférieur gauche du temple du mur de droite
         upperRightCorner = new Vector3(templeBox.position.x + this.boxDepth/2,
             templeBox.position.y + this.pillarHeight - this.boxHeight/2, templeBox.position.z);
         lowerLeftCorner = new Vector3(templeBox.position.x - this.boxDepth/2,
             templeBox.position.y - this.boxHeight/2,templeBox.position.z);
-        let wallRight = this.createWallV2("wall_right", upperRightCorner, lowerLeftCorner);
+        let wallRight = this.createWallV2(this.prefix + "wall_right", upperRightCorner, lowerLeftCorner);
         wallRight.position.x += this.boxWidth/2;
         wallRight.rotation.y = Math.PI/2;
 
@@ -323,7 +428,7 @@ export class Temple {
             templeBox.position.y + this.pillarHeight - this.boxHeight/2, templeBox.position.z - this.boxDepth/2);
         lowerLeftCorner = new Vector3(templeBox.position.x - this.boxWidth/2,
             templeBox.position.y - this.boxHeight/2,templeBox.position.z - this.boxDepth/2);
-        this.createWallV2("wall_front", upperRightCorner, lowerLeftCorner);
+        this.createWallV2(this.prefix + "wall_front", upperRightCorner, lowerLeftCorner);
 
         // Calculer les coins supérieur droit et inférieur gauche du temple du mur de gauche
         // mur avant la porte
@@ -334,7 +439,7 @@ export class Temple {
             templeBox.position.y + this.pillarHeight - this.boxHeight/2, templeBox.position.z);
         lowerLeftCorner = new Vector3(templeBox.position.x,
             templeBox.position.y - this.boxHeight/2,templeBox.position.z);
-        let wallLeftBeforeDoor = this.createWallV2("wall_left_before_door", upperRightCorner, lowerLeftCorner);
+        let wallLeftBeforeDoor = this.createWallV2(this.prefix + "wall_left_before_door", upperRightCorner, lowerLeftCorner);
         wallLeftBeforeDoor.position.x = templeBox.position.x - this.boxWidth/2;
         wallLeftBeforeDoor.rotation.y = Math.PI/2;
         wallLeftBeforeDoor.position.z = doorMinZ - this._spacingPillars - wallLeftBeforeDoorDistance/2;
@@ -345,7 +450,7 @@ export class Temple {
             templeBox.position.y + this.pillarHeight - this.boxHeight/2, templeBox.position.z);
         lowerLeftCorner = new Vector3(templeBox.position.x,
             templeBox.position.y - this.boxHeight/2,templeBox.position.z);
-        let wallLeftAfterDoor = this.createWallV2("wall_left_after_door", upperRightCorner, lowerLeftCorner);
+        let wallLeftAfterDoor = this.createWallV2(this.prefix + "wall_left_after_door", upperRightCorner, lowerLeftCorner);
         wallLeftAfterDoor.position.x = templeBox.position.x - this.boxWidth/2;
         wallLeftAfterDoor.rotation.y = Math.PI/2;
         wallLeftAfterDoor.position.z = doorMaxZ + this._spacingPillars + wallLeftAfterDoorDistance/2;
@@ -373,7 +478,7 @@ export class Temple {
         wall.position.x = centerX;
         wall.position.y = centerY;
         wall.position.z = centerZ;
-        wall.material = this._wallMaterial;
+        wall.material = <StandardMaterial>this._wallMaterial;
         wall.parent = this.templeGroup;
 
         return wall;

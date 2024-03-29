@@ -17,7 +17,7 @@ export class Player implements Character{
         this.isFlying = false
     }
 
-    setupPlayer(){
+    setupCharacter(){
         this.mesh = this.CreateMesh();
     }
 
@@ -30,20 +30,11 @@ export class Player implements Character{
         return mesh;
     }
 
-
-
-    attack(target: Character): void {
-        return
-    }
-
-
     takeDamage(amount: number): void {
-        return
+        this.hp -= amount;
 
     }
 
-    setupCharacter(): void {
-    }
 
 
 

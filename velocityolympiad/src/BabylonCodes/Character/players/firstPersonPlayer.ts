@@ -18,14 +18,18 @@ export class FirstPersonPlayer{
 
     CreateCamera():Camera{
         console.log(this.our_scene)
+        // const camera = new FreeCamera("camera", new Vector3(0, 5, 10), this.our_scene.scene);
+        // camera.attachControl(this.canvas, true);
+        // camera.setTarget(Vector3.Zero());
+
         const camera = new FreeCamera("camera", new Vector3(0, 5, 10), this.our_scene.scene);
         camera.attachControl(this.canvas, true);
-        camera.setTarget(Vector3.Zero());
+
         return camera;
     }
 
     setupFirstPersonPlayer(){
-        this.player.setupPlayer();
+        this.player.setupCharacter();
     }
 
 }
