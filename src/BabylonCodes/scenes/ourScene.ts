@@ -11,6 +11,7 @@ import {
 import {FirstPersonPlayer} from "../Character/players/firstPersonPlayer";
 import {Inspector} from "@babylonjs/inspector";
 import {Debug} from "@babylonjs/core/Legacy/legacy";
+import * as GUI from "@babylonjs/gui";
 
 export class OurScene {
     scene: Scene;
@@ -19,6 +20,7 @@ export class OurScene {
     isSceneSetup: boolean = false;
     canvas: HTMLCanvasElement;
     player: FirstPersonPlayer;
+    stackPanel: GUI.StackPanel;
 
     constructor(engine: Engine,
                 canvas: HTMLCanvasElement,
@@ -28,13 +30,17 @@ export class OurScene {
         this.canvas = canvas;
         this.physicsEngine = physicsEngine;
         this.setupScene();
-        this.player = this.createPlayer(canvas);
     }
 
     setupScene(scene = undefined) {
         if (this.isSceneSetup) return;
-        if (scene === undefined) this.scene = this._createScene();
-        else this.scene = scene;
+
+        // Create a new scene if none is provided
+        this.scene = new Scene(this.engine);
+        this.scene.enablePhysics(new Vector3(0, -9.81, 0), this.physicsEngine);
+
+        // Create a player
+        this.player = new FirstPersonPlayer(this);
 
         // Ajout du sol
         const ground_size = 100;
@@ -71,10 +77,6 @@ export class OurScene {
         frontWall.material = wallMaterial;
         var frontWallPhysics = new PhysicsAggregate(frontWall, PhysicsShapeType.BOX, {mass: 0}, this.scene);
 
-        // Ajout du joueur
-        const player = new FirstPersonPlayer(this, this.engine, this.canvas);
-        player.CreatePlayer();
-
 
         // Affichage de l'inspecteur en mode développement
         if (import.meta.env.DEV) {
@@ -83,19 +85,33 @@ export class OurScene {
             // new Debug.AxesViewer(this.scene, 10);
         }
 
+        this.createGUI();
         this.isSceneSetup = true;
     }
 
-    _createScene(enablePhysics: boolean = true): Scene{
-        const scene = new Scene(this.engine);
-        const gravity = new Vector3(0, -9.81, 0);
-        if(enablePhysics) scene.enablePhysics(gravity, this.physicsEngine);
-        return scene;
+    createGUI() {
+        const advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+        this.stackPanel = new GUI.StackPanel();
+        this.stackPanel.width = "220px";
+        this.stackPanel.isVertical = true;
+        this.stackPanel.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+        this.stackPanel.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+        advancedTexture.addControl(this.stackPanel);
     }
 
-    createPlayer(canvas: HTMLCanvasElement){
-        const player = new FirstPersonPlayer(this,this.engine,canvas);
-        player.CreatePlayer();
-        return player;
+    guiUpdate() {
+        var listofcard = this.player.cardlist;
+
+        for (var i = 0; i < listofcard.length; i++) {
+            var button = GUI.Button.CreateSimpleButton("but", listofcard[i].name);
+            button.width = "100px"
+            button.height = "50px";
+            button.color = "white";
+            button.background = "green";
+            button.onPointerUpObservable.add(function () {
+                console.log("clicked");
+            });
+            this.stackPanel.addControl(button);
+        }
     }
 }

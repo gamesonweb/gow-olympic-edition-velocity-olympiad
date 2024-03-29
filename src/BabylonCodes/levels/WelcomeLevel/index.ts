@@ -26,8 +26,10 @@ export class WelcomeLevel {
         // Set up the welcome level
 
         new Temple(this.ourScene, 1, 15, 7);
-        const commonFlammeCard = new FlammeCard(RareteCard.COMMON);
-        new CardSocle(this.ourScene.scene, this.ourScene.engine, commonFlammeCard, new Vector3(10, 0, 0));
+        new CardSocle(this.ourScene, new FlammeCard(RareteCard.COMMON), new Vector3(10, 0, 0));
+        new CardSocle(this.ourScene, new FlammeCard(RareteCard.RARE), new Vector3(15, 0, 10));
+        new CardSocle(this.ourScene, new FlammeCard(RareteCard.EPIC), new Vector3(20, 0, 15));
+        new CardSocle(this.ourScene, new FlammeCard(RareteCard.LEGENDARY), new Vector3(25, 0, 5));
 
         new HemisphericLight("light", new Vector3(0, 1, 0), this.ourScene.scene);
         const ground = MeshBuilder.CreateGround("ground", {width: 100, height: 100});

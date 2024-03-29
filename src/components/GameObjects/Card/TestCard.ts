@@ -22,16 +22,16 @@ export class TestCard {
 
         // ajout de la carte flamme
         const commonFlammeCard = new FlammeCard(RareteCard.COMMON);
-        const socle = new CardSocle(this.our_scene.scene, engine, commonFlammeCard, new Vector3(10, 0, 0));
+        const socle = new CardSocle(this.our_scene, engine, commonFlammeCard, new Vector3(10, 0, 0));
 
         const rareFlammeCard = new FlammeCard(RareteCard.RARE);
-        const socle2 = new CardSocle(this.our_scene.scene, engine, rareFlammeCard, new Vector3(10, 0, 5));
+        const socle2 = new CardSocle(this.our_scene, engine, rareFlammeCard, new Vector3(10, 0, 5));
 
         const epicFlammeCard = new FlammeCard(RareteCard.EPIC);
-        const socle3 = new CardSocle(this.our_scene.scene, engine, epicFlammeCard, new Vector3(10, 0, 10));
+        const socle3 = new CardSocle(this.our_scene, engine, epicFlammeCard, new Vector3(10, 0, 10));
 
         const legendaryFlammeCard = new FlammeCard(RareteCard.LEGENDARY);
-        const socle4 = new CardSocle(this.our_scene.scene, engine, legendaryFlammeCard, new Vector3(10, 0, 15));
+        const socle4 = new CardSocle(this.our_scene, engine, legendaryFlammeCard, new Vector3(10, 0, 15));
 
 
         const light = new HemisphericLight("light", new Vector3(0, 1, 0), this.our_scene.scene);
