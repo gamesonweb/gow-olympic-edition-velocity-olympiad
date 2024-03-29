@@ -25,7 +25,12 @@ export class WelcomeLevel {
     setup() {
         // Set up the welcome level
 
-        new Temple(this.ourScene, 1, 15, 7);
+        let temple = new Temple(this.ourScene, 1, 15, 7);
+        temple.position = new Vector3(5, 0, -15);
+        temple.rotation = new Vector3(0, Math.PI / 2, 0);
+        temple.setup();
+
+
         new CardSocle(this.ourScene, new FlammeCard(RareteCard.COMMON), new Vector3(10, 0, 0));
         new CardSocle(this.ourScene, new FlammeCard(RareteCard.RARE), new Vector3(15, 0, 10));
         new CardSocle(this.ourScene, new FlammeCard(RareteCard.EPIC), new Vector3(20, 0, 15));

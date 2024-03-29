@@ -25,7 +25,7 @@ export class Temple {
     private _wallMaterial: StandardMaterial | undefined;
     private _roofMaterial: StandardMaterial | undefined;
     private _stairsMaterial: StandardMaterial | undefined;
-    private _templeMaterial: StandardMaterial | undefined;
+    private _templeBoxMaterial: StandardMaterial | undefined;
     private _frontonMaterial: StandardMaterial | undefined;
     private _id: string;
     private prefix: string;
@@ -89,6 +89,14 @@ export class Temple {
         return this.templeGroup.position;
     }
 
+    set rotation(rotation: Vector3) {
+        this.templeGroup.rotation = rotation;
+    }
+
+    get rotation(): Vector3 {
+        return this.templeGroup.rotation;
+    }
+
     set wallMaterial(value: StandardMaterial) {
         this._wallMaterial = value;
     }
@@ -121,12 +129,12 @@ export class Temple {
         return <StandardMaterial>this._stairsMaterial;
     }
 
-    set templeMaterial(value: StandardMaterial) {
-        this._templeMaterial = value;
+    set templeBoxMaterial(value: StandardMaterial) {
+        this._templeBoxMaterial = value;
     }
 
-    get templeMaterial(): StandardMaterial {
-        return <StandardMaterial>this._templeMaterial;
+    get templeBoxMaterial(): StandardMaterial {
+        return <StandardMaterial>this._templeBoxMaterial;
     }
 
     set frontonMaterial(value: StandardMaterial) {
@@ -155,6 +163,11 @@ export class Temple {
     }
 
     _createMissingMaterials() {
+
+        if (!this._templeBoxMaterial) {
+            this._templeBoxMaterial = new StandardMaterial(this.prefix + 'templeMaterial', this.ourScene.scene);
+            this._templeBoxMaterial.diffuseTexture = new Texture("src/assets/textures/wall.jpg");
+        }
         if(!this._wallMaterial) {
             this._wallMaterial =  new StandardMaterial(this.prefix + "wallMaterial", this.ourScene.scene)
             this._wallMaterial.diffuseTexture = new Texture("src/assets/textures/wall.jpg");
@@ -186,7 +199,7 @@ export class Temple {
         if (this._isSetup) return;
         // Set up the temple
         this._createMissingMaterials();
-        this._createCamera();
+        // this._createCamera();
 
         // Ajouter une lumière
         const light = new HemisphericLight(this.prefix + 'light', new Vector3(0, 1, 0), this.ourScene.scene);
@@ -198,7 +211,7 @@ export class Temple {
         templeBox.parent = this.templeGroup;
 
         // Ajouter une texture ou une matière au temple
-        templeBox.material = <StandardMaterial>this._templeMaterial;
+        templeBox.material = <StandardMaterial>this._templeBoxMaterial;
 
 
         let numberOfPillars = this._numberOfPillars // nombre de piliers sur un côté
