@@ -6,7 +6,7 @@ import {
     HavokPlugin,
     HemisphericLight,
     MeshBuilder,
-    PhysicsAggregate, PhysicsShapeType, StandardMaterial, Texture,
+    StandardMaterial, Texture,
     Vector3
 } from "@babylonjs/core";
 import {MeleeEnemy} from "../../Character/Enemy/melee.ts";
@@ -42,13 +42,7 @@ export class WelcomeLevel {
         let customPillarMaterial = new StandardMaterial("customPillarMaterial", this.ourScene.scene);
         customPillarMaterial.diffuseTexture = new Texture("src/assets/textures/pillar.jpg");
 
-        let customStairsMaterial = new StandardMaterial("customStairsMaterial", this.ourScene.scene);
-        customStairsMaterial.diffuseColor = new Color3(1, 0.8, 0.6); // Couleur sable
-
-        let customFrontonMaterial = new StandardMaterial("customFrontonMaterial", this.ourScene.scene);
-        customFrontonMaterial.diffuseColor = new Color3(0.8, 0.8, 0.8); // Couleur gris clair
-
-        // Custom materials
+         // Custom materials
         let temple = new Temple(this.ourScene, 1, 25, 10, camera, );
         let temple2 = new Temple(this.ourScene, 1, 10, 5, camera);
 
@@ -60,8 +54,6 @@ export class WelcomeLevel {
         temple2.wallMaterial = temple.wallMaterial = customWallMaterial;
         temple2.roofMaterial = temple.roofMaterial = customRoofMaterial;
         temple2.pillarMaterial = temple.pillarMaterial = customPillarMaterial;
-        temple2.stairsMaterial = temple.stairsMaterial = customStairsMaterial;
-        temple2.frontonMaterial = temple.frontonMaterial = customFrontonMaterial;
 
         temple.setup();
         temple2.setup();

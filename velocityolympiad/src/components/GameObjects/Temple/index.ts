@@ -1,6 +1,6 @@
 import {
     Vector3, Color3, StandardMaterial, ArcRotateCamera, MeshBuilder, HemisphericLight,
-    TransformNode, Camera, Mesh, VertexData, Texture
+    TransformNode, Camera, Mesh, VertexData, Texture, PhysicsImpostor
 } from "@babylonjs/core";
 import {OurScene} from "../../../BabylonCodes/scenes";
 import {Stairs} from "../Stairs";
@@ -171,8 +171,8 @@ export class Temple {
         }
 
         if (!this._stairsMaterial) {
-            this._templeMaterial = new StandardMaterial(this.prefix + 'templeMaterial', this.ourScene.scene);
-            this._templeMaterial.diffuseColor = new Color3(1, 0.8, 0.6); // Couleur sable
+            this._stairsMaterial = new StandardMaterial(this.prefix + 'templeMaterial', this.ourScene.scene);
+            this._stairsMaterial.diffuseTexture = new Texture("src/assets/textures/wall.jpg");
         }
 
         if(!this._frontonMaterial) {
@@ -258,6 +258,15 @@ export class Temple {
 
         this.createTempleWalls(templeBox);
 
+        const templeMesh = new Mesh("templeMesh", this.ourScene.scene);
+
+        // 2. Ajoutez les meshes contenus dans le TransformNode en tant qu'enfants du Mesh conteneur
+        this.templeGroup.getChildren().forEach(child => {
+            if (child instanceof Mesh) {
+                templeMesh.addChild(child);
+            }
+        });
+        // let physicsAggregate =
         this._isSetup = true;
     }
 
