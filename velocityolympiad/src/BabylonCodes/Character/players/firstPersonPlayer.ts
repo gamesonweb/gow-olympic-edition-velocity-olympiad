@@ -17,7 +17,6 @@ export class FirstPersonPlayer{
         this.camera = this.CreateCamera();
         this.player = new Player(this.our_scene.scene,this.camera);
         this.our_scene.scene.activeCamera = this.camera;
-        //this.setupFirstPersonPlayer()
     }
 
     CreateCamera():Camera{

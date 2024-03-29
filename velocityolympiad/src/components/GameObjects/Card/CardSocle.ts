@@ -1,6 +1,7 @@
 import {Engine, Mesh, Nullable, Quaternion, Scene, SceneLoader, Vector3} from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import {ICard} from "./ICard.ts";
+import {OurScene} from "../../../BabylonCodes/scenes";
 
 export class CardSocle {
     position: Vector3;
@@ -8,9 +9,11 @@ export class CardSocle {
     engine: Engine;
     card: ICard;
     private mesh: Nullable<Mesh>;
+    private our_scene: OurScene;
 
-    constructor(scene: Scene, engine: Engine, card: ICard, position: Vector3) {
-        this.scene = scene;
+    constructor(scene: OurScene, engine: Engine, card: ICard, position: Vector3) {
+        this.scene = scene.scene;
+        this.our_scene = scene;
         this.engine = engine;
         this.card = card;
         this.position = position;
@@ -58,6 +61,9 @@ export class CardSocle {
                 // Remove the mesh from the scene
                 this.mesh.dispose();
                 this.mesh = null; // Mark mesh as disposed
+
+                this.our_scene.player.player.cardlist.push(this.card);
+                this.our_scene._guiUpdate();
             }
         }
     }
