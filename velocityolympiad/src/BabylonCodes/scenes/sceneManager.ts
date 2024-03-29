@@ -21,15 +21,6 @@ export class SceneManager {
         if(!scene.isSceneSetup) scene.setupScene();
         this.scenes.push(scene);
     }
-
-    renderScenes(){
-        this.engine.runRenderLoop(() => {
-            this.scenes.forEach(scene => {
-                scene.scene.render(); // possibilité de changer de scène en appelant une liste de scène de SceneManager au lieu d'un attribut scene
-                scene.player.UpdatePlayerPosition(scene.player.keys);
-            });
-        });
-    }
 }
 
 

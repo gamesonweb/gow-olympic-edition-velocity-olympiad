@@ -51,7 +51,6 @@ export class Main {
     Run() {
         SetupPointerLock(this.canvas,this.sceneManager.scenes[0].player);
         // Render the scenes
-        //this.sceneManager.renderScenes();
         this.engine.runRenderLoop(() => {
             this.sceneManager.scenes.forEach(scene => {
                 scene.scene.render(); // possibilité de changer de scène en appelant une liste de scène de SceneManager au lieu d'un attribut scene
