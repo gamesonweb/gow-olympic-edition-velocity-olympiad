@@ -1,5 +1,13 @@
-import {Engine, HavokPlugin, Scene, Vector3} from "@babylonjs/core";
-import {FirstPersonPlayer} from "../FirstPersonPlayer.ts";
+import {
+    Engine,
+    HavokPlugin,
+    Scene,
+    Vector3
+} from "@babylonjs/core";
+import {FirstPersonPlayer} from "../Character/players/firstPersonPlayer";
+import {Inspector} from "@babylonjs/inspector";
+import {Debug} from "@babylonjs/core/Legacy/legacy";
+
 
 export class OurScene {
     scene: Scene;
@@ -7,6 +15,7 @@ export class OurScene {
     physicsEngine: HavokPlugin;
     isSceneSetup: boolean = false;
     canvas: HTMLCanvasElement;
+    player: FirstPersonPlayer;
 
     constructor(engine: Engine,
                 canvas: HTMLCanvasElement,
@@ -16,6 +25,7 @@ export class OurScene {
         this.canvas = canvas;
         this.physicsEngine = physicsEngine;
         this.setupScene();
+        this.player = this.createPlayer(canvas);
     }
 
 
@@ -42,5 +52,11 @@ export class OurScene {
         const gravity = new Vector3(0, -9.81, 0);
         if(enablePhysics) scene.enablePhysics(gravity, this.physicsEngine);
         return scene;
+    }
+
+    createPlayer(canvas: HTMLCanvasElement){
+        const player = new FirstPersonPlayer(this,this.engine,canvas); 
+        player.CreatePlayer();
+        return player;
     }
 }

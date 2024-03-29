@@ -26,6 +26,7 @@ export class SceneManager {
         this.engine.runRenderLoop(() => {
             this.scenes.forEach(scene => {
                 scene.scene.render(); // possibilité de changer de scène en appelant une liste de scène de SceneManager au lieu d'un attribut scene
+                scene.player.UpdatePlayerPosition(scene.player.keys);
             });
         });
     }
