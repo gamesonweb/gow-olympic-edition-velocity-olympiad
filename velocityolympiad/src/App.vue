@@ -3,7 +3,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import {defineComponent} from 'vue';
 import BabylonCode from './components/BabylonCode.vue';
 
 export default defineComponent({

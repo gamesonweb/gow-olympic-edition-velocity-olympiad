@@ -6,28 +6,30 @@
         <canvas></canvas>
     </div>
 </template>
-
+  
   <script lang="ts">
-  import { defineComponent } from 'vue';
+  import {defineComponent} from 'vue';
   import {Main} from "../BabylonCodes/Main.ts";
-  import { FirstLevel } from "../BabylonCodes/scenes";
-  import {TestTemple} from "./GameObjects/Temple/testTemple";
+  import {TestCard} from "./GameObjects/Card/TestCard.ts";
+
   export default defineComponent({
     name: 'BabylonCode',
-    async mounted(){
+    mounted(){
         const canvas = document.querySelector('canvas')!;
         const game = new Main(canvas);
         game.Init().then(() => {
-          // let ourSceneLevel1: FirstLevel = new FirstLevel(game.getEngine(), game.getCanvas(), game.getPhysicsEngine());
-          // game.getSceneManager().addScene(ourSceneLevel1);
-          let testTemple = new TestTemple(game.getEngine(), game.getCanvas(), game.getPhysicsEngine());
-          game.getSceneManager().addScene(testTemple.our_scene);
-          game.Run();
-        });
+          setTimeout(() => {
+
+            let scene = new TestCard(game.getEngine(), game.getCanvas(), game.getPhysicsEngine());
+
+            game.getSceneManager().addScene(scene.our_scene);
+            game.Run();
+          }, 1500);
+        }); 
     }
   });
   </script>
-
+  
   <!-- Add "scoped" attribute to limit CSS to this component only -->
   <style scoped>
   h3 {
@@ -49,3 +51,4 @@
     height: 100%;
   }
   </style>
+  

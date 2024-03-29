@@ -22,7 +22,7 @@ export class Temple {
     private _wallMaterial: StandardMaterial;
     private _roofMaterial: StandardMaterial;
 
-    constructor(ourScene: OurScene, boxHeight: number = 1, boxWidth: number = 10, boxDepth: number = 5) {
+    constructor(ourScene: OurScene, boxHeight: number = 1, boxWidth: number = 10, boxDepth: number = 5, camera?: Camera) {
         this.ourScene = ourScene;
         this.boxHeight = boxHeight;
         this.boxWidth = boxWidth;
@@ -41,6 +41,7 @@ export class Temple {
 
         this._roofMaterial = new StandardMaterial("roofMaterial", this.ourScene.scene);
         this._roofMaterial.diffuseColor = new Color3(1, 0.5, 0); // Couleur tuile
+        if (camera !== undefined) { this.camera = camera;}
         this.setup();
     }
 
@@ -191,6 +192,7 @@ export class Temple {
         const stairsPositionX = - this.boxWidth/2 - stairStep/2*stepDepth ;
         const stairsHeightAdjustment = - this.boxHeight/2;
         stairs.position = new Vector3(stairsPositionX, stairsHeightAdjustment, 0);
+        stairs.parent = this.templeGroup;
     }
 
     createPillar(scene, pillarName=undefined) {

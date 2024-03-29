@@ -1,6 +1,5 @@
 import {Scene, Vector3} from "@babylonjs/core";
 
-
 export interface Character {
     position: Vector3;
     mesh: object | null;
@@ -8,6 +7,5 @@ export interface Character {
     hp: number;
     isFlying: boolean;
     setupCharacter(): void;
-    attack(target: Character): void;
     takeDamage(amount: number): void;
 }
