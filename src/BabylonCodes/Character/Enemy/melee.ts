@@ -1,6 +1,5 @@
 import {Character} from "../Character.ts";
-import {MeshBuilder, PhysicsAggregate, PhysicsShapeType, Scene, SceneLoader, Vector3} from "@babylonjs/core";
-import console from "console";
+import {MeshBuilder, PhysicsAggregate, PhysicsShapeType, Scene, Vector3} from "@babylonjs/core";
 
 
 export class MeleeEnemy implements Character{

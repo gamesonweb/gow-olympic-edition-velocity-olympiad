@@ -1,4 +1,4 @@
-import { MeshBuilder, StandardMaterial, Vector3, Scene, Color3, TransformNode } from "@babylonjs/core";
+import {Color3, MeshBuilder, Scene, StandardMaterial, TransformNode, Vector3} from "@babylonjs/core";
 
 export class Stairs extends TransformNode {
     steps: number;

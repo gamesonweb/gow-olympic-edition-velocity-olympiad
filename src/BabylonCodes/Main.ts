@@ -1,9 +1,5 @@
 import {SceneManager} from "./scenes/sceneManager.ts";
-import {Engine} from "@babylonjs/core";
-import { FirstPersonPlayer } from "./Character/players/firstPersonPlayer.ts";
-
-import {HavokPlugin} from "@babylonjs/core";
-import {OurScene} from "./scenes/ourScene.ts";
+import {Engine, HavokPlugin} from "@babylonjs/core";
 import HavokPhysics from "@babylonjs/havok";
 
 export class Main {

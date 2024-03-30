@@ -1,7 +1,6 @@
-import {Scene} from "@babylonjs/core";
-import { ParticleGenerator } from "./particleGenerator";
-import { FluidSimulator } from "./fluidSimulator";
-import { FluidRenderer } from "@babylonjs/core";
+import {FluidRenderer, Scene} from "@babylonjs/core";
+import {ParticleGenerator} from "./particleGenerator";
+import {FluidSimulator} from "./fluidSimulator";
 
 export class FluidSimulation {
     scene: Scene;

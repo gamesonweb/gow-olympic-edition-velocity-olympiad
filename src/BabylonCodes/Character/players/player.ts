@@ -1,5 +1,16 @@
-import { Scene, Vector3, Camera, MeshBuilder, PhysicsAggregate, PhysicsShapeType, TransformNode, StandardMaterial, Color3, Axis} from "@babylonjs/core";
-import { Character } from "../Character.ts";
+import {
+    Axis,
+    Camera,
+    Color3,
+    MeshBuilder,
+    PhysicsAggregate,
+    PhysicsShapeType,
+    Scene,
+    StandardMaterial,
+    TransformNode,
+    Vector3
+} from "@babylonjs/core";
+import {Character} from "../Character.ts";
 
 
 export class Player implements Character {

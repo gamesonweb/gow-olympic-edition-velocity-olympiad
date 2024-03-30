@@ -1,8 +1,6 @@
-import {
-    Engine,
-} from '@babylonjs/core';
+import {Engine,} from '@babylonjs/core';
 
-import { OurScene } from "./ourScene";
+import {OurScene} from "./ourScene";
 
 export class SceneManager {
     // Manage the scenes and Havok physics engine

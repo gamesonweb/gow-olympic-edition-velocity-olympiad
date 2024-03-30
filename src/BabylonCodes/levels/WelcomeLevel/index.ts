@@ -1,15 +1,13 @@
 import {OurScene} from "../../scenes";
 import {
-    ArcRotateCamera, Color3,
     Engine,
-    FreeCamera,
     HavokPlugin,
     HemisphericLight,
-    MeshBuilder, PhysicsAggregate, PhysicsShapeType,
-    StandardMaterial, Texture,
+    MeshBuilder,
+    PhysicsAggregate,
+    PhysicsShapeType,
     Vector3
 } from "@babylonjs/core";
-import {MeleeEnemy} from "../../Character/Enemy/melee.ts";
 import {Temple} from "../../../components/GameObjects/Temple";
 import {FlammeCard} from "../../../components/GameObjects/Card/armes/FlammeCard";
 import {RareteCard} from "../../../components/GameObjects/Card/RareteCard";

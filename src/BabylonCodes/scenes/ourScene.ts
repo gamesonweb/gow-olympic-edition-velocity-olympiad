@@ -1,16 +1,14 @@
 import {
     Engine,
     HavokPlugin,
-    HemisphericLight,
     MeshBuilder,
     PhysicsAggregate,
     PhysicsShapeType,
-    Scene, StandardMaterial,
+    Scene,
+    StandardMaterial,
     Vector3
 } from "@babylonjs/core";
 import {FirstPersonPlayer} from "../Character/players/firstPersonPlayer";
-import {Inspector} from "@babylonjs/inspector";
-import {Debug} from "@babylonjs/core/Legacy/legacy";
 import * as GUI from "@babylonjs/gui";
 
 export class OurScene {

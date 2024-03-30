@@ -1,6 +1,15 @@
 import {
-    Vector3, Color3, StandardMaterial, ArcRotateCamera, MeshBuilder, HemisphericLight,
-    TransformNode, Camera, Mesh, VertexData, Texture, PhysicsImpostor
+    ArcRotateCamera,
+    Camera,
+    Color3,
+    HemisphericLight,
+    Mesh,
+    MeshBuilder,
+    StandardMaterial,
+    Texture,
+    TransformNode,
+    Vector3,
+    VertexData
 } from "@babylonjs/core";
 import {OurScene} from "../../../BabylonCodes/scenes";
 import {Stairs} from "../Stairs";

@@ -1,5 +1,4 @@
-
-import { defineConfig } from 'vite'
+import {defineConfig} from 'vite'
 import wasm from 'vite-plugin-wasm'
 import vue from '@vitejs/plugin-vue'
 

@@ -1,5 +1,4 @@
-import { Vector3 } from "@babylonjs/core";
-import {FloatArray} from "@babylonjs/core";
+import {Vector3} from "@babylonjs/core";
 
 export  class ParticleGenerator {
     _scene;
