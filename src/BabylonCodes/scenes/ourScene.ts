@@ -1,6 +1,7 @@
 import {
+    Color3,
     Engine,
-    HavokPlugin,
+    HavokPlugin, HemisphericLight,
     MeshBuilder,
     PhysicsAggregate,
     PhysicsShapeType,
@@ -41,13 +42,18 @@ export class OurScene {
         this.player = new FirstPersonPlayer(this);
 
         // Ajout du sol
-        const ground_size = 100;
+        const ground_size = 1000;
         const ground = MeshBuilder.CreateGround("ground", {width: ground_size, height: ground_size}, this.scene);
         var groundPhysics = new PhysicsAggregate(ground, PhysicsShapeType.BOX, {mass: 0}, this.scene);
 
+        const groundMaterial = new StandardMaterial("groundMaterial", this.scene);
+        groundMaterial.diffuseColor = new Color3(0, 0, 1);
+        ground.material = groundMaterial;
+
+
         // Ajout des murs invisibles
-        const wallThickness = 1; // Épaisseur des murs
-        const wallHeight = 10; // Hauteur des murs
+        const wallThickness = 5; // Épaisseur des murs
+        const wallHeight = 300; // Hauteur des murs
         const wallMaterial = new StandardMaterial("wallMaterial", this.scene);
         wallMaterial.alpha = 0; // Rend les murs invisibles
 
@@ -74,7 +80,7 @@ export class OurScene {
         frontWall.position.z = ground_size / 2 + wallThickness / 2;
         frontWall.material = wallMaterial;
         var frontWallPhysics = new PhysicsAggregate(frontWall, PhysicsShapeType.BOX, {mass: 0}, this.scene);
-
+        new HemisphericLight("light", new Vector3(0, 1, 0), this.scene);
 
         // Affichage de l'inspecteur en mode développement
         if (import.meta.env.DEV) {

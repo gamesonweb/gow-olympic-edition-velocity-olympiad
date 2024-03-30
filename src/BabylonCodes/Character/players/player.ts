@@ -50,18 +50,21 @@ export class Player implements Character {
     }
 
     CreateMesh() {
-        const mesh = MeshBuilder.CreateBox("player", { size: 1 });
+        const mesh = MeshBuilder.CreateBox("player", {size: 1});
         mesh.position = new Vector3(0, 50, 0);
         const playerMaterial = new StandardMaterial("playerMaterial", this.scene);
         playerMaterial.diffuseColor = new Color3(0, 0, 1);
         mesh.material = playerMaterial;
-        const aggregate = new PhysicsAggregate(mesh, PhysicsShapeType.BOX, { mass: 1, friction: 0.5, restitution: 0.1 }, this.scene);
+        const aggregate = new PhysicsAggregate(mesh, PhysicsShapeType.BOX, {
+            mass: 1,
+            friction: 0.5,
+            restitution: 0.1
+        }, this.scene);
         this.aggregate = aggregate;
         this.rotation = mesh.rotation;
         aggregate.body.setCollisionCallbackEnabled(true);
         return mesh;
     }
-
 
 
     takeDamage(amount: number): void {
@@ -76,13 +79,14 @@ export class Player implements Character {
         const observable = this.aggregate?.body.getCollisionObservable();
         if (observable) {
             const observer = observable.add((collisionEvent) => {
-                if (collisionEvent.collidedAgainst.transformNode.name === "ground" || collisionEvent.collider.transformNode.name === "ground") {
+                if (collisionEvent.collidedAgainst.transformNode.name.includes("ground") || collisionEvent.collider.transformNode.name.includes("ground")) {
                     this.grounded = true;
                 }
             });
         }
 
-        if(this.mesh == null)  console.log("mesh: ", this.mesh);
+
+        if (this.mesh == null) console.log("mesh: ", this.mesh);
         if (this.mesh !== null) {
             if (!keys.left && !keys.right && !keys.forward && !keys.back && !keys.jump && this.grounded) {
                 const frictionForce = this.aggregate?.body.getLinearVelocity().scale(-0.1); // Adjust the friction factor as needed
