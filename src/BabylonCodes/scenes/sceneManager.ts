@@ -1,8 +1,6 @@
 import {
     Engine,
-    HavokPlugin,
 } from '@babylonjs/core';
-import { SetupPointerLock, handleKeyUp, handleKeyDown, mouseMove, changeCallback, keys } from "./utils"
 
 import { OurScene } from "./ourScene";
 
@@ -23,11 +21,12 @@ export class SceneManager {
     }
 
     renderScenes(){
-        SetupPointerLock(this.canvas,this.scenes[0].player);
+        // SetupPointerLock(this.canvas,this.scenes[0].player);
+        this.scenes[0].player.setupPointerLock();
         this.engine.runRenderLoop(() => {
-            this.scenes.forEach(scene => {
-                scene.scene.render(); // possibilité de changer de scène en appelant une liste de scène de SceneManager au lieu d'un attribut scene
-                scene.player.UpdatePlayerPosition(keys);
+            this.scenes.forEach(ourScene => {
+                ourScene.scene.render(); // possibilité de changer de scène en appelant une liste de scène de SceneManager au lieu d'un attribut scene
+                ourScene.player.updatePlayerPosition();
             });
         });
     }

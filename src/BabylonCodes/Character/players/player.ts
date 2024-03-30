@@ -31,6 +31,7 @@ export class Player implements Character {
         this.aggregate = null;
         this.playerNode = new TransformNode("player", this.scene);
         this.camera = camera;
+        this.setupCharacter();
     }
 
     setupCharacter() {
@@ -60,7 +61,7 @@ export class Player implements Character {
         // Utilisez la direction de la caméra pour déterminer le frontVector
         this.frontVector = this.camera.getDirection(Axis.Z);
         this.rightVector = this.camera.getDirection(Axis.X);
-
+        // console.log("keys: ", keys)
         const observable = this.aggregate?.body.getCollisionObservable();
         if (observable) {
             const observer = observable.add((collisionEvent) => {
@@ -70,6 +71,7 @@ export class Player implements Character {
             });
         }
 
+        if(this.mesh == null)  console.log("mesh: ", this.mesh);
         if (this.mesh !== null) {
             if (!keys.left && !keys.right && !keys.forward && !keys.back && !keys.jump && this.grounded) {
                 const frictionForce = this.aggregate?.body.getLinearVelocity().scale(-0.1); // Adjust the friction factor as needed
@@ -84,6 +86,7 @@ export class Player implements Character {
                 this.aggregate?.body.applyImpulse(this.frontVector.scale(-this.speed), this.mesh.position);
             }
             if (keys.right) {
+                console.log("right")
                 this.aggregate?.body.applyImpulse(this.rightVector.scale(this.speed * 0.5), this.mesh.position);
             }
             if (keys.left) {

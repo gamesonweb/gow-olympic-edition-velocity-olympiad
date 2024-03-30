@@ -98,20 +98,4 @@ export class OurScene {
         this.stackPanel.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_CENTER;
         advancedTexture.addControl(this.stackPanel);
     }
-
-    guiUpdate() {
-        var listofcard = this.player.cardlist;
-
-        for (var i = 0; i < listofcard.length; i++) {
-            var button = GUI.Button.CreateSimpleButton("but", listofcard[i].name);
-            button.width = "100px"
-            button.height = "50px";
-            button.color = "white";
-            button.background = "green";
-            button.onPointerUpObservable.add(function () {
-                console.log("clicked");
-            });
-            this.stackPanel.addControl(button);
-        }
-    }
 }

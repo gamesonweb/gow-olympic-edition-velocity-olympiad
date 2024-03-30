@@ -19,7 +19,6 @@ export class MeleeEnemy implements Character{
     }
 
     setupCharacter(){
-    //     box
         this.mesh = this.CreateMesh();
     }
 
