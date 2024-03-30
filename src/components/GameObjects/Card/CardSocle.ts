@@ -1,4 +1,14 @@
-import {Engine, Mesh, Nullable, Quaternion, Scene, SceneLoader, Vector3} from "@babylonjs/core";
+import {
+    Engine,
+    Mesh,
+    Nullable,
+    PhysicsAggregate,
+    PhysicsShapeType,
+    Quaternion,
+    Scene,
+    SceneLoader,
+    Vector3
+} from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import {ICard} from "./ICard.ts";
 import {OurScene} from "../../../BabylonCodes/scenes";
@@ -10,6 +20,7 @@ export class CardSocle {
     card: ICard;
     private mesh: Nullable<Mesh>;
     private our_scene: OurScene;
+
 
     constructor(ourScene: OurScene, card: ICard, position: Vector3) {
         this.our_scene = ourScene;
@@ -25,11 +36,14 @@ export class CardSocle {
         SceneLoader.ImportMesh("", "./models/", this.card.meshname, this.scene, (meshes) => {
             this.mesh = meshes[0] as Mesh;
 
+
             // Set up rendering loop to continually rotate the mesh to face the camera
             this.scene.onBeforeRenderObservable.add(() => {
                 this.rotateMeshTowardsCamera();
             });
             this.mesh.position = this.position;
+
+            console.log("Card socle loaded at position: ", this.position.toString());
         });
     }
 
@@ -53,7 +67,7 @@ export class CardSocle {
 
             // Apply rotation to mesh
             this.mesh.rotationQuaternion = rotationQuaternion;
-        // Check for collision with camera
+            // Check for collision with camera
             if (this.checkCollisionWithCamera()) {
                 // Log collision
                 console.log("Collision occurred!");
@@ -69,22 +83,13 @@ export class CardSocle {
     }
 
     checkCollisionWithCamera(): boolean {
-        const distance = 2
-        // Ensure camera exists and mesh is loaded
-        if (this.scene.activeCamera && this.mesh) {
-            // Calculate direction from mesh to camera
-            const cameraPosition = this.scene.activeCamera.position;
-            const meshPosition = this.mesh.position;
 
-            // Calculate direction without height component (Y axis)
-            const directionXZ = cameraPosition.subtract(meshPosition);
-            directionXZ.y = 0; // Ignore the Y component
+        // Check if the camera is within 1 unit of the mesh
 
-            // Check if the distance between the camera and the mesh is less than a threshold
-            if (directionXZ.length() < distance) {
-                return true;
-            }
-        }
+        return this.mesh.position.subtract(this.scene.activeCamera.position).length() < 3;
+
+
     }
+
 
 }
