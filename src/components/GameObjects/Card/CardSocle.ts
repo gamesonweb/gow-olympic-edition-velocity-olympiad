@@ -1,14 +1,4 @@
-import {
-    Engine,
-    Mesh,
-    Nullable,
-    PhysicsAggregate,
-    PhysicsShapeType,
-    Quaternion,
-    Scene,
-    SceneLoader,
-    Vector3
-} from "@babylonjs/core";
+import {Engine, Mesh, Nullable, Quaternion, Scene, SceneLoader, Vector3} from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import {ICard} from "./ICard.ts";
 import {OurScene} from "../../../BabylonCodes/scenes";

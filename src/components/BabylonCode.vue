@@ -12,6 +12,7 @@
   import {Main} from "../BabylonCodes/Main.ts";
 
   import {FirstLevel} from "../BabylonCodes/levels/FirstLevel";
+  import {WelcomeLevel} from "../BabylonCodes/levels/WelcomeLevel";
 
   export default defineComponent({
     name: 'BabylonCode',
@@ -19,8 +20,13 @@
         const canvas = document.querySelector('canvas')!;
         const game = new Main(canvas);
         game.Init().then(() => {
-          let firstLevel: FirstLevel = new FirstLevel(game.getEngine(), game.getCanvas(), game.getPhysicsEngine());
+          let firstLevel: FirstLevel = new FirstLevel(game);
+          let welcomelevel : WelcomeLevel = new WelcomeLevel(game);
+          console.log(game.getSceneManager().scenes);
           game.getSceneManager().addScene(firstLevel.ourScene);
+          console.log(game.getSceneManager().scenes);
+          game.getSceneManager().addScene(welcomelevel.ourScene);
+          console.log(game.getSceneManager().scenes);
           game.Run();
         });
     }

@@ -1,7 +1,8 @@
 import {
     Color3,
     Engine,
-    HavokPlugin, HemisphericLight,
+    HavokPlugin,
+    HemisphericLight,
     MeshBuilder,
     PhysicsAggregate,
     PhysicsShapeType,
