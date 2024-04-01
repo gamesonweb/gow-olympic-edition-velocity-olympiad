@@ -16,16 +16,13 @@ export default defineComponent({
     const canvas = document.querySelector('canvas')!;
 
     let sceneManager = new SceneManager(canvas);
+
     let welcomeScene: WelcomeScene = new WelcomeScene(sceneManager.engine, sceneManager.playerState,
         sceneManager.guiStackPanel);
+
     welcomeScene.init().then(() => {
       sceneManager.renderScene();
     });
-    // let firstLevelScene: FirstLevelScene = new FirstLevelScene(sceneManager.engine, sceneManager.physicsEngine, sceneManager.playerState,
-    //     sceneManager.guiStackPanel);
-    // firstLevelScene.init().then(() => {
-    //   sceneManager.renderScene();
-    // });
   }
 
 });
