@@ -2,15 +2,14 @@
  * Character interface
  */
 
-import {Camera, Scene, Vector3} from "@babylonjs/core";
+import {Camera, Mesh, Scene, Vector3} from "@babylonjs/core";
 
 export interface Character {
     position: Vector3;
-    mesh: object | null;
+    mesh: Mesh | null;
     scene: Scene;
     hp: number;
     isFlying: boolean;
-    isSetup: boolean;
-    setupCharacter(scene: Scene, camera: Camera): void;
+    init(): void;
     takeDamage(amount: number): void;
 }

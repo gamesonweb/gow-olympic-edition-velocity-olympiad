@@ -14,6 +14,7 @@ import {Temple} from "../../gameObjects/Temple";
 import {CardSocle} from "../../gameObjects/Card/CardSocle";
 import {FlammeCard} from "../../gameObjects/Card/armes/FlammeCard";
 import {RareteCard} from "../../gameObjects/Card/RareteCard";
+import {ICard} from "../../gameObjects/Card/ICard";
 
 
 export class FirstLevelScene extends OlympiadScene {
@@ -23,9 +24,9 @@ export class FirstLevelScene extends OlympiadScene {
   private readonly enemyManager: WelcomeEnemyManager;
   private readonly player: FirstPersonPlayer;
 
-  constructor(engine: Engine, playerState, guiStackPanel: GUI.StackPanel) {
+  constructor(engine: Engine, playerState) {
 
-    super(engine, playerState, guiStackPanel);
+    super(engine);
 
     this.enemyManager = new WelcomeEnemyManager(this);
     this.addComponent(this.enemyManager); // Ainsi, le manager sera détruit avec la scène
@@ -76,7 +77,7 @@ export class FirstLevelScene extends OlympiadScene {
         {card: new FlammeCard(RareteCard.LEGENDARY), position: cardposition4}
     ]
     cardAndPositions.forEach(cardAndPosition => {
-        let cardSocle = new CardSocle(this, cardAndPosition.card, cardAndPosition.position);
+        let cardSocle = new CardSocle(this, cardAndPosition.card, cardAndPosition.position, this.callbackOnCardCollision.bind(this));
         this.addComponent(cardSocle);
         this.player.cardList?.push(cardAndPosition.card);
     })
@@ -91,8 +92,20 @@ export class FirstLevelScene extends OlympiadScene {
     this._meshes.forEach((mesh) => mesh.dispose());
   }
 
-  public switchToFirstScene() {
+  public switchToSecondScene() {
 
+  }
+
+  private callbackOnCardCollision(card: ICard) {
+    const button = GUI.Button.CreateSimpleButton("but", card.name);
+    button.width = "100px"
+    button.height = "50px";
+    button.color = "white";
+    button.background = "green";
+    button.onPointerUpObservable.add(function () {
+      console.log("clicked");
+    });
+    this.guiStackPanel.addControl(button);
   }
 
 }

@@ -3,15 +3,16 @@
  * The active scene is can be access and manage as well.
  */
 import {CardList} from '../../gameObjects/Card/CardList';
+import {Mesh} from "@babylonjs/core";
 
 export class PlayerState {
-    cardList: CardList | null = null;
+    public cardList: CardList | null = null;
 
     constructor(cardList?: CardList) {
-        if (cardList === null) {
+        if (!cardList) {
             cardList = new CardList();
         }
-        this.cardList = cardList;
+        this.cardList = <CardList>cardList;
     }
 }
 

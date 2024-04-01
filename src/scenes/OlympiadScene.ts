@@ -7,6 +7,8 @@ import * as GUI from "@babylonjs/gui";
 import {SceneComponent} from "./SceneComponent";
 import HavokPhysics from "@babylonjs/havok";
 import {PlayerState} from "../character/players/PlayerState";
+import {FirstPersonPlayer} from "../character/players/FirstPersonPlayer";
+import {Player} from "../character/players";
 
 
 export class OlympiadScene extends Scene {
@@ -14,17 +16,13 @@ export class OlympiadScene extends Scene {
     private _sceneComponents: SceneComponent[] = [];
     protected engine: Engine;
     protected physicsEngine: HavokPlugin;
-    protected playerState: PlayerState;
+    protected readonly player: Player;
     protected guiStackPanel: GUI.StackPanel;
 
-    protected constructor(engine: Engine, playerState: PlayerState,
-                          guiStackPanel: GUI.StackPanel, options?: SceneOptions) {
+    protected constructor(engine: Engine, options?: SceneOptions) {
         super(engine, options);
         this.engine = engine;
-        this.playerState = playerState;
-        this.guiStackPanel = guiStackPanel;
         this._enableDebug();
-
     }
 
     async _createPhysicsEngine() {
@@ -38,6 +36,17 @@ export class OlympiadScene extends Scene {
             this.getEngine().resize();
         });
         await this._createPhysicsEngine();
+        this._createGUI();
+    }
+
+    private _createGUI() {
+        const advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+        this.guiStackPanel = new GUI.StackPanel();
+        this.guiStackPanel.width = "220px";
+        this.guiStackPanel.isVertical = true;
+        this.guiStackPanel.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+        this.guiStackPanel.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+        advancedTexture.addControl(this.guiStackPanel);
     }
 
     public destroy(): void {
@@ -57,5 +66,10 @@ export class OlympiadScene extends Scene {
             // Inspector.Show(this, {enablePopup: false});
             // new Debug.AxesViewer(this, 10);
         }
+    }
+
+    public render(updateCameras?: boolean, ignoreAnimations?: boolean) {
+        this.player.updatePosition();
+        super.render(updateCameras, ignoreAnimations);
     }
 }

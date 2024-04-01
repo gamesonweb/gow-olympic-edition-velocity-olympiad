@@ -17,19 +17,12 @@ export class SceneManager {
     private readonly _canvas: HTMLCanvasElement;
     public engine: Engine;
     public playerState: PlayerState;
-    public guiStackPanel: GUI.StackPanel
 
     constructor(canvas: HTMLCanvasElement) {
         this._canvas = canvas;
         this.engine = new Engine(this._canvas, true);
         this.playerState = new PlayerState();
-        this._createGUI();
     }
-
-    private _createGUI() {
-        this.guiStackPanel = new GUI.StackPanel();
-    }
-
 
     public renderScene() {
         if (!this.engine.scenes[0]) throw new Error("No active scene set.");

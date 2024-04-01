@@ -12,17 +12,16 @@ import * as GUI from "@babylonjs/gui";
 import {FirstPersonPlayer} from "../../character/players/FirstPersonPlayer";
 import {FirstLevelScene} from "../FirstLevelScene";
 import {Temple} from "../../gameObjects/Temple";
+import {ICard} from "../../gameObjects/Card/ICard";
 
 export class WelcomeScene extends OlympiadScene {
 
   private _meshes: Mesh[] = [];
   private _materials: Material[] = [];
   private readonly enemyManager: WelcomeEnemyManager;
-  private readonly player: FirstPersonPlayer;
+  constructor(engine: Engine, playerState: PlayerState) {
 
-  constructor(engine: Engine, playerState: PlayerState, guiStackPanel: GUI.StackPanel) {
-
-    super(engine, playerState, guiStackPanel);
+    super(engine);
 
     this.enemyManager = new WelcomeEnemyManager(this);
     this.addComponent(this.enemyManager); // Ainsi, le manager sera détruit avec la scène
@@ -38,10 +37,12 @@ export class WelcomeScene extends OlympiadScene {
     this._buildWalls();
     this._createTemple();
 
+
     setTimeout(() => {
         this.switchToFirstScene();
     }, 5000);
   }
+
 
   private _buildWalls(): void {
     const ground_size = 100;
@@ -103,15 +104,14 @@ export class WelcomeScene extends OlympiadScene {
     temple.setup();
   }
 
-
   public destroy() {
     super.destroy();
     this._meshes.forEach((mesh) => mesh.dispose());
+    this._materials.forEach((material) => material.dispose());
   }
 
   public switchToFirstScene() {
-    let firstLevelScene: FirstLevelScene = new FirstLevelScene(this.engine, this.playerState,
-        this.guiStackPanel);
+    let firstLevelScene: FirstLevelScene = new FirstLevelScene(this.engine, this.player.playerState);
     this.engine.scenes.push(firstLevelScene);
     firstLevelScene.init().then(() => {
       this.destroy();

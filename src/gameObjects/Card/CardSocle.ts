@@ -19,19 +19,20 @@ export class CardSocle extends SceneComponent {
     engine: Engine;
     card: ICard;
     private mesh: Nullable<Mesh>;
-    private our_scene: Scene;
+    private callbackOnCollision: (...args) => void;
 
 
-    constructor(scene: Scene, card: ICard, position: Vector3) {
+    constructor(scene: Scene, card: ICard, position: Vector3, callbackOnCollision: (...args) => void) {
         super();
         this.scene = scene;
         this.engine = this.scene.getEngine();
         this.card = card;
         this.position = position;
-        this.setup();
+        this.callbackOnCollision = callbackOnCollision;
+        this.init();
     }
 
-    setup() {
+    init() {
         // Setup the socle
         SceneLoader.ImportMesh("", "./models/", this.card.meshname, this.scene, (meshes) => {
             this.mesh = meshes[0] as Mesh;
@@ -75,6 +76,7 @@ export class CardSocle extends SceneComponent {
                 // Remove the mesh from the scene
                 this.mesh.dispose();
                 this.mesh = null; // Mark mesh as disposed
+                this.callbackOnCollision(this.card); // Call the callback function
             }
         }
     }
