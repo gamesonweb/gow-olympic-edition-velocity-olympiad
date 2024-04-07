@@ -13,7 +13,7 @@ import {
     PhysicsShapeType,
     Material,
     Ray,
-    RayHelper
+    RayHelper, Quaternion
 } from '@babylonjs/core';
 import { PlayerInput } from './inputController';
 import { Hud } from './ui';
@@ -37,8 +37,8 @@ export class Player extends SceneComponent{
     private _frontVector: Vector3;
     private _rightVector: Vector3;
     private _speed: number = .5;
-    private _targetRotationY: number | null = null;
-
+    private _targetCamaraRotationY: number | null = null;
+    private _slerpAmount: number = 0;
 
 
     constructor(playerState: PlayerState, scene: Scene){
@@ -140,25 +140,24 @@ export class Player extends SceneComponent{
     }
 
     private _moveBackward(): void {
-        console.log("move backward on ground: ", this.isOnGround);
         if (!this.isOnGround) return; // Optional
         let direction = this._getCameraDirection().scale(-1);
         this.rotation.y = Math.atan2(direction.x, direction.z);
         this._aggregate.body.applyImpulse(direction.scale(this._speed), this.position);
     }
 
-    private _moveRight(): void {
+    private _turnRight(): void {
         if (!this.isOnGround) return;
         let direction: Vector3 = this._getCameraDirection().cross(Vector3.Down());
         this.rotation.y = Math.atan2(direction.x, direction.z);
-        this._targetRotationY = this.rotation.y;
+        this._targetCamaraRotationY = this.rotation.y;
     }
 
-    private _moveLeft(): void {
+    private _turnLeft(): void {
         if (!this.isOnGround) return;
         let direction: Vector3 = this._getCameraDirection().cross(Vector3.Up());
         this.rotation.y = Math.atan2(direction.x, direction.z);
-        this._targetRotationY = this.rotation.y;
+        this._targetCamaraRotationY = this.rotation.y;
     }
 
     private _jump(): void {
@@ -224,26 +223,41 @@ export class Player extends SceneComponent{
         }
         if (this._input.horizontalAxis != 0) {
             if (this._input.horizontalAxis == 1) {
-                this._moveRight();
+                this._turnRight();
             } else {
-                this._moveLeft();
+                this._turnLeft();
             }
         }
         this._isGrounded();
+        this._updateCameraInfos();
+    }
+
+    private _updateCameraInfos(): void {
         this._camera.position.x = this.position.x;
         this._camera.position.y = this.position.y + 2;
         this._camera.position.z = this.position.z;
-        if (this._targetRotationY) {
-            if (this._camera.rotation.y !== this._targetRotationY) {
-                this._camera.rotation.y += (this._targetRotationY - this._camera.rotation.y) * 0.1; // Ajustez 0.1 pour contrôler la vitesse de l'interpolation
-                if (Math.abs(this._camera.rotation.y - this._targetRotationY) <= 0.1) {
-                    this._camera.rotation.y = this._targetRotationY;
-                    this._targetRotationY = null;
+        if (this._targetCamaraRotationY !== null) {
+            // Supposons que targetQuaternion est défini correctement comme montré précédemment
+            let targetQuaternion = Quaternion.RotationYawPitchRoll(this._targetCamaraRotationY, 0, 0);
+
+            // Assurez-vous que la caméra utilise rotationQuaternion pour les rotations
+            if (!this._camera.rotationQuaternion) {
+                this._camera.rotationQuaternion = new Quaternion();
+            }
+
+            if (this._slerpAmount < 1) {
+                this._slerpAmount += 0.03; // Incrémentez de 0.02 à chaque frame, ajustez selon les besoins pour la vitesse
+                Quaternion.SlerpToRef(this._camera.rotationQuaternion, targetQuaternion, this._slerpAmount,
+                    this._camera.rotationQuaternion);
+
+                // Une fois que _slerpAmount atteint ou dépasse 1, arrêtez l'interpolation
+                if (this._slerpAmount >= 1) {
+                    this._targetCamaraRotationY = null;
+                    this._slerpAmount = 0; // Réinitialisez pour la prochaine fois
                 }
             }
         }
     }
-
     public destroy() {
         this._scene.onKeyboardObservable.clear();
         this._aggregate.dispose();
