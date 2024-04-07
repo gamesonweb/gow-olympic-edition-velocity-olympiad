@@ -2,8 +2,6 @@ import {
     Engine,
     Mesh,
     Nullable,
-    PhysicsAggregate,
-    PhysicsShapeType,
     Quaternion,
     Scene,
     SceneLoader,
@@ -11,15 +9,15 @@ import {
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import {ICard} from "./ICard.ts";
-import {Scene} from "@babylonjs/core";
 import {SceneComponent} from "../../scenes/SceneComponent";
+
 export class CardSocle extends SceneComponent {
     position: Vector3;
     scene: Scene;
     engine: Engine;
     card: ICard;
     private mesh: Nullable<Mesh>;
-    private callbackOnCollision: (...args) => void;
+    private readonly callbackOnCollision: (...args) => void;
 
 
     constructor(scene: Scene, card: ICard, position: Vector3, callbackOnCollision: (...args) => void) {
@@ -90,8 +88,7 @@ export class CardSocle extends SceneComponent {
 
     }
 
-    destroy(): void {
-    }
+    destroy(): void {}
 
 
 }

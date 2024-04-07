@@ -2,13 +2,12 @@
  * OlympiadScene is equivalent to OurScene in the first version of the project.
  */
 
-import {Scene, Engine, SceneOptions, Vector3, HavokPlugin} from '@babylonjs/core';
+import {Scene, Engine, SceneOptions, Vector3, HavokPlugin, PhysicsViewer} from '@babylonjs/core';
 import * as GUI from "@babylonjs/gui";
 import {SceneComponent} from "./SceneComponent";
 import HavokPhysics from "@babylonjs/havok";
-import {PlayerState} from "../character/players/PlayerState";
-import {FirstPersonPlayer} from "../character/players/FirstPersonPlayer";
 import {Player} from "../character/players";
+import { Inspector } from '@babylonjs/inspector';
 
 
 export class OlympiadScene extends Scene {
@@ -37,6 +36,7 @@ export class OlympiadScene extends Scene {
         });
         await this._createPhysicsEngine();
         this._createGUI();
+        this.collisionsEnabled = true;
     }
 
     private _createGUI() {
@@ -62,14 +62,18 @@ export class OlympiadScene extends Scene {
     private _enableDebug(): void {
         if (import.meta.env.DEV) {
             console.log("DEV MODE: Scene inspector enabled");
+            Inspector.Show(this, {embedMode: true});
             // this.debugLayer.show();
-            // Inspector.Show(this, {enablePopup: false});
-            // new Debug.AxesViewer(this, 10);
+            // var viewer = new PhysicsViewer(this);
+            // this.meshes.forEach((mesh) => {
+            //     if (mesh.physicsBody) {
+            //         viewer.showBody(mesh.physicsBody);
+            //     }
+            // });
         }
     }
 
     public render(updateCameras?: boolean, ignoreAnimations?: boolean) {
-        this.player.updatePosition();
         super.render(updateCameras, ignoreAnimations);
     }
 }
