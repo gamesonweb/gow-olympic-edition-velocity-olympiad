@@ -59,6 +59,7 @@ export class Hud {
     }
 
     public init(): void {
+        this._lockPointer();
         const playerUI = AdvancedDynamicTexture.CreateFullscreenUI("UI");
         this._playerUI = playerUI;
         this._playerUI.idealHeight = 720;
@@ -308,6 +309,23 @@ export class Hud {
         }
     }
 
+    private _lockPointer(): void {
+        // When the element is clicked, request pointer lock
+        const canvas: HTMLCanvasElement = <HTMLCanvasElement> this._scene.getEngine().getRenderingCanvas();
+        canvas.onclick = function () {
+            let requestPointerLock = canvas.requestPointerLock ||
+                canvas.mozRequestPointerLock ||
+                canvas.webkitRequestPointerLock;
+            if (requestPointerLock) {
+                console.log("requestPointerLock exists")
+                canvas.requestPointerLock = requestPointerLock;
+                // Ask the browser to lock the pointer
+                canvas.requestPointerLock();
+            } else {
+                console.log("Pointer lock not supported");
+            }
+        };
+    }
 
     public updateHud(): void {
         if (!this._stopTimer && this._startTime != null) {

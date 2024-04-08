@@ -37,6 +37,7 @@ export class Player extends SceneComponent{
     private _frontVector: Vector3;
     private _rightVector: Vector3;
     private _speed: number = .5;
+    private _jumpForce: number = 5;
     private _targetCamaraRotationY: number | null = null;
     private _slerpAmount: number = 0;
 
@@ -94,14 +95,6 @@ export class Player extends SceneComponent{
         this._input.init();
         // Update the player position and rotation based on the physics body
         this._scene.registerBeforeRender(this._callbackBeforeRenderScene.bind(this));
-        // let interval = setInterval(() => {
-        //     this._aggregate.body.applyImpulse(this._frontVector.scale(this._speed), this.position);
-        //     console.log("applied impulse");
-        // }, 1000);
-        //
-        // setTimeout(() => {
-        //     clearInterval(interval);
-        // }, 10000);
     }
 
     private _createLight(): void {
@@ -147,22 +140,21 @@ export class Player extends SceneComponent{
     }
 
     private _turnRight(): void {
-        if (!this.isOnGround) return;
         let direction: Vector3 = this._getCameraDirection().cross(Vector3.Down());
         this.rotation.y = Math.atan2(direction.x, direction.z);
         this._targetCamaraRotationY = this.rotation.y;
     }
 
     private _turnLeft(): void {
-        if (!this.isOnGround) return;
         let direction: Vector3 = this._getCameraDirection().cross(Vector3.Up());
         this.rotation.y = Math.atan2(direction.x, direction.z);
         this._targetCamaraRotationY = this.rotation.y;
     }
 
     private _jump(): void {
+        console.log("jumping: ", this.isOnGround);
         if (!this.isOnGround) return;
-        this._aggregate.body.applyImpulse(Vector3.Up().scale(this._speed*.5), this.position);
+        this._aggregate.body.applyImpulse(Vector3.Up().scale(this._jumpForce), this.position);
         this.isOnGround = false;
     }
 

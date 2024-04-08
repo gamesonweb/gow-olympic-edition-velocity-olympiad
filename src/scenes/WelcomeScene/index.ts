@@ -1,6 +1,5 @@
 import {
   Engine,
-  HavokPlugin,
   MeshBuilder,
   PhysicsAggregate,
   PhysicsShapeType, Material, HemisphericLight, Vector3, Mesh, StandardMaterial, Camera, UniversalCamera

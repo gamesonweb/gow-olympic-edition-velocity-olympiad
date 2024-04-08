@@ -96,15 +96,16 @@ export class FirstLevelScene extends OlympiadScene {
   }
 
   private callbackOnCardCollision(card: ICard) {
-    const button = GUI.Button.CreateSimpleButton("but", card.name);
-    button.width = "100px"
-    button.height = "50px";
-    button.color = "white";
-    button.background = "green";
-    button.onPointerUpObservable.add(function () {
-      console.log("clicked");
-    });
-    this.guiStackPanel.addControl(button);
+    // const button = GUI.Button.CreateSimpleButton("but", card.name);
+    // button.width = "100px"
+    // button.height = "50px";
+    // button.color = "white";
+    // button.background = "green";
+    // button.onPointerUpObservable.add(function () {
+    //   console.log("clicked");
+    // });
+    // this.guiStackPanel.addControl(button);
+    throw new Error("Method not implemented. Use player ui to display card.");
   }
 
 }
