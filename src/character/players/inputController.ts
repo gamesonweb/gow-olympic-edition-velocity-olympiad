@@ -38,6 +38,7 @@ export class PlayerInput {
 
         this.inputMap = {};
         this._scene.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnKeyDownTrigger, (evt) => {
+            console.log("evt: ", evt);
             this.inputMap[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
         }));
         this._scene.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnKeyUpTrigger, (evt) => {
@@ -60,11 +61,11 @@ export class PlayerInput {
     private _updateFromKeyboard(): void {
 
         //forward - backwards movement
-        if ((this.inputMap["ArrowUp"] || this.mobileUp) && !this._ui.gamePaused) {
+        if ((this.inputMap["ArrowUp"] || this.inputMap["z"] || this.mobileUp) && !this._ui.gamePaused) {
             this.verticalAxis = 1;
             this.vertical = Scalar.Lerp(this.vertical, 1, 0.2);
 
-        } else if ((this.inputMap["ArrowDown"] || this.mobileDown) && !this._ui.gamePaused) {
+        } else if ((this.inputMap["ArrowDown"] || this.inputMap["s"] || this.mobileDown) && !this._ui.gamePaused) {
             this.vertical = Scalar.Lerp(this.vertical, -1, 0.2);
             this.verticalAxis = -1;
         } else {
@@ -73,13 +74,13 @@ export class PlayerInput {
         }
 
         //left - right movement
-        if ((this.inputMap["ArrowLeft"] || this.mobileLeft) && !this._ui.gamePaused) {
+        if ((this.inputMap["ArrowLeft"] || this.inputMap["q"] || this.mobileLeft) && !this._ui.gamePaused) {
             //lerp will create a scalar linearly interpolated amt between start and end scalar
             //taking current horizontal and how long you hold, will go up to -1(all the way left)
             this.horizontal = Scalar.Lerp(this.horizontal, -1, 0.2);
             this.horizontalAxis = -1;
 
-        } else if ((this.inputMap["ArrowRight"] || this.mobileRight) && !this._ui.gamePaused) {
+        } else if ((this.inputMap["ArrowRight"] || this.inputMap["d"] || this.mobileRight) && !this._ui.gamePaused) {
             this.horizontal = Scalar.Lerp(this.horizontal, 1, 0.2);
             this.horizontalAxis = 1;
         }
@@ -149,20 +150,5 @@ export class PlayerInput {
         this._ui.downBtn.onPointerUpObservable.add(() => {
             this.mobileDown = false;
         });
-    }
-
-    public reset(): void {
-        this.horizontal = 0;
-        this.vertical = 0;
-        this.horizontalAxis = 0;
-        this.verticalAxis = 0;
-        this.jumpKeyDown = false;
-        this.dashing = false;
-        this.mobileLeft = false;
-        this.mobileRight = false;
-        this.mobileUp = false;
-        this.mobileDown = false;
-        this._mobileJump = false;
-        this._mobileDash = false;
     }
 }
