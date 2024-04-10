@@ -40,6 +40,7 @@ export class Player extends SceneComponent{
     private _jumpForce: number = 5;
     private _targetCamaraRotationY: number | null = null;
     private _slerpAmount: number = 0;
+    private _cameraAttached: boolean = true;
 
 
     constructor(playerState: PlayerState, scene: Scene){
@@ -87,12 +88,12 @@ export class Player extends SceneComponent{
 
 
     public init(): void {
+        this._ui.init();
+        this._input.init();
         this._createCamera();
         this._createLight();
         this._createPlayerMesh();
         this._setupPhysics();
-        this._ui.init();
-        this._input.init();
         // Update the player position and rotation based on the physics body
         this._scene.registerBeforeRender(this._callbackBeforeRenderScene.bind(this));
     }
@@ -104,6 +105,11 @@ export class Player extends SceneComponent{
     private _createCamera(): void {
         this._camera = new UniversalCamera("FPS", new Vector3(0, 2, -10), this._scene);
         this._camera.attachControl(this._scene, true);
+        if (this._ui.isMobile) {
+            this._camera.touchAngularSensibility = 100000;
+            this._camera.touchMoveSensibility = 1000;
+        }
+
     }
 
     private _createPlayerMesh(): void {
@@ -222,6 +228,16 @@ export class Player extends SceneComponent{
         }
         this._isGrounded();
         this._updateCameraInfos();
+        if (this._ui.gamePaused) {
+            this._camera.detachControl();
+            this._cameraAttached = false;
+        } else {
+            // Check is camera is detached
+            if (!this._cameraAttached) {
+                this._camera.attachControl(this._scene, true);
+                this._cameraAttached = true;
+            }
+        }
     }
 
     private _updateCameraInfos(): void {

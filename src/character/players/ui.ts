@@ -59,19 +59,18 @@ export class Hud {
     }
 
     public init(): void {
-        this._lockPointer();
         const playerUI = AdvancedDynamicTexture.CreateFullscreenUI("UI");
         this._playerUI = playerUI;
         this._playerUI.idealHeight = 720;
 
         const lanternCnt = new TextBlock();
-        lanternCnt.name = "lantern count";
+        lanternCnt.name = "Piece count";
         lanternCnt.textVerticalAlignment = TextBlock.VERTICAL_ALIGNMENT_CENTER;
         lanternCnt.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
         lanternCnt.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
         lanternCnt.fontSize = "22px";
         lanternCnt.color = "white";
-        lanternCnt.text = "Lanterns: 1 / 22";
+        lanternCnt.text = "Pièces: 1 / 22";
         lanternCnt.top = "32px";
         lanternCnt.left = "-64px";
         lanternCnt.width = "25%";
@@ -205,6 +204,12 @@ export class Hud {
         this._createControlsMenu();
         this._loadSounds(this._scene);
 
+        this._lockPointer();
+        this.startTimer();
+        this._scene.onBeforeRenderObservable.add(() => {
+            this.updateHud();
+            this._disablePointerLockOnPause();
+        });
         //Check if Mobile, add button controls
         if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
             this.isMobile = true; // tells inputController to track mobile inputs
@@ -325,6 +330,18 @@ export class Hud {
                 console.log("Pointer lock not supported");
             }
         };
+    }
+
+    private _disablePointerLockOnPause(): void {
+        const canvas: HTMLCanvasElement = <HTMLCanvasElement> this._scene.getEngine().getRenderingCanvas();
+        if (this.gamePaused) {
+            canvas.requestPointerLock = null;
+            this.stopTimer();
+        } else {
+            if (document.pointerLockElement !== canvas) {
+                this._lockPointer();
+            }
+        }
     }
 
     public updateHud(): void {
