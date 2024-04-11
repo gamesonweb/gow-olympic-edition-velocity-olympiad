@@ -11,6 +11,7 @@ import {PlayerState} from "../../character/players/PlayerState";
 import * as GUI from "@babylonjs/gui";
 import {FirstPersonPlayer} from "../../character/players/FirstPersonPlayer";
 import {Temple} from "../../gameObjects/Temple";
+import { TempleV2 } from "../../gameObjects/TempleV2";
 import {CardSocle} from "../../gameObjects/Card/CardSocle";
 import {FlammeCard} from "../../gameObjects/Card/armes/FlammeCard";
 import {RareteCard} from "../../gameObjects/Card/RareteCard";
@@ -81,7 +82,10 @@ export class FirstLevelScene extends OlympiadScene {
         this.addComponent(cardSocle);
         this.player.cardList?.push(cardAndPosition.card);
     })
+
+    let templeV2 = new TempleV2(this, new Vector3(50, objetgroundYref, 0), new Vector3(0, -Math.PI/2, 0));
   }
+
 
   private _createCards(): void {
 
