@@ -5,7 +5,7 @@
 <script lang="ts">
 import {defineComponent} from 'vue';
 import {SceneManager} from "./scenes/SceneManager";
-import {WelcomeScene} from "./scenes/WelcomeScene"
+//import {WelcomeScene} from "./scenes/WelcomeScene"
 import {FirstLevelScene} from "./scenes/FirstLevelScene";
 
 export default defineComponent({
@@ -17,10 +17,12 @@ export default defineComponent({
 
     let sceneManager = new SceneManager(canvas);
 
-    let welcomeScene: WelcomeScene = new WelcomeScene(sceneManager.engine, sceneManager.playerState,
-        sceneManager.guiStackPanel);
+    /*let welcomeScene: WelcomeScene = new WelcomeScene(sceneManager.engine, sceneManager.playerState,
+        sceneManager.guiStackPanel);*/
 
-    welcomeScene.init().then(() => {
+    let firstLevelScene: FirstLevelScene = new FirstLevelScene(sceneManager.engine, sceneManager.playerState,sceneManager.guiStackPanel);
+
+    firstLevelScene.init().then(() => {
       sceneManager.renderScene();
     });
   }
