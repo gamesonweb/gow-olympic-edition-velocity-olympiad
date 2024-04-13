@@ -1,10 +1,15 @@
 import {ICard} from "../ICard.ts";
 import {RareteCard} from "../RareteCard.ts";
+import {MeshBuilder, PhysicsAggregate, PhysicsShapeType, Vector3} from "@babylonjs/core";
 
 
 export class FlammeCard implements ICard{
     firstSpell(): void {
-        console.log('First spell');
+
+        let fireball = new MeshBuilder.CreateSphere("fireball", {diameter: 1});
+        fireball.position = new Vector3(0, 25, 0);
+
+
     }
 
     secondSpell(): void {

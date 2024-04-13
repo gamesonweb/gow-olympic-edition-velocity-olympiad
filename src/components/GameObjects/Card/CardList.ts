@@ -33,6 +33,17 @@ export class CardList extends Array {
             this.ourScene.stackPanel.addControl(button);
         }
     }
+
+    getCurrentCard() {
+        if (this.length === 0) return null;
+
+        return this[this.length - 1];
+    }
+
+    nextCard() {
+        if (this.length === 0) return null;
+        this.pop();
+    }
 }
 
 
