@@ -36,8 +36,6 @@ export class FirstPersonPlayer extends Player implements PlayerMovement{
 
     _setupPointerLock(canvas: HTMLCanvasElement){
         canvas.onclick = function () {
-            console.log("canvas.onclick")
-            console.log("canvas: ", canvas);
             let requestPointerLock = canvas.requestPointerLock ||
                 canvas.mozRequestPointerLock ||
                 canvas.webkitRequestPointerLock;
@@ -49,6 +47,7 @@ export class FirstPersonPlayer extends Player implements PlayerMovement{
             } else {
                 console.log("Pointer lock not supported");
             }
+
         };
     }
     setupPointerLock() {
@@ -64,7 +63,10 @@ export class FirstPersonPlayer extends Player implements PlayerMovement{
         this._setupPointerLock(this.canvas);
     }
 
-
+    UseCurrentCard(){
+        if (this.cardlist.getCurrentCard() == null) return;
+        this.cardlist.getCurrentCard().firstSpell(this);
+    }
 
 
     mouseMove(e: MouseEvent): void {
@@ -114,6 +116,10 @@ export class FirstPersonPlayer extends Player implements PlayerMovement{
         }
         if (evt.key == ' ') {
             this.movement_keys.jump = true;
+        }
+
+        if (evt.key == 'e') {
+            this.UseCurrentCard();
         }
     }
 

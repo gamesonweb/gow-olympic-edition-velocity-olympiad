@@ -102,4 +102,21 @@ export class OurScene {
         this.stackPanel.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_CENTER;
         advancedTexture.addControl(this.stackPanel);
     }
+
+    updateGUI() {
+        this.stackPanel.children.forEach(child => {
+            this.stackPanel.removeControl(child);
+        });
+        this.player.cardlist.forEach(card => {
+            const button = GUI.Button.CreateSimpleButton("but", card.name);
+            button.width = "100px"
+            button.height = "50px";
+            button.color = "white";
+            button.background = "green";
+            button.onPointerUpObservable.add(function () {
+                console.log("clicked");
+            });
+            this.stackPanel.addControl(button);
+        });
+    }
 }
