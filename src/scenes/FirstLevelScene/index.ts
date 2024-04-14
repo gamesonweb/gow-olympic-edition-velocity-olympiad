@@ -16,6 +16,7 @@ import {CardSocle} from "../../gameObjects/Card/CardSocle";
 import {FlammeCard} from "../../gameObjects/Card/armes/FlammeCard";
 import {RareteCard} from "../../gameObjects/Card/RareteCard";
 import {ICard} from "../../gameObjects/Card/ICard";
+import { TempleTorch } from "../../gameObjects/TempleTorch";
 
 
 export class FirstLevelScene extends OlympiadScene {
@@ -83,7 +84,8 @@ export class FirstLevelScene extends OlympiadScene {
         this.player.cardList?.push(cardAndPosition.card);
     })
 
-    let templeV2 = new TempleV2(this, new Vector3(50, objetgroundYref, 0), new Vector3(0, -Math.PI/2, 0));
+    //let templeV2 = new TempleV2(this, new Vector3(50, objetgroundYref, 0), new Vector3(0, -Math.PI/2, 0));
+    //let templeTorch = new TempleTorch(this, new Vector3(50, objetgroundYref, 0), new Vector3(0, -Math.PI/2, 0));
   }
 
 
