@@ -78,7 +78,6 @@ export class FirstLevelScene extends OlympiadScene {
     cardAndPositions.forEach(cardAndPosition => {
         let cardSocle = new CardSocle(this, cardAndPosition.card, cardAndPosition.position, this.callbackOnCardCollision.bind(this));
         this.addComponent(cardSocle);
-        this.player.cardList?.push(cardAndPosition.card);
     })
   }
 
@@ -96,6 +95,8 @@ export class FirstLevelScene extends OlympiadScene {
   }
 
   private callbackOnCardCollision(card: ICard) {
+    console.log()
+    this.player.addCardToCart(card);
     // const button = GUI.Button.CreateSimpleButton("but", card.name);
     // button.width = "100px"
     // button.height = "50px";
@@ -105,7 +106,7 @@ export class FirstLevelScene extends OlympiadScene {
     //   console.log("clicked");
     // });
     // this.guiStackPanel.addControl(button);
-    throw new Error("Method not implemented. Use player ui to display card.");
+    // throw new Error("Method not implemented. Use player ui to display card.");
   }
 
 }

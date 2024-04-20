@@ -21,6 +21,7 @@ import {SceneComponent} from "../../scenes/SceneComponent";
 import {Nullable} from "@babylonjs/core/types";
 import {PickingInfo} from "@babylonjs/core/Collisions/pickingInfo";
 import {State as PlayerState} from "./state";
+import {ICard} from "../../gameObjects/Card/ICard";
 
 export class Player extends SceneComponent{
     private mesh: Mesh;
@@ -36,11 +37,12 @@ export class Player extends SceneComponent{
     public readonly playerState: PlayerState;
     private _frontVector: Vector3;
     private _rightVector: Vector3;
-    private _speed: number = .5;
+    private _speed: number = .2;
     private _jumpForce: number = 5;
     private _targetCamaraRotationY: number | null = null;
     private _slerpAmount: number = 0;
     private _cameraAttached: boolean = true;
+    private _dashRate: number = 5; // dash speed equals speed * dashRate
 
 
     constructor(playerState: PlayerState, scene: Scene){
@@ -98,6 +100,13 @@ export class Player extends SceneComponent{
         this._scene.registerBeforeRender(this._callbackBeforeRenderScene.bind(this));
     }
 
+    public addCardToCart(card: ICard): void {
+        this.cardList?.push(card);
+        // this._ui.addCardToStackPanel(card)
+        this._ui.addCardsToStackPanel(this.cardList || []);
+        this._ui.activeCard(card);  // Active the card on the UI input later
+    }
+
     private _createLight(): void {
         this._light = new HemisphericLight("light", new Vector3(0, 1, 0), this._scene);
     }
@@ -106,8 +115,8 @@ export class Player extends SceneComponent{
         this._camera = new UniversalCamera("FPS", new Vector3(0, 2, -10), this._scene);
         this._camera.attachControl(this._scene, true);
         if (this._ui.isMobile) {
-            this._camera.touchAngularSensibility = 100000;
-            this._camera.touchMoveSensibility = 1000;
+            this._camera.touchAngularSensibility = 10000;
+            // this._camera.touchMoveSensibility = 1000;
         }
 
     }
@@ -146,15 +155,25 @@ export class Player extends SceneComponent{
     }
 
     private _turnRight(): void {
+        // Vraiment pas sûr de ce que fait cette fonction
         let direction: Vector3 = this._getCameraDirection().cross(Vector3.Down());
         this.rotation.y = Math.atan2(direction.x, direction.z);
-        this._targetCamaraRotationY = this.rotation.y;
+        if (!this.isOnGround) {
+            this._targetCamaraRotationY = this.rotation.y;
+        } else {
+            this._aggregate.body.applyImpulse(direction.scale(this._speed), this.position);
+        }
     }
 
     private _turnLeft(): void {
         let direction: Vector3 = this._getCameraDirection().cross(Vector3.Up());
         this.rotation.y = Math.atan2(direction.x, direction.z);
-        this._targetCamaraRotationY = this.rotation.y;
+        if (!this.isOnGround) {
+            this._targetCamaraRotationY = this.rotation.y;
+        } else {
+            this._aggregate.body.applyImpulse(direction.scale(this._speed), this.position);
+        }
+
     }
 
     private _jump(): void {
@@ -162,6 +181,12 @@ export class Player extends SceneComponent{
         if (!this.isOnGround) return;
         this._aggregate.body.applyImpulse(Vector3.Up().scale(this._jumpForce), this.position);
         this.isOnGround = false;
+    }
+
+    private _dash(): void {
+        let direction = this._getCameraDirection();
+        this._aggregate.body.applyImpulse(direction.scale(this._speed * this._dashRate), this.position);
+        this._input.dashing = false;
     }
 
     private _getCameraDirection(): Vector3 {
@@ -225,6 +250,9 @@ export class Player extends SceneComponent{
             } else {
                 this._turnLeft();
             }
+        }
+        if (this._input.dashing) {
+            this._dash();
         }
         this._isGrounded();
         this._updateCameraInfos();

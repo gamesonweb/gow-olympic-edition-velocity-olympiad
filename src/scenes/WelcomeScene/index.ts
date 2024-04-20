@@ -34,9 +34,9 @@ export class WelcomeScene extends OlympiadScene {
     this._buildWalls();
     this._createTemple();
 
-    // setTimeout(() => {
-    //     this.switchToFirstScene();
-    // }, 5000);
+    setTimeout(() => {
+        this.switchToFirstScene();
+    }, 5000);
   }
 
 

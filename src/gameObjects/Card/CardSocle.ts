@@ -17,6 +17,7 @@ export class CardSocle extends SceneComponent {
     engine: Engine;
     card: ICard;
     private mesh: Nullable<Mesh>;
+    private _meshes: Mesh[] = [];
     private readonly callbackOnCollision: (...args) => void;
 
 
@@ -34,6 +35,7 @@ export class CardSocle extends SceneComponent {
         // Setup the socle
         SceneLoader.ImportMesh("", "./models/", this.card.meshname, this.scene, (meshes) => {
             this.mesh = meshes[0] as Mesh;
+            this._meshes.push(this.mesh);
 
 
             // Set up rendering loop to continually rotate the mesh to face the camera
@@ -83,12 +85,18 @@ export class CardSocle extends SceneComponent {
 
         // Check if the camera is within 1 unit of the mesh
 
-        return this.mesh!.position.subtract(this.scene.activeCamera!.position).length() < 3;
+        // console.log("CHECKIN_COLLISION: ", this.mesh!.position.subtract(this.scene.activeCamera!.position).length() < 5)
+
+        return this.mesh!.position.subtract(this.scene.activeCamera!.position).length() < 4;
 
 
     }
 
-    destroy(): void {}
+    destroy(): void {
+        this._meshes.forEach((mesh) => {
+            mesh.dispose();
+        });
+    }
 
 
 }

@@ -1,5 +1,7 @@
-import { TextBlock, StackPanel, AdvancedDynamicTexture, Image, Button, Rectangle, Control, Grid } from "@babylonjs/gui";
-import { Scene, Sound, ParticleSystem, PostProcess, Effect, SceneSerializer } from "@babylonjs/core";
+import {AdvancedDynamicTexture, Button, Control, Grid, Image, Rectangle, StackPanel, TextBlock} from "@babylonjs/gui";
+import {Effect, ParticleSystem, PostProcess, Scene, Sound} from "@babylonjs/core";
+import {ICard} from "../../gameObjects/Card/ICard";
+import {RareteCard} from "../../gameObjects/Card/RareteCard";
 
 export class Hud {
     private _scene: Scene;
@@ -53,6 +55,10 @@ export class Hud {
     private _sfx: Sound;
     private _pause: Sound;
     private _sparkWarningSfx: Sound;
+
+    //ICard Menu
+    private _cardMenuStackPanel: StackPanel;
+    private _activeCardStackPanel: StackPanel;
 
     constructor(scene: Scene) {
         this._scene = scene;
@@ -312,6 +318,104 @@ export class Hud {
             grid.addControl(downBtn, 1, 1);
 
         }
+
+        this._createICardMenu();
+    }
+
+    private _createICardMenu(): void {
+        this._cardMenuStackPanel = new StackPanel("cardMenuStackPanel");
+        this._cardMenuStackPanel.width = "180px"; // La largeur du stack panel
+        this._cardMenuStackPanel.isVertical = true; // Alignement vertical des cartes
+        this._cardMenuStackPanel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
+        this._cardMenuStackPanel.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
+        this._cardMenuStackPanel.left = "-230px"
+        this._cardMenuStackPanel.rotation = -Math.PI / 18;
+        this._playerUI.addControl(this._cardMenuStackPanel);
+
+        this._activeCardStackPanel = new StackPanel("activeCardStackPanel");
+        this._activeCardStackPanel.width = "150px";
+        this._activeCardStackPanel.isVertical = true;
+        this._activeCardStackPanel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
+        this._activeCardStackPanel.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
+        // this._activeCardStackPanel.rotate(Axis.Z, -Math.PI / 18); // Inclinaison légère du StackPanel
+        // this._activeCardStackPanel.rotation = -Math.PI / 18;
+        this._activeCardStackPanel.left = "-10px"; // Ajuster la position à gauche par rapport au centre du StackPanel des cartes du menu
+        this._playerUI.addControl(this._activeCardStackPanel);
+        this._playerUI.addControl(this._activeCardStackPanel);
+    }
+
+    private _getStackUIImageFromRarete(rareteCard: RareteCard): string {
+        let stackUIImage = "sprites/controls.jpeg"
+        switch (rareteCard) {
+            case RareteCard.COMMON:
+                stackUIImage = "TorchCardGray.glb";
+                break;
+            case RareteCard.RARE:
+                stackUIImage = "TorchCardBlue.glb"
+                break;
+            case RareteCard.EPIC:
+                stackUIImage = "TorchCardPurple.glb";
+                break;
+            case RareteCard.LEGENDARY:
+                stackUIImage = "TorchCardGold.glb";
+                break;
+        }
+        stackUIImage = "sprites/controls.jpeg"
+        return stackUIImage;
+    }
+
+    public addCardsToStackPanel(cards: ICard[]): void {
+        this._cardMenuStackPanel.clearControls();
+        let cardCountText = new TextBlock("cardCountText", `${cards.length}`);
+        cardCountText.color = "black";
+        cardCountText.fontSize = "32px";
+        cardCountText.paddingLeft = "5px"; // Espacement à gauche du nombre de cartes
+        cardCountText.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+        cardCountText.height = "40px";
+        this._cardMenuStackPanel.addControl(cardCountText);
+        if (cards.length > 0) {
+            this.addCardToStackPanel(cards[0], 0);
+        }
+    }
+
+    public addCardToStackPanel(card: ICard, index = 0): Control {
+        if (index > 0) { return; }
+        let stackUIImage = this._getStackUIImageFromRarete(RareteCard.COMMON)
+        let cardImage = new Image("card", stackUIImage);
+        let width = "100px";
+        let height = "150px";
+        let paddingTop = (index == 0)? "10px" : "0px";
+        let paddingBottom = (index == 0)? "5px" : "0px";
+        let left = (index == 0) ? "0px" : index * -10 + "px";
+
+        cardImage.width = width; // La largeur de la carte
+        cardImage.height = height; // La hauteur de la carte
+        cardImage.paddingTop = paddingTop; // Espacement entre les cartes
+        cardImage.paddingTop = paddingBottom; // Espacement entre les cartes
+        cardImage.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
+        cardImage.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+        cardImage.left = left;
+        this._cardMenuStackPanel.addControl(cardImage);
+        return cardImage;
+    }
+
+    public activeCard(card: ICard): void {
+        this._activeCardStackPanel.clearControls();
+        let cardMeshName = card.meshname.split(".")[0];
+        let cardActiveText = new TextBlock("cardActiveText", `${cardMeshName}`);
+        cardActiveText.color = "black";
+        cardActiveText.fontSize = "18px";
+        cardActiveText.paddingLeft = "5px"; // Espacement à gauche du nombre de cartes
+        cardActiveText.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+        cardActiveText.height = "20px";
+        this._activeCardStackPanel.addControl(cardActiveText);
+        let stackUIImage = this._getStackUIImageFromRarete(RareteCard.COMMON)
+        let cardImage = new Image("card", stackUIImage);
+        cardImage.width = "200px";
+        cardImage.height = "300px";
+        cardImage.paddingTop = "10px";
+        cardImage.paddingTop = "5px";
+        this._activeCardStackPanel.addControl(cardImage);
     }
 
     private _lockPointer(): void {
@@ -349,7 +453,8 @@ export class Hud {
             let curTime = Math.floor((new Date().getTime() - this._startTime) / 1000) + this._prevTime; // divide by 1000 to get seconds
 
             this.time = curTime; //keeps track of the total time elapsed in seconds
-            this._clockTime!.text = this._formatTime(curTime);
+            // this._clockTime!.text = this._formatTime(curTime);
+            this._clockTime!.text = ("0" + this._formatTime(curTime)).slice(-8);
         }
     }
 
@@ -372,7 +477,8 @@ export class Hud {
         //gameclock works like: 4 mins = 1 hr
         // 4sec = 1/15 = 1min game time
         if (secPassed % 4 == 0) {
-            this._mString = Math.floor(minsPassed / 4) + 11;
+            // this._mString = Math.floor(minsPassed / 4) + 11;
+            this._mString = Math.floor(minsPassed / 4);
             this._sString = (secPassed / 4 < 10 ? "0" : "") + secPassed / 4;
         }
         let day = (this._mString == 11 ? " PM" : " AM");

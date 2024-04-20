@@ -6,6 +6,7 @@
 import {defineComponent} from 'vue';
 import {SceneManager} from "./scenes/SceneManager";
 import {WelcomeScene} from "./scenes/WelcomeScene"
+import {FirstLevelScene} from "./scenes/FirstLevelScene"
 
 export default defineComponent({
   name: 'App',
@@ -16,9 +17,9 @@ export default defineComponent({
 
     let sceneManager = new SceneManager(canvas);
 
-    let welcomeScene: WelcomeScene = new WelcomeScene(sceneManager.engine, sceneManager.playerState);
+    let _scene: FirstLevelScene = new FirstLevelScene(sceneManager.engine, sceneManager.playerState);
 
-    welcomeScene.init().then(() => {
+    _scene.init().then(() => {
       sceneManager.renderScene();
     });
   }
