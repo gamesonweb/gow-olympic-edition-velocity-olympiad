@@ -2,13 +2,12 @@
  * OlympiadScene is equivalent to OurScene in the first version of the project.
  */
 
-import {Scene, Engine, SceneOptions, Vector3, HavokPlugin} from '@babylonjs/core';
+import {Scene, Engine, SceneOptions, Vector3, HavokPlugin, PhysicsViewer} from '@babylonjs/core';
 import * as GUI from "@babylonjs/gui";
 import {SceneComponent} from "./SceneComponent";
 import HavokPhysics from "@babylonjs/havok";
-import {PlayerState} from "../character/players/PlayerState";
-import {FirstPersonPlayer} from "../character/players/FirstPersonPlayer";
 import {Player} from "../character/players";
+import { Inspector } from '@babylonjs/inspector';
 
 
 export class OlympiadScene extends Scene {
@@ -17,7 +16,7 @@ export class OlympiadScene extends Scene {
     protected engine: Engine;
     protected physicsEngine: HavokPlugin;
     protected readonly player: Player;
-    protected guiStackPanel: GUI.StackPanel;
+    // protected guiStackPanel: GUI.StackPanel;
 
     protected constructor(engine: Engine, options?: SceneOptions) {
         super(engine, options);
@@ -36,18 +35,19 @@ export class OlympiadScene extends Scene {
             this.getEngine().resize();
         });
         await this._createPhysicsEngine();
-        this._createGUI();
+        // this._createGUI();
+        this.collisionsEnabled = true;
     }
 
-    private _createGUI() {
-        const advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
-        this.guiStackPanel = new GUI.StackPanel();
-        this.guiStackPanel.width = "220px";
-        this.guiStackPanel.isVertical = true;
-        this.guiStackPanel.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-        this.guiStackPanel.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_CENTER;
-        advancedTexture.addControl(this.guiStackPanel);
-    }
+    // private _createGUI() {
+    //     const advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+    //     this.guiStackPanel = new GUI.StackPanel();
+    //     this.guiStackPanel.width = "220px";
+    //     this.guiStackPanel.isVertical = true;
+    //     this.guiStackPanel.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+    //     this.guiStackPanel.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+    //     advancedTexture.addControl(this.guiStackPanel);
+    // }
 
     public destroy(): void {
         this._sceneComponents.forEach((component) => component.destroy());
@@ -62,14 +62,18 @@ export class OlympiadScene extends Scene {
     private _enableDebug(): void {
         if (import.meta.env.DEV) {
             console.log("DEV MODE: Scene inspector enabled");
+            Inspector.Show(this, {embedMode: true});
             // this.debugLayer.show();
-            // Inspector.Show(this, {enablePopup: false});
-            // new Debug.AxesViewer(this, 10);
+            // var viewer = new PhysicsViewer(this);
+            // this.meshes.forEach((mesh) => {
+            //     if (mesh.physicsBody) {
+            //         viewer.showBody(mesh.physicsBody);
+            //     }
+            // });
         }
     }
 
     public render(updateCameras?: boolean, ignoreAnimations?: boolean) {
-        this.player.updatePosition();
         super.render(updateCameras, ignoreAnimations);
     }
 }

@@ -1,18 +1,15 @@
 import {
   Engine,
-  HavokPlugin,
   MeshBuilder,
   PhysicsAggregate,
   PhysicsShapeType, Material, HemisphericLight, Vector3, Mesh, StandardMaterial, Camera, UniversalCamera
 } from "@babylonjs/core";
 import {OlympiadScene} from "../OlympiadScene";
 import {WelcomeEnemyManager} from "./enemyManager";
-import {PlayerState} from "../../character/players/PlayerState";
-import * as GUI from "@babylonjs/gui";
-import {FirstPersonPlayer} from "../../character/players/FirstPersonPlayer";
+import {PlayerState} from "../../character/players";
+import {Player} from "../../character/players";
 import {FirstLevelScene} from "../FirstLevelScene";
 import {Temple} from "../../gameObjects/Temple";
-import {ICard} from "../../gameObjects/Card/ICard";
 
 export class WelcomeScene extends OlympiadScene {
 
@@ -26,7 +23,7 @@ export class WelcomeScene extends OlympiadScene {
     this.enemyManager = new WelcomeEnemyManager(this);
     this.addComponent(this.enemyManager); // Ainsi, le manager sera détruit avec la scène
 
-    this.player = new FirstPersonPlayer(playerState, this);
+    this.player = new Player(playerState, this);
     this.addComponent(this.player);
   }
 
@@ -36,7 +33,6 @@ export class WelcomeScene extends OlympiadScene {
     this.enemyManager.init();
     this._buildWalls();
     this._createTemple();
-
 
     setTimeout(() => {
         this.switchToFirstScene();

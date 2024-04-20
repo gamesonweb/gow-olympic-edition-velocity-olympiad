@@ -7,9 +7,8 @@ import {
 } from "@babylonjs/core";
 import {OlympiadScene} from "../OlympiadScene";
 import {WelcomeEnemyManager} from "./enemyManager";
-import {PlayerState} from "../../character/players/PlayerState";
 import * as GUI from "@babylonjs/gui";
-import {FirstPersonPlayer} from "../../character/players/FirstPersonPlayer";
+import {Player} from "../../character/players";
 import {Temple} from "../../gameObjects/Temple";
 import {CardSocle} from "../../gameObjects/Card/CardSocle";
 import {FlammeCard} from "../../gameObjects/Card/armes/FlammeCard";
@@ -22,7 +21,7 @@ export class FirstLevelScene extends OlympiadScene {
   private _meshes: Mesh[] = [];
   private _materials: Material[] = [];
   private readonly enemyManager: WelcomeEnemyManager;
-  private readonly player: FirstPersonPlayer;
+  private readonly player: Player;
 
   constructor(engine: Engine, playerState) {
 
@@ -31,7 +30,7 @@ export class FirstLevelScene extends OlympiadScene {
     this.enemyManager = new WelcomeEnemyManager(this);
     this.addComponent(this.enemyManager); // Ainsi, le manager sera détruit avec la scène
 
-    this.player = new FirstPersonPlayer(playerState, this);
+    this.player = new Player(playerState, this);
     this.addComponent(this.player);
   }
 
@@ -79,7 +78,6 @@ export class FirstLevelScene extends OlympiadScene {
     cardAndPositions.forEach(cardAndPosition => {
         let cardSocle = new CardSocle(this, cardAndPosition.card, cardAndPosition.position, this.callbackOnCardCollision.bind(this));
         this.addComponent(cardSocle);
-        this.player.cardList?.push(cardAndPosition.card);
     })
   }
 
@@ -97,15 +95,18 @@ export class FirstLevelScene extends OlympiadScene {
   }
 
   private callbackOnCardCollision(card: ICard) {
-    const button = GUI.Button.CreateSimpleButton("but", card.name);
-    button.width = "100px"
-    button.height = "50px";
-    button.color = "white";
-    button.background = "green";
-    button.onPointerUpObservable.add(function () {
-      console.log("clicked");
-    });
-    this.guiStackPanel.addControl(button);
+    console.log()
+    this.player.addCardToCart(card);
+    // const button = GUI.Button.CreateSimpleButton("but", card.name);
+    // button.width = "100px"
+    // button.height = "50px";
+    // button.color = "white";
+    // button.background = "green";
+    // button.onPointerUpObservable.add(function () {
+    //   console.log("clicked");
+    // });
+    // this.guiStackPanel.addControl(button);
+    // throw new Error("Method not implemented. Use player ui to display card.");
   }
 
 }
