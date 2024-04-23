@@ -1,5 +1,4 @@
 import {OurScene} from "../../../BabylonCodes/scenes";
-import * as GUI from "@babylonjs/gui";
 import {ICard} from "./ICard";
 
 export class CardList extends Array {

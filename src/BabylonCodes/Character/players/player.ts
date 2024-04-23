@@ -101,7 +101,6 @@ export class Player implements Character {
                 this.aggregate?.body.applyImpulse(this.frontVector.scale(-this.speed), this.mesh.position);
             }
             if (keys.right) {
-                console.log("right")
                 this.aggregate?.body.applyImpulse(this.rightVector.scale(this.speed * 0.5), this.mesh.position);
             }
             if (keys.left) {

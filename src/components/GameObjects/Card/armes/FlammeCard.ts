@@ -16,6 +16,7 @@ export class FlammeCard implements ICard{
 
     // Create fireball mesh
     let fireball = MeshBuilder.CreateSphere("fireball", { diameter: 1 }, scene);
+    fireball.checkCollisions = true;
     fireball.position = camera.position.clone(); // Clone the position of the camera
     let fireballMaterial = new StandardMaterial("fireballMaterial", scene);
     fireballMaterial.diffuseColor = new Color3(1, 0, 0);

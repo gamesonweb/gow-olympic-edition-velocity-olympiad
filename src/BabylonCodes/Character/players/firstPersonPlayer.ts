@@ -121,6 +121,8 @@ export class FirstPersonPlayer extends Player implements PlayerMovement{
         if (evt.key == 'e') {
             this.UseCurrentCard();
         }
+
+
     }
 
     setupMovement() {

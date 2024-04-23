@@ -13,6 +13,8 @@ import {Temple} from "../../../components/GameObjects/Temple";
 import {CardSocle} from "../../../components/GameObjects/Card/CardSocle.ts";
 import {FlammeCard} from "../../../components/GameObjects/Card/armes/FlammeCard.ts";
 import {RareteCard} from "../../../components/GameObjects/Card/RareteCard.ts";
+import {Sign} from "../../../components/GameObjects/Sign/Sign.ts";
+import {Wall} from "../../../components/GameObjects/Walls/Walls.ts";
 
 
 export class FirstLevel {
@@ -65,6 +67,21 @@ export class FirstLevel {
         new CardSocle(this.ourScene, new FlammeCard(RareteCard.RARE), cardposition2);
         new CardSocle(this.ourScene, new FlammeCard(RareteCard.EPIC), cardposition3);
         new CardSocle(this.ourScene, new FlammeCard(RareteCard.LEGENDARY), cardposition4);
+
+
+
+        // sign
+        let signposition = new Vector3(5, objetgroundYref + 1, 0);
+        new Sign("test", signposition, this.ourScene);
+
+
+        // wall destructible
+        let wallposition = new Vector3(30, objetgroundYref, 0);
+
+        new Wall(this.ourScene, wallposition);
+
+
+
 
 
 
