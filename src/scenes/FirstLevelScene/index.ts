@@ -44,31 +44,28 @@ export class FirstLevelScene extends OlympiadScene {
   }
 
   private _buildWalls(): void {
-    let levelgroundwidth = 500;
+    let levelgroundwidth = 50;
     let levelgroundheight = 1;
-    let levelgrounddepth = 50;
+    let levelgrounddepth = 500;
 
     let levelGround = MeshBuilder.CreateBox("level1ground", {width: levelgroundwidth,
       height: levelgroundheight, depth: levelgrounddepth}, this);
     this._meshes.push(levelGround);
     // a 20 au dessus du sol
     levelGround.position.y = 20;
-    levelGround.position.x = levelgroundwidth/2 - 50;
+    levelGround.position.z = 0;
+    console.log(levelGround.position.y)
+    console.log(levelGround.position.z)
+
+
     const objetgroundYref = levelGround.position.y + levelgroundheight/2;
     new PhysicsAggregate(levelGround, PhysicsShapeType.BOX, {mass: 0}, this);
 
-    // temple
-    let templedimension = new Vector3(1, 15, 7);
-    let templeposition = new Vector3(levelgroundwidth-50-templedimension.z, objetgroundYref +1, 0);
-    let temple = new Temple(this, templedimension.x, templedimension.y, templedimension.z);
-    temple.position = templeposition;
-    temple.rotation = new Vector3(0, 0, 0);
-    temple.setup();
 
-    let cardposition1 = new Vector3(10,objetgroundYref, 0);
-    let cardposition2 = new Vector3(15,objetgroundYref, 0);
-    let cardposition3 = new Vector3(20,objetgroundYref, 0);
-    let cardposition4 = new Vector3(25,objetgroundYref, 0);
+    let cardposition1 = new Vector3(0,objetgroundYref, 10);
+    let cardposition2 = new Vector3(0,objetgroundYref, 15);
+    let cardposition3 = new Vector3(0,objetgroundYref, 20);
+    let cardposition4 = new Vector3(0,objetgroundYref, 25);
 
     let cardAndPositions = [
         {card: new FlammeCard(RareteCard.COMMON), position: cardposition1},
