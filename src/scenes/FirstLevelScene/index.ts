@@ -14,7 +14,8 @@ import {CardSocle} from "../../gameObjects/Card/CardSocle";
 import {FlammeCard} from "../../gameObjects/Card/armes/FlammeCard";
 import {RareteCard} from "../../gameObjects/Card/RareteCard";
 import {ICard} from "../../gameObjects/Card/ICard";
-
+import {Sign} from "../../gameObjects/Sign";
+import {Wall} from "../../gameObjects/Wall";
 
 export class FirstLevelScene extends OlympiadScene {
 
@@ -79,10 +80,15 @@ export class FirstLevelScene extends OlympiadScene {
         let cardSocle = new CardSocle(this, cardAndPosition.card, cardAndPosition.position, this.callbackOnCardCollision.bind(this));
         this.addComponent(cardSocle);
     })
-  }
 
-  private _createCards(): void {
+    let signposition = new Vector3(5, objetgroundYref + 1, 0);
+    new Sign("test", signposition, this);
 
+
+    // wall destructible
+    let wallposition = new Vector3(0, objetgroundYref, 50);
+
+    new Wall(this, wallposition);
   }
 
   public destroy() {
@@ -97,16 +103,6 @@ export class FirstLevelScene extends OlympiadScene {
   private callbackOnCardCollision(card: ICard) {
     console.log()
     this.player.addCardToCart(card);
-    // const button = GUI.Button.CreateSimpleButton("but", card.name);
-    // button.width = "100px"
-    // button.height = "50px";
-    // button.color = "white";
-    // button.background = "green";
-    // button.onPointerUpObservable.add(function () {
-    //   console.log("clicked");
-    // });
-    // this.guiStackPanel.addControl(button);
-    // throw new Error("Method not implemented. Use player ui to display card.");
   }
 
 }
