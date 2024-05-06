@@ -1,4 +1,3 @@
-import { OurScene } from "../../../BabylonCodes/scenes";
 import {
     ActionManager,
     ExecuteCodeAction,
@@ -18,10 +17,10 @@ export class Sign {
     private advancedTexture: GUI.AdvancedDynamicTexture;
     private signMesh: Mesh;
 
-    constructor(text: string, position: Vector3, ourScene: OurScene) {
+    constructor(text: string, position: Vector3, scene: Scene) {
         this._text = text;
         this._position = position;
-        this.scene = ourScene.scene;
+        this.scene = scene;
         const advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
         this.advancedTexture = advancedTexture;
         this.setup();
