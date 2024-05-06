@@ -13,7 +13,7 @@ import {
     PhysicsShapeType,
     Material,
     Ray,
-    RayHelper, Quaternion
+    RayHelper, Quaternion, AbstractMesh
 } from '@babylonjs/core';
 import { PlayerInput } from './inputController';
 import { Hud } from './ui';
@@ -35,15 +35,13 @@ export class Player extends SceneComponent{
     private _input: PlayerInput;
     private readonly _scene: Scene;
     public readonly playerState: PlayerState;
-    private _frontVector: Vector3;
-    private _rightVector: Vector3;
     private _speed: number = .2;
     private _jumpForce: number = 5;
     private _targetCamaraRotationY: number | null = null;
     private _slerpAmount: number = 0;
     private _cameraAttached: boolean = true;
     private _dashRate: number = 5; // dash speed equals speed * dashRate
-
+    private _initialPosition: Vector3;
 
     constructor(playerState: PlayerState, scene: Scene){
         super();
@@ -52,8 +50,7 @@ export class Player extends SceneComponent{
         this._ui = ui;
         this._input = new PlayerInput(scene, ui);
         this.playerState = playerState;
-        this._frontVector = new Vector3(0, 0, 1);
-        this._rightVector = new Vector3(1, 0, 0);
+        this._initialPosition = Vector3.Zero();
     }
 
     get cardList() {
@@ -88,7 +85,10 @@ export class Player extends SceneComponent{
         this._speed = speed;
     }
 
-    public init(): void {
+    public init(initialPosition?: Vector3): void {
+        if (initialPosition) {
+            this._initialPosition = initialPosition;
+        }
         this._ui.init();
         this._input.init();
         this._createCamera();
@@ -122,7 +122,7 @@ export class Player extends SceneComponent{
 
     private _createPlayerMesh(): void {
         this.mesh = MeshBuilder.CreateBox("player", { size: 2 }, this._scene);
-        this.mesh.position = new Vector3(0, 15, -80);
+        this.mesh.position = this._initialPosition;
         this.mesh.isVisible = true;
         const playerMaterial = new StandardMaterial("playerMaterial", this._scene);
         playerMaterial.diffuseColor = new Color3(0, 0, 1);
@@ -156,6 +156,7 @@ export class Player extends SceneComponent{
     private _turnRight(): void {
         // Vraiment pas sûr de ce que fait cette fonction
         let direction: Vector3 = this._getCameraDirection().cross(Vector3.Down());
+        console.log("isOnGround: ", this.isOnGround)
         this.rotation.y = Math.atan2(direction.x, direction.z);
         if (!this.isOnGround) {
             this._targetCamaraRotationY = this.rotation.y;
@@ -167,6 +168,7 @@ export class Player extends SceneComponent{
     private _turnLeft(): void {
         let direction: Vector3 = this._getCameraDirection().cross(Vector3.Up());
         this.rotation.y = Math.atan2(direction.x, direction.z);
+        console.log("isOnGround: ", this.isOnGround)
         if (!this.isOnGround) {
             this._targetCamaraRotationY = this.rotation.y;
         } else {
@@ -207,7 +209,7 @@ export class Player extends SceneComponent{
         let ray = new Ray(raycastFloorPos, Vector3.Down(), raycastlen);
 
         //defined which type of meshes should be pickable
-        let predicate = (mesh: Mesh) => {
+        let predicate = (mesh: AbstractMesh) => {
             return mesh.isPickable && mesh.isEnabled() && mesh !== this.mesh;
         };
 
@@ -215,17 +217,19 @@ export class Player extends SceneComponent{
         // let rayHelper = new RayHelper(ray);
         // rayHelper.show(this._scene, new Color3(1, 0, 0)); // Affiche le rayon en rouge
 
+        let pickedPointVector = Vector3.Zero();
         // console.log("pick: ", pick)
         if (pick && pick.hit) { //grounded
-            return <Vector3>pick.pickedPoint;
-        } else { //not grounded
-            return Vector3.Zero();
+            pickedPointVector = <Vector3>pick.pickedPoint;
         }
+        // rayHelper.dispose();
+        return pickedPointVector;
     }
 
     //raycast from the center of the player to check for whether player is grounded
     private  _isGrounded(): void {
-        if (this._floorRaycast({x: 0, y: 1, z: 0}, 2).equals(Vector3.Zero())) {
+        let meshSize: number = this.mesh.getBoundingInfo().boundingBox.extendSize.y;
+        if (this._floorRaycast({x: 0, y: meshSize*0.9, z: 0}, 2).equals(Vector3.Zero())) {
             this.isOnGround = false;
         } else {
             this.isOnGround = true;

@@ -16,27 +16,27 @@ import {CardSocle} from "../../gameObjects/Card/CardSocle";
 import {FlammeCard} from "../../gameObjects/Card/armes/FlammeCard";
 import {RareteCard} from "../../gameObjects/Card/RareteCard";
 import {ICard} from "../../gameObjects/Card/ICard";
-
+import * as utils from 'util'
 export class LevelSelectorScene extends OlympiadScene {
     private _meshes: Mesh[] = [];
     private _materials: Material[] = [];
     private readonly enemyManager: WelcomeEnemyManager;
     private readonly player: Player;
-  
+
     constructor(engine: Engine, playerState) {
-  
+
       super(engine);
-  
+
       this.enemyManager = new WelcomeEnemyManager(this);
       this.addComponent(this.enemyManager); // Ainsi, le manager sera détruit avec la scène
-  
+
       this.player = new Player(playerState, this);
       this.addComponent(this.player);
     }
 
     public async init(): Promise<void> {
         await super.init();
-        this.player.init();
+        this.player.init(new Vector3(0, 100, 0));
         this.enemyManager.init();
         this._buildlevelStatic();
     }
@@ -48,12 +48,13 @@ export class LevelSelectorScene extends OlympiadScene {
             root.rotation = new Vector3(0, 0, 0);
             root.scaling = new Vector3(1, 1, 1);
             const childrens = root.getChildren();
-            
+
             for (let child of childrens){
                 const mesh = child as Mesh;
                 const body = new PhysicsBody(mesh, PhysicsMotionType.STATIC,false, this);
                 body.shape = new PhysicsShapeMesh(mesh,this)
             }
+            // new PhysicsAggregate(root, PhysicsShapeType.BOX, {mass: 0}, this);
         });
     }
 }
