@@ -31,7 +31,7 @@ export class Wall {
 
         // Ajouter un material au mur
         const wallMaterial = new StandardMaterial("", this.scene);
-        wallMaterial.diffuseTexture = new Texture("assets/textures/wall.jpg", this.scene);
+        wallMaterial.diffuseTexture = new Texture("src/assets/textures/mur vignes.png", this.scene);
         this.mesh.material = wallMaterial;
 
 
