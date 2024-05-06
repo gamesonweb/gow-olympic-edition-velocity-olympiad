@@ -1,7 +1,14 @@
 import {ICard} from "../ICard.ts";
 import {RareteCard} from "../RareteCard.ts";
 import {FirstPersonPlayer} from "../../../../BabylonCodes/Character/players/firstPersonPlayer.ts";
-import {Color3, MeshBuilder, PhysicsAggregate, PhysicsShapeType, StandardMaterial} from "@babylonjs/core";
+import {
+    Color3, Color4,
+    MeshBuilder,
+    ParticleSystem,
+    PhysicsAggregate,
+    PhysicsShapeType,
+    StandardMaterial, Texture, Vector3
+} from "@babylonjs/core";
 
 
 export class FlammeCard implements ICard{
@@ -13,35 +20,45 @@ export class FlammeCard implements ICard{
     let camera = FirstPersonPlayer.camera;
     let player = FirstPersonPlayer;
     let card = this;
+    let color1 = Color3.FromInts(249, 115, 0);
+    let color2 = Color3.FromInts(222, 93, 54);
+    let texturepath = "https://raw.githubusercontent.com/oriongunning/t5c/main/public/textures/particle_01.png"
+    let start = camera.position.clone();
+    let end = start.clone();
+    end.z += 100;
+
 
     // Create fireball mesh
     let fireball = MeshBuilder.CreateSphere("fireball", { diameter: 1 }, scene);
     fireball.checkCollisions = true;
-    fireball.position = camera.position.clone(); // Clone the position of the camera
-    let fireballMaterial = new StandardMaterial("fireballMaterial", scene);
-    fireballMaterial.diffuseColor = new Color3(1, 0, 0);
-    fireball.material = fireballMaterial;
+    fireball.position = camera.position.clone();
 
-    // Set velocity and direction
-    let direction = camera.getFrontPosition(2).subtract(camera.position).normalize();
-    let velocity = 0.5;
+    var angle = Math.atan2(start.z - end.z, start.x - end.x);
+    fireball.rotation.y = Math.PI / 2 - angle;
 
-    // Update fireball position
-    scene.onBeforeRenderObservable.add(() => {
-        fireball.position.addInPlace(direction.scale(velocity));
-    });
 
-    // Dispose fireball after reaching certain distance
-    scene.registerBeforeRender(() => {
-        if (fireball.intersectsMesh(player.mesh, false)) {
-            // Fireball hit the player, you might want to add some logic here
-            fireball.dispose();
-        }
-        if (fireball.position.subtract(camera.position).length() > 100) {
-            // Assuming 100 is the maximum distance traveled by fireball
-            fireball.dispose();
-        }
-    });
+
+
+
+    //  add particle system
+    let particleSystem = new ParticleSystem("particles", 2000, scene);
+    particleSystem.particleTexture = new Texture(texturepath, scene);
+    particleSystem.emitter = fireball; // the starting object, the emitter
+    particleSystem.minEmitBox = new Vector3(0, 0, 0); // Starting all from
+    particleSystem.maxEmitBox = new Vector3(0, 0, 0); // To...
+    particleSystem.color1 = Color4.FromColor3(color1);
+    particleSystem.color2 = Color4.FromColor3(color2);
+    particleSystem.colorDead = new Color4(0, 0, 0, 0.0);
+    particleSystem.minSize = 0.1;
+    particleSystem.maxSize = 0.5;
+    particleSystem.minLifeTime = 0.3;
+    particleSystem.maxLifeTime = 1.5;
+    particleSystem.emitRate = 1500;
+
+
+
+
+
 
     }
 

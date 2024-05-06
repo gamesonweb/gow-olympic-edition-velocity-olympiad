@@ -24,17 +24,23 @@ export class Wall {
     }
 
     setup() {
-        this.mesh = MeshBuilder.CreateBox("wall", {width: 10, height: 10, depth: 1}, this.scene);
+
+        const size = 7;
+
+        this.mesh = MeshBuilder.CreateBox("wall", {width: size, height: size, depth: 1}, this.scene);
 
         // detecter les collisions et savoir si une boule fireball touche le mur
         this.mesh.checkCollisions = true;
 
-        // Ajouter un material au mur
+        // Ajouter un material au mur qui es un image qui s'ajuste a la taille du mur
+
         const wallMaterial = new StandardMaterial("", this.scene);
-        wallMaterial.diffuseTexture = new Texture("src/assets/textures/mur vignes.png", this.scene);
+        wallMaterial.diffuseTexture = new Texture("src/assets/textures/wall.jpeg", this.scene);
+
+
         this.mesh.material = wallMaterial;
 
-
+        this.position.y += size / 2;
         // Positionner le mur
         this.mesh.position = this.position;
 

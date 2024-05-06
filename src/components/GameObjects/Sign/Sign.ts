@@ -6,7 +6,7 @@ import {
     Mesh,
     MeshBuilder,
     Scene,
-    StandardMaterial,
+    StandardMaterial, Texture,
     Vector3,
 } from "@babylonjs/core";
 
@@ -78,19 +78,27 @@ export class Sign {
             )
         );
 
+
+
+
+
         console.log("Sign loaded at position: ", this.position.toString());
     }
 
     private createSignMesh(): Mesh {
-        const signMesh = MeshBuilder.CreateBox("signMesh", { width: 1, height: 1, depth: 1 }, this.scene);
-        signMesh.position = this.position;
+        this.signMesh = MeshBuilder.CreatePlane("sign", {width: 1, height: 1}, this.scene);
+        this.signMesh.position = this.position;
 
-        const material = new StandardMaterial("signMaterial", this.scene);
-        material.diffuseColor = new Color3(1, 1, 0);
-        signMesh.material = material;
+        const material = new StandardMaterial("", this.scene);
+        material.diffuseTexture = new Texture("src/assets/textures/sign.jpeg", this.scene);
+        this.signMesh.material = material;
 
-        return signMesh;
+
+        return this.signMesh;
     }
+
+
+
 
     dispose() {
         this.advancedTexture.dispose();
