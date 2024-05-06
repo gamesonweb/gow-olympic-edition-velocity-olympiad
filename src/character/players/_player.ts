@@ -88,7 +88,6 @@ export class Player extends SceneComponent{
         this._speed = speed;
     }
 
-
     public init(): void {
         this._ui.init();
         this._input.init();
@@ -123,7 +122,7 @@ export class Player extends SceneComponent{
 
     private _createPlayerMesh(): void {
         this.mesh = MeshBuilder.CreateBox("player", { size: 2 }, this._scene);
-        this.mesh.position = new Vector3(0, 50, 0);
+        this.mesh.position = new Vector3(0, 15, -80);
         this.mesh.isVisible = true;
         const playerMaterial = new StandardMaterial("playerMaterial", this._scene);
         playerMaterial.diffuseColor = new Color3(0, 0, 1);

@@ -37,7 +37,6 @@ export class LevelSelectorScene extends OlympiadScene {
     public async init(): Promise<void> {
         await super.init();
         this.player.init();
-        this.player.position = new Vector3(0, 100, 0);
         this.enemyManager.init();
         this._buildlevelStatic();
     }
