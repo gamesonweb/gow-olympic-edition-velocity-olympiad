@@ -5,7 +5,7 @@ import {
     StandardMaterial,
     Color3,
     Vector3,
-    PhysicsShapeType, PhysicsAggregate, ActionManager, ExecuteCodeAction
+    PhysicsShapeType, PhysicsAggregate, ActionManager, ExecuteCodeAction, Texture
 } from "@babylonjs/core";
 import {OurScene} from "../../../BabylonCodes/scenes";
 
@@ -24,15 +24,16 @@ export class Wall {
     }
 
     setup() {
-        this.mesh = MeshBuilder.CreateBox("wall", {width: 10, height: 10, depth: 10}, this.scene);
+        this.mesh = MeshBuilder.CreateBox("wall", {width: 10, height: 10, depth: 1}, this.scene);
 
         // detecter les collisions et savoir si une boule fireball touche le mur
         this.mesh.checkCollisions = true;
 
         // Ajouter un material au mur
-        const wallMaterial = new StandardMaterial("wallMaterial", this.scene);
-        wallMaterial.diffuseColor = new Color3(0, 0, 1);
+        const wallMaterial = new StandardMaterial("", this.scene);
+        wallMaterial.diffuseTexture = new Texture("assets/textures/wall.jpg", this.scene);
         this.mesh.material = wallMaterial;
+
 
         // Positionner le mur
         this.mesh.position = this.position;
