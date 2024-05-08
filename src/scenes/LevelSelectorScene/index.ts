@@ -1,29 +1,19 @@
 import {
-    Engine,
-    HavokPlugin,
-    MeshBuilder,
-    PhysicsAggregate,
-    PhysicsShapeType, Material, HemisphericLight, Vector3, Mesh, StandardMaterial, Camera, UniversalCamera,
-    SceneLoader,PhysicsBody,PhysicsShapeMesh,PhysicsMotionType
+    Engine, Vector3, Mesh,
+    SceneLoader, PhysicsBody, PhysicsShapeMesh, PhysicsMotionType, Material
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import {OlympiadScene} from "../OlympiadScene";
 import {WelcomeEnemyManager} from "./enemyManager";
-import * as GUI from "@babylonjs/gui";
-import {Player} from "../../character/players";
-import {Temple} from "../../gameObjects/Temple";
-import {CardSocle} from "../../gameObjects/Card/CardSocle";
-import {FlammeCard} from "../../gameObjects/Card/armes/FlammeCard";
-import {RareteCard} from "../../gameObjects/Card/RareteCard";
-import {ICard} from "../../gameObjects/Card/ICard";
-import * as utils from 'util'
+import {Player, PlayerState} from "../../character/players";
+
 export class LevelSelectorScene extends OlympiadScene {
+    // noinspection JSUnusedGlobalSymbols
     private _meshes: Mesh[] = [];
     private _materials: Material[] = [];
     private readonly enemyManager: WelcomeEnemyManager;
-    private readonly player: Player;
 
-    constructor(engine: Engine, playerState) {
+    constructor(engine: Engine, playerState: PlayerState) {
 
       super(engine);
 
@@ -56,5 +46,11 @@ export class LevelSelectorScene extends OlympiadScene {
             }
             // new PhysicsAggregate(root, PhysicsShapeType.BOX, {mass: 0}, this);
         });
+    }
+
+    public destroy(): void {
+        this._meshes.forEach((mesh) => mesh.dispose());
+        this._materials.forEach((material) => material.dispose());
+        super.destroy();
     }
 }

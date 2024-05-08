@@ -7,13 +7,11 @@ import {
     HemisphericLight,
     UniversalCamera,
     Mesh,
-    KeyboardEventTypes,
-    KeyboardInfo,
     PhysicsAggregate,
     PhysicsShapeType,
     Material,
     Ray,
-    RayHelper, Quaternion, AbstractMesh
+    Quaternion, AbstractMesh
 } from '@babylonjs/core';
 import { PlayerInput } from './inputController';
 import { Hud } from './ui';
@@ -24,12 +22,12 @@ import {State as PlayerState} from "./state";
 import {ICard} from "../../gameObjects/Card/ICard";
 
 export class Player extends SceneComponent{
-    private mesh: Mesh;
+    private mesh!: Mesh;
     private isOnGround: boolean = true;
     private _ui: Hud;
-    private _aggregate: PhysicsAggregate;
-    private _light: HemisphericLight;
-    private _camera: UniversalCamera;
+    private _aggregate!: PhysicsAggregate;
+    private _light!: HemisphericLight;
+    private _camera!: UniversalCamera;
     private _meshes: Mesh[] = [];
     private _materials: Material[] = [];
     private _input: PlayerInput;
@@ -71,18 +69,6 @@ export class Player extends SceneComponent{
 
     get rotation(): Vector3 {
         return this.mesh.rotation;
-    }
-
-    set rotation(rotation: Vector3) {
-        this.mesh.rotation = rotation;
-    }
-
-    get speed(): number {
-        return this._speed;
-    }
-
-    set speed(speed: number) {
-        this._speed = speed;
     }
 
     public init(initialPosition?: Vector3): void {
@@ -140,45 +126,30 @@ export class Player extends SceneComponent{
     }
 
     private _moveForward(): void {
-        if (!this.isOnGround) return;
         let direction = this._getCameraDirection();
         this.rotation.y = Math.atan2(direction.x, direction.z);
         this._aggregate.body.applyImpulse(direction.scale(this._speed), this.position);
     }
 
     private _moveBackward(): void {
-        if (!this.isOnGround) return; // Optional
         let direction = this._getCameraDirection().scale(-1);
         this.rotation.y = Math.atan2(direction.x, direction.z);
         this._aggregate.body.applyImpulse(direction.scale(this._speed), this.position);
     }
 
     private _turnRight(): void {
-        // Vraiment pas sûr de ce que fait cette fonction
         let direction: Vector3 = this._getCameraDirection().cross(Vector3.Down());
-        console.log("isOnGround: ", this.isOnGround)
         this.rotation.y = Math.atan2(direction.x, direction.z);
-        if (!this.isOnGround) {
-            this._targetCamaraRotationY = this.rotation.y;
-        } else {
-            this._aggregate.body.applyImpulse(direction.scale(this._speed), this.position);
-        }
+        this._aggregate.body.applyImpulse(direction.scale(this._speed), this.position);
     }
 
     private _turnLeft(): void {
         let direction: Vector3 = this._getCameraDirection().cross(Vector3.Up());
         this.rotation.y = Math.atan2(direction.x, direction.z);
-        console.log("isOnGround: ", this.isOnGround)
-        if (!this.isOnGround) {
-            this._targetCamaraRotationY = this.rotation.y;
-        } else {
-            this._aggregate.body.applyImpulse(direction.scale(this._speed), this.position);
-        }
-
+        this._aggregate.body.applyImpulse(direction.scale(this._speed), this.position);
     }
 
     private _jump(): void {
-        console.log("jumping: ", this.isOnGround);
         if (!this.isOnGround) return;
         this._aggregate.body.applyImpulse(Vector3.Up().scale(this._jumpForce), this.position);
         this.isOnGround = false;
