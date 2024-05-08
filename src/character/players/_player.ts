@@ -40,8 +40,9 @@ export class Player extends SceneComponent{
     private _cameraAttached: boolean = true;
     private _dashRate: number = 5; // dash speed equals speed * dashRate
     private _initialPosition: Vector3;
-    private _initialGravity: Vector3 = new Vector3(0, -9.81, 0);
-    private _gravityScaleOnJump: number = 2;
+    private _normalGravity: Vector3 = new Vector3(0, -9.81, 0);
+    private _gravityScaleOnFalling: number = 2;
+    private _isFallingGravitySet: boolean = false;
 
     constructor(playerState: PlayerState, scene: Scene){
         super();
@@ -71,14 +72,6 @@ export class Player extends SceneComponent{
 
     get rotation(): Vector3 {
         return this.mesh.rotation;
-    }
-
-    get gravityScaleOnJump(): number {
-        return this._gravityScaleOnJump;
-    }
-
-    set gravityScaleOnJump(value: number) {
-        this._gravityScaleOnJump = value;
     }
 
     public init(initialPosition?: Vector3): void {
@@ -133,7 +126,6 @@ export class Player extends SceneComponent{
         this._aggregate = new PhysicsAggregate(<Mesh>this.mesh, PhysicsShapeType.BOX, { mass: 1, friction: 0.5,
             restitution: 0.1 }, this._scene);
         this._aggregate.body.setCollisionCallbackEnabled(true);
-        this._initialGravity = this._scene.getPhysicsEngine()?.gravity.clone() || this._initialGravity;
     }
 
     private _moveForward(): void {
@@ -163,7 +155,6 @@ export class Player extends SceneComponent{
     private _jump(): void {
         if (!this.isOnGround) return;
         // Intensify the gravity to make the jump more realistic
-        this._scene.getPhysicsEngine()?.setGravity(this._initialGravity.scale(this._gravityScaleOnJump));
         this._aggregate.body.applyImpulse(Vector3.Up().scale(this._jumpForce), this.position);
         this.isOnGround = false;
     }
@@ -220,6 +211,10 @@ export class Player extends SceneComponent{
         }
     }
 
+    private _isPlayerFalling(): boolean {
+        return this._aggregate.body.getLinearVelocity().y < 0; // If velocity along Y-axis is negative, it's falling
+    }
+
     private _callbackBeforeRenderScene(): void {
         if (this._input.jumpKeyDown) {
             this._jump();
@@ -254,9 +249,17 @@ export class Player extends SceneComponent{
             }
         }
 
-        // Update gravity to initial gravity if player is grounded
-        if (this.isOnGround) {
-            this._scene.getPhysicsEngine()?.setGravity(this._initialGravity);
+        // Update gravity to initial gravity if player is grounded and not falling
+        if (!this.isOnGround) {
+            if (this._isPlayerFalling() && !this._isFallingGravitySet) {
+                this._isFallingGravitySet = true;
+                this._scene.getPhysicsEngine()?.setGravity(this._normalGravity.scale(this._gravityScaleOnFalling));
+            }
+        }else {
+            if (this._isFallingGravitySet) {
+                this._isFallingGravitySet = false;
+                this._scene.getPhysicsEngine()?.setGravity(this._normalGravity);
+            }
         }
     }
 
