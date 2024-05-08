@@ -2,8 +2,7 @@
  * OlympiadScene is equivalent to OurScene in the first version of the project.
  */
 
-import {Scene, Engine, SceneOptions, Vector3, HavokPlugin, PhysicsViewer} from '@babylonjs/core';
-import * as GUI from "@babylonjs/gui";
+import {Scene, Engine, SceneOptions, Vector3, HavokPlugin} from '@babylonjs/core';
 import {SceneComponent} from "./SceneComponent";
 import HavokPhysics from "@babylonjs/havok";
 import {Player} from "../character/players";
@@ -14,9 +13,8 @@ export class OlympiadScene extends Scene {
 
     private _sceneComponents: SceneComponent[] = [];
     protected engine: Engine;
-    protected physicsEngine: HavokPlugin;
-    protected readonly player: Player;
-    // protected guiStackPanel: GUI.StackPanel;
+    protected physicsEngine!: HavokPlugin;
+    protected player!: Player;
 
     protected constructor(engine: Engine, options?: SceneOptions) {
         super(engine, options);

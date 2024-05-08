@@ -7,13 +7,11 @@ import {
     HemisphericLight,
     UniversalCamera,
     Mesh,
-    KeyboardEventTypes,
-    KeyboardInfo,
     PhysicsAggregate,
     PhysicsShapeType,
     Material,
     Ray,
-    RayHelper, Quaternion
+    Quaternion, AbstractMesh
 } from '@babylonjs/core';
 import { PlayerInput } from './inputController';
 import { Hud } from './ui';
@@ -24,26 +22,26 @@ import {State as PlayerState} from "./state";
 import {ICard} from "../../gameObjects/Card/ICard";
 
 export class Player extends SceneComponent{
-    private mesh: Mesh;
+    private mesh!: Mesh;
     private isOnGround: boolean = true;
     private _ui: Hud;
-    private _aggregate: PhysicsAggregate;
-    private _light: HemisphericLight;
-    private _camera: UniversalCamera;
+    private _aggregate!: PhysicsAggregate;
+    private _light!: HemisphericLight;
+    private _camera!: UniversalCamera;
     private _meshes: Mesh[] = [];
     private _materials: Material[] = [];
     private _input: PlayerInput;
     private readonly _scene: Scene;
     public readonly playerState: PlayerState;
-    private _frontVector: Vector3;
-    private _rightVector: Vector3;
     private _speed: number = .2;
     private _jumpForce: number = 5;
     private _targetCamaraRotationY: number | null = null;
     private _slerpAmount: number = 0;
     private _cameraAttached: boolean = true;
     private _dashRate: number = 5; // dash speed equals speed * dashRate
-
+    private _initialPosition: Vector3;
+    private _initialGravity: Vector3 = new Vector3(0, -9.81, 0);
+    private _gravityScaleOnJump: number = 2;
 
     constructor(playerState: PlayerState, scene: Scene){
         super();
@@ -52,8 +50,7 @@ export class Player extends SceneComponent{
         this._ui = ui;
         this._input = new PlayerInput(scene, ui);
         this.playerState = playerState;
-        this._frontVector = new Vector3(0, 0, 1);
-        this._rightVector = new Vector3(1, 0, 0);
+        this._initialPosition = Vector3.Zero();
     }
 
     get cardList() {
@@ -76,20 +73,18 @@ export class Player extends SceneComponent{
         return this.mesh.rotation;
     }
 
-    set rotation(rotation: Vector3) {
-        this.mesh.rotation = rotation;
+    get gravityScaleOnJump(): number {
+        return this._gravityScaleOnJump;
     }
 
-    get speed(): number {
-        return this._speed;
+    set gravityScaleOnJump(value: number) {
+        this._gravityScaleOnJump = value;
     }
 
-    set speed(speed: number) {
-        this._speed = speed;
-    }
-
-
-    public init(): void {
+    public init(initialPosition?: Vector3): void {
+        if (initialPosition) {
+            this._initialPosition = initialPosition;
+        }
         this._ui.init();
         this._input.init();
         this._createCamera();
@@ -123,7 +118,7 @@ export class Player extends SceneComponent{
 
     private _createPlayerMesh(): void {
         this.mesh = MeshBuilder.CreateBox("player", { size: 2 }, this._scene);
-        this.mesh.position = new Vector3(0, 50, 0);
+        this.mesh.position = this._initialPosition;
         this.mesh.isVisible = true;
         const playerMaterial = new StandardMaterial("playerMaterial", this._scene);
         playerMaterial.diffuseColor = new Color3(0, 0, 1);
@@ -138,47 +133,37 @@ export class Player extends SceneComponent{
         this._aggregate = new PhysicsAggregate(<Mesh>this.mesh, PhysicsShapeType.BOX, { mass: 1, friction: 0.5,
             restitution: 0.1 }, this._scene);
         this._aggregate.body.setCollisionCallbackEnabled(true);
+        this._initialGravity = this._scene.getPhysicsEngine()?.gravity.clone() || this._initialGravity;
     }
 
     private _moveForward(): void {
-        if (!this.isOnGround) return;
         let direction = this._getCameraDirection();
         this.rotation.y = Math.atan2(direction.x, direction.z);
         this._aggregate.body.applyImpulse(direction.scale(this._speed), this.position);
     }
 
     private _moveBackward(): void {
-        if (!this.isOnGround) return; // Optional
         let direction = this._getCameraDirection().scale(-1);
         this.rotation.y = Math.atan2(direction.x, direction.z);
         this._aggregate.body.applyImpulse(direction.scale(this._speed), this.position);
     }
 
     private _turnRight(): void {
-        // Vraiment pas sûr de ce que fait cette fonction
         let direction: Vector3 = this._getCameraDirection().cross(Vector3.Down());
         this.rotation.y = Math.atan2(direction.x, direction.z);
-        if (!this.isOnGround) {
-            this._targetCamaraRotationY = this.rotation.y;
-        } else {
-            this._aggregate.body.applyImpulse(direction.scale(this._speed), this.position);
-        }
+        this._aggregate.body.applyImpulse(direction.scale(this._speed), this.position);
     }
 
     private _turnLeft(): void {
         let direction: Vector3 = this._getCameraDirection().cross(Vector3.Up());
         this.rotation.y = Math.atan2(direction.x, direction.z);
-        if (!this.isOnGround) {
-            this._targetCamaraRotationY = this.rotation.y;
-        } else {
-            this._aggregate.body.applyImpulse(direction.scale(this._speed), this.position);
-        }
-
+        this._aggregate.body.applyImpulse(direction.scale(this._speed), this.position);
     }
 
     private _jump(): void {
-        console.log("jumping: ", this.isOnGround);
         if (!this.isOnGround) return;
+        // Intensify the gravity to make the jump more realistic
+        this._scene.getPhysicsEngine()?.setGravity(this._initialGravity.scale(this._gravityScaleOnJump));
         this._aggregate.body.applyImpulse(Vector3.Up().scale(this._jumpForce), this.position);
         this.isOnGround = false;
     }
@@ -208,7 +193,7 @@ export class Player extends SceneComponent{
         let ray = new Ray(raycastFloorPos, Vector3.Down(), raycastlen);
 
         //defined which type of meshes should be pickable
-        let predicate = (mesh: Mesh) => {
+        let predicate = (mesh: AbstractMesh) => {
             return mesh.isPickable && mesh.isEnabled() && mesh !== this.mesh;
         };
 
@@ -216,17 +201,19 @@ export class Player extends SceneComponent{
         // let rayHelper = new RayHelper(ray);
         // rayHelper.show(this._scene, new Color3(1, 0, 0)); // Affiche le rayon en rouge
 
+        let pickedPointVector = Vector3.Zero();
         // console.log("pick: ", pick)
         if (pick && pick.hit) { //grounded
-            return <Vector3>pick.pickedPoint;
-        } else { //not grounded
-            return Vector3.Zero();
+            pickedPointVector = <Vector3>pick.pickedPoint;
         }
+        // rayHelper.dispose();
+        return pickedPointVector;
     }
 
     //raycast from the center of the player to check for whether player is grounded
     private  _isGrounded(): void {
-        if (this._floorRaycast({x: 0, y: 1, z: 0}, 2).equals(Vector3.Zero())) {
+        let meshSize: number = this.mesh.getBoundingInfo().boundingBox.extendSize.y;
+        if (this._floorRaycast({x: 0, y: meshSize*0.9, z: 0}, 2).equals(Vector3.Zero())) {
             this.isOnGround = false;
         } else {
             this.isOnGround = true;
@@ -265,6 +252,11 @@ export class Player extends SceneComponent{
                 this._camera.attachControl(this._scene, true);
                 this._cameraAttached = true;
             }
+        }
+
+        // Update gravity to initial gravity if player is grounded
+        if (this.isOnGround) {
+            this._scene.getPhysicsEngine()?.setGravity(this._initialGravity);
         }
     }
 

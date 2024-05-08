@@ -2,7 +2,7 @@ import {
   Engine,
   MeshBuilder,
   PhysicsAggregate,
-  PhysicsShapeType, Material, HemisphericLight, Vector3, Mesh, StandardMaterial, Camera, UniversalCamera
+  PhysicsShapeType, Material, HemisphericLight, Vector3, Mesh, StandardMaterial
 } from "@babylonjs/core";
 import {OlympiadScene} from "../OlympiadScene";
 import {WelcomeEnemyManager} from "./enemyManager";
@@ -29,7 +29,7 @@ export class WelcomeScene extends OlympiadScene {
 
   public async init(): Promise<void> {
     await super.init();
-    this.player.init();
+    this.player!.init();
     this.enemyManager.init();
     this._buildWalls();
     this._createTemple();
@@ -107,7 +107,7 @@ export class WelcomeScene extends OlympiadScene {
   }
 
   public switchToFirstScene() {
-    let firstLevelScene: FirstLevelScene = new FirstLevelScene(this.engine, this.player.playerState);
+    let firstLevelScene: FirstLevelScene = new FirstLevelScene(this.engine, this.player!.playerState);
     this.engine.scenes.push(firstLevelScene);
     firstLevelScene.init().then(() => {
       this.destroy();
