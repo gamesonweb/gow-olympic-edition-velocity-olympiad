@@ -95,6 +95,12 @@ export class Player extends SceneComponent{
         this._ui.activeCard(card);  // Active the card on the UI input later
     }
 
+    private _getfirstCard(): ICard | undefined {
+        if (this.cardList && this.cardList.length > 0) {
+            return this.cardList[0];
+        }
+    }
+
     private _createLight(): void {
         this._light = new HemisphericLight("light", new Vector3(0, 1, 0), this._scene);
     }
@@ -163,6 +169,15 @@ export class Player extends SceneComponent{
         let direction = this._getCameraDirection();
         this._aggregate.body.applyImpulse(direction.scale(this._speed * this._dashRate), this.position);
         this._input.dashing = false;
+    }
+
+    private _castSpell1(): void {
+        // Cast spell 1 of the first card in the card list
+        this._getfirstCard()?.firstSpell(this);
+    }
+    private _castSpell2(): void {
+        // Cast spell 2
+        this._getfirstCard()?.secondSpell();
     }
 
     private _getCameraDirection(): Vector3 {
@@ -235,6 +250,12 @@ export class Player extends SceneComponent{
         }
         if (this._input.dashing) {
             this._dash();
+        }
+        if (this._input.spell1) {
+            this._castSpell1();
+        }
+        if (this._input.spell2) {
+            this._castSpell2();
         }
         this._isGrounded();
         this._updateCameraInfos();
