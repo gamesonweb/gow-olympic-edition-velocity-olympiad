@@ -31,7 +31,7 @@ export class Player extends SceneComponent{
     private _meshes: Mesh[] = [];
     private _materials: Material[] = [];
     private _input: PlayerInput;
-    private readonly _scene: Scene;
+    readonly _scene: Scene;
     public readonly playerState: PlayerState;
     private _speed: number = .2;
     private _jumpForce: number = 5;
