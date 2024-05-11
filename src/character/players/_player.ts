@@ -39,6 +39,7 @@ export class Player extends SceneComponent{
     private _slerpAmount: number = 0;
     private _cameraAttached: boolean = true;
     private _dashRate: number = 5; // dash speed equals speed * dashRate
+    private _dashAvailable: boolean = false;
     private _initialPosition: Vector3;
     private _normalGravity: Vector3 = new Vector3(0, -9.81, 0);
     private _gravityScaleOnFalling: number = 2;
@@ -166,9 +167,12 @@ export class Player extends SceneComponent{
     }
 
     private _dash(): void {
+        if (this.isOnGround) return;
+        if (!this._dashAvailable) return;
         let direction = this._getCameraDirection();
         this._aggregate.body.applyImpulse(direction.scale(this._speed * this._dashRate), this.position);
         this._input.dashing = false;
+        this._dashAvailable = false;
     }
 
     private _castSpell1(): void {
@@ -223,7 +227,9 @@ export class Player extends SceneComponent{
             this.isOnGround = false;
         } else {
             this.isOnGround = true;
+            this._dashAvailable = true;
         }
+
     }
 
     private _isPlayerFalling(): boolean {
