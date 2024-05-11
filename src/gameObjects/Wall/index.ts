@@ -6,14 +6,16 @@ import {
     Vector3,
     PhysicsShapeType, PhysicsAggregate, Texture
 } from "@babylonjs/core";
+import {SceneComponent} from "../../scenes/SceneComponent.ts";
 
-export class Wall {
+export class Wall extends SceneComponent{
     mesh: Mesh;
     private scene: Scene;
     private position: Vector3;
     private aggregate: PhysicsAggregate| null;
 
     constructor(scene: Scene, position: Vector3) {
+        super();
         this.position = position;
         this.scene = scene;
         this.scene.collisionsEnabled = true;
@@ -64,9 +66,12 @@ export class Wall {
     }
 
     // Method to dispose the wall object
-    dispose() {
-        this.mesh.dispose();
+    destroy() {
+        // animation de destruction du mur
 
+
+
+        this.mesh.dispose();
     }
 
 }
