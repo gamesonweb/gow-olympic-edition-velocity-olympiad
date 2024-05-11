@@ -1,10 +1,11 @@
 import {RareteCard} from "./RareteCard.ts";
-import {CardList} from "./CardList.ts";
-import {FirstPersonPlayer} from "../../../BabylonCodes/Character/players/firstPersonPlayer.ts";
+import {Character} from "../../character/interfaces/Character.ts";
+import {Player} from "../../character/players";
+
 
 
 export interface ICard {
-    firstSpell(FirstPersonPlayer : FirstPersonPlayer): void;
+    firstSpell(player:Player): void;
     secondSpell(): void;
     name: string;
     description: string;
