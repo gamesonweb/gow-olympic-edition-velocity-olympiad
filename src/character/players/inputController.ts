@@ -17,6 +17,10 @@ export class PlayerInput {
     public jumpKeyDown: boolean = false;
     public dashing: boolean = false;
 
+    // spell casting
+    public spell1: boolean = false;
+    public spell2: boolean = false;
+
     //Mobile Input trackers
     private _ui: Hud;
     public mobileLeft: boolean;
@@ -44,6 +48,7 @@ export class PlayerInput {
         this._scene.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnKeyUpTrigger, (evt) => {
             this.inputMap[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
         }));
+
 
         //add to the scene an observable that calls updateFromKeyboard before rendering
         this._scene.onBeforeRenderObservable.add(() => {
@@ -102,6 +107,12 @@ export class PlayerInput {
         } else {
             this.jumpKeyDown = false;
         }
+        // First Spell cast (a key)
+        this.spell1 = this.inputMap["a"];
+        // Second Spell cast (e key)
+        this.spell2 = this.inputMap["e"];
+
+
     }
 
     // Mobile controls
