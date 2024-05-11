@@ -6,7 +6,7 @@ import {
     MeshBuilder,
     ParticleSystem, Path3D,
     PhysicsAggregate,
-    PhysicsShapeType,
+    PhysicsShapeType, Scene,
     StandardMaterial, Texture, Vector3
 } from "@babylonjs/core";
 
@@ -15,17 +15,17 @@ import {Player} from "../../../character/players";
 
 export class FlammeCard implements ICard {
 
-    firstSpell(player: Player): void {
+    firstSpell(_scene : Scene, position : Vector3): void {
     let color1 = Color3.FromInts(249, 115, 0);
     let color2 = Color3.FromInts(222, 93, 54);
     let texture = "https://raw.githubusercontent.com/oriongunning/t5c/main/public/textures/particle_01.png";
     let textureParticule = new Texture(texture);
-    let scene = player._scene;
+    let scene = _scene;
 
     let camera = scene.activeCamera;
     if (!camera) return; // Return if there's no active camera
 
-    let start = player.position.clone();
+    let start = position;
     start.y += 1;
 
     // Calculate end position based on camera direction

@@ -173,7 +173,7 @@ export class Player extends SceneComponent{
 
     private _castSpell1(): void {
         // Cast spell 1 of the first card in the card list
-        this._getfirstCard()?.firstSpell(this);
+        this._getfirstCard()?.firstSpell(this._scene, this.position.clone());
     }
     private _castSpell2(): void {
         // Cast spell 2
