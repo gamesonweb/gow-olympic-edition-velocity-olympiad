@@ -15,79 +15,86 @@ import {Player} from "../../../character/players";
 
 export class FlammeCard implements ICard {
 
-    firstSpell(_scene : Scene, position : Vector3): void {
-    let color1 = Color3.FromInts(249, 115, 0);
-    let color2 = Color3.FromInts(222, 93, 54);
-    let texture = "https://raw.githubusercontent.com/oriongunning/t5c/main/public/textures/particle_01.png";
-    let textureParticule = new Texture(texture);
-    let scene = _scene;
+    private _firstSpellCalled: boolean = false;
+    private _secondSpellCalled: boolean = false;
 
-    let camera = scene.activeCamera;
-    if (!camera) return; // Return if there's no active camera
+    public firstSpell(_scene : Scene, position : Vector3): void {
+        if (this._firstSpellCalled) return;
+        this._firstSpellCalled = true;
+        let color1 = Color3.FromInts(249, 115, 0);
+        let color2 = Color3.FromInts(222, 93, 54);
+        let texture = "https://raw.githubusercontent.com/oriongunning/t5c/main/public/textures/particle_01.png";
+        let textureParticule = new Texture(texture);
+        let scene = _scene;
 
-    let start = position;
-    start.y += 1;
+        let camera = scene.activeCamera;
+        if (!camera) return; // Return if there's no active camera
 
-    // Calculate end position based on camera direction
-    let end = camera.getTarget().subtract(camera.position).normalize().scaleInPlace(100).add(camera.position);
+        let start = position;
+        start.y += 1;
 
-    // calculate angle
-    var angle = Math.atan2(start.z - end.z, start.x - end.x);
+        // Calculate end position based on camera direction
+        let end = camera.getTarget().subtract(camera.position).normalize().scaleInPlace(100).add(camera.position);
 
-    // create material
-    var material = new StandardMaterial("player_spell");
-    material.diffuseColor = color1;
-    material.alpha = 0.1;
+        // calculate angle
+        var angle = Math.atan2(start.z - end.z, start.x - end.x);
 
-    // create mesh
-    var projectile = MeshBuilder.CreateSphere("Projectile", {segments: 4, diameter: 0.4}, scene);
-    projectile.material = material;
-    projectile.position = start.clone();
-    projectile.rotation.y = Math.PI / 2 - angle;
+        // create material
+        var material = new StandardMaterial("player_spell");
+        material.diffuseColor = color1;
+        material.alpha = 0.1;
 
-    //particule
-    var particleSystem = new ParticleSystem("particles", 2000, scene);
-    particleSystem.particleTexture = textureParticule;
-    particleSystem.emitter = projectile;
-    particleSystem.minEmitBox = new Vector3(0, 0, 0);
-    particleSystem.maxEmitBox = new Vector3(0, 0, 0);
-    particleSystem.color1 = color1;
-    particleSystem.color2 = color2;
-    particleSystem.colorDead = new Color4(0, 0, 0, 0.0);
-    particleSystem.minSize = 0.1;
-    particleSystem.maxSize = 0.5;
-    particleSystem.minLifeTime = 0.3;
-    particleSystem.maxLifeTime = 1.5;
-    particleSystem.emitRate = 1500;
-    particleSystem.blendMode = ParticleSystem.BLENDMODE_ONEONE;
-    particleSystem.gravity = new Vector3(0, -9.81, 0);
-    particleSystem.direction1 = new Vector3(-7, 8, 3);
-    particleSystem.direction2 = new Vector3(7, 8, -3);
-    particleSystem.minAngularSpeed = 0;
-    particleSystem.maxAngularSpeed = Math.PI;
-    particleSystem.minEmitPower = 1;
-    particleSystem.maxEmitPower = 3;
-    particleSystem.updateSpeed = 0.005;
-    particleSystem.start();
+        // create mesh
+        var projectile = MeshBuilder.CreateSphere("Projectile", {segments: 4, diameter: 0.4}, scene);
+        projectile.material = material;
+        projectile.position = start.clone();
+        projectile.rotation.y = Math.PI / 2 - angle;
 
-    // move
-    var endVector = projectile.calcMovePOV(0, 0, 100).addInPlace(projectile.position);
-    var points = [start, endVector];
-    var path = new Path3D(points);
-    var i = 0;
-    var loop = scene.onBeforeRenderObservable.add(() => {
-        if (i < 1) {
-            projectile.position = path.getPointAt(i);
-            i += 0.001;
-        } else {
-            projectile.dispose();
-            scene.onBeforeRenderObservable.remove(loop);
-        }
-    });
-}
+        //particule
+        var particleSystem = new ParticleSystem("particles", 2000, scene);
+        particleSystem.particleTexture = textureParticule;
+        particleSystem.emitter = projectile;
+        particleSystem.minEmitBox = new Vector3(0, 0, 0);
+        particleSystem.maxEmitBox = new Vector3(0, 0, 0);
+        particleSystem.color1 = color1;
+        particleSystem.color2 = color2;
+        particleSystem.colorDead = new Color4(0, 0, 0, 0.0);
+        particleSystem.minSize = 0.1;
+        particleSystem.maxSize = 0.5;
+        particleSystem.minLifeTime = 0.3;
+        particleSystem.maxLifeTime = 1.5;
+        particleSystem.emitRate = 1500;
+        particleSystem.blendMode = ParticleSystem.BLENDMODE_ONEONE;
+        particleSystem.gravity = new Vector3(0, -9.81, 0);
+        particleSystem.direction1 = new Vector3(-7, 8, 3);
+        particleSystem.direction2 = new Vector3(7, 8, -3);
+        particleSystem.minAngularSpeed = 0;
+        particleSystem.maxAngularSpeed = Math.PI;
+        particleSystem.minEmitPower = 1;
+        particleSystem.maxEmitPower = 3;
+        particleSystem.updateSpeed = 0.005;
+        particleSystem.start();
+
+        // move
+        var endVector = projectile.calcMovePOV(0, 0, 100).addInPlace(projectile.position);
+        var points = [start, endVector];
+        var path = new Path3D(points);
+        var i = 0;
+        var loop = scene.onBeforeRenderObservable.add(() => {
+            if (i < 1) {
+                projectile.position = path.getPointAt(i);
+                i += 0.001;
+            } else {
+                projectile.dispose();
+                scene.onBeforeRenderObservable.remove(loop);
+            }
+        });
+    }
 
 
     secondSpell(): void {
+        if (this._secondSpellCalled) return;
+        this._secondSpellCalled = true;
         console.log('Second spell');
     }
 

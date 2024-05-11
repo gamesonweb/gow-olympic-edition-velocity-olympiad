@@ -92,7 +92,7 @@ export class Player extends SceneComponent{
     public addCardToCart(card: ICard): void {
         this.cardList?.push(card);
         // this._ui.addCardToStackPanel(card)
-        this._ui.addCardsToStackPanel(this.cardList || []);
+        this._ui.updateCardsToStackPanel(this.cardList || []);
         this._ui.activeCard(card);  // Active the card on the UI input later
     }
 
@@ -177,11 +177,17 @@ export class Player extends SceneComponent{
 
     private _castSpell1(): void {
         // Cast spell 1 of the first card in the card list
-        this._getfirstCard()?.firstSpell(this._scene, this.position.clone());
+        if (!this.cardList || this.cardList.length == 0) return;
+        let card: ICard = this.cardList?.shift();
+        card.firstSpell(this._scene, this.position.clone());
+        this._ui.updateCardsToStackPanel(this.cardList || []); // Update the UI
     }
     private _castSpell2(): void {
         // Cast spell 2
-        this._getfirstCard()?.secondSpell();
+        if (!this.cardList || this.cardList.length == 0) return;
+        let card: ICard = this.cardList?.shift();
+        card.secondSpell();
+        this._ui.updateCardsToStackPanel(this.cardList || []); // Update the UI
     }
 
     private _getCameraDirection(): Vector3 {
@@ -261,6 +267,7 @@ export class Player extends SceneComponent{
             this._castSpell1();
         }
         if (this._input.spell2) {
+            this._input.spell2 = false;
             this._castSpell2();
         }
         this._isGrounded();
@@ -288,6 +295,7 @@ export class Player extends SceneComponent{
                 this._scene.getPhysicsEngine()?.setGravity(this._normalGravity);
             }
         }
+        this._input.resetInputMap();
     }
 
     private _updateCameraInfos(): void {
