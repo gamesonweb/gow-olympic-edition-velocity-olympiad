@@ -1,9 +1,10 @@
 import {RareteCard} from "./RareteCard.ts";
+import {Character} from "../../character/interfaces/Character.ts";
 
 
 
 export interface ICard {
-    firstSpell(): void;
+    firstSpell(player:Character): void;
     secondSpell(): void;
     name: string;
     description: string;

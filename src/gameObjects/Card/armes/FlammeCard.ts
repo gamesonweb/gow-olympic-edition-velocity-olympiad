@@ -9,11 +9,13 @@ import {
     PhysicsShapeType,
     StandardMaterial, Texture, Vector3
 } from "@babylonjs/core";
+import {Character} from "../../../character/interfaces/Character.ts";
 
 
 export class FlammeCard implements ICard{
-    firstSpell(): void {
-    //     on va crée une boule de feu avec une trainer de feu qui part du joueur
+    firstSpell(player : Character): void {
+
+        //     on va crée une boule de feu avec une trainer de feu qui part du joueur
 
         console.log('First spell');
     }
