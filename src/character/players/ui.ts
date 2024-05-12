@@ -369,7 +369,6 @@ export class Hud {
                 stackUIImage = "sprites/cardPreview/TorchTextureGold.png";
                 break;
         }
-        console.log(stackUIImage)
         return stackUIImage;
     }
 
@@ -391,14 +390,19 @@ export class Hud {
         this._cardMenuStackPanel.addControl(cardCountText);
         if (cards.length > 0) {
             let activeCardPosition = cards.length - 1;
-
             let card = cards[activeCardPosition];
             this.activeCard(card);
             if (activeCardPosition > 0) {
                 let previousCard = cards[activeCardPosition-1];
                 this.addCardToStackPanel(previousCard, 0);
             }
+        }else {
+            this._activeCardStackPanel.clearControls();
+            this._cardMenuStackPanel.clearControls();
         }
+
+
+
 
     }
 

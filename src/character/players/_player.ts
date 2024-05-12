@@ -181,6 +181,7 @@ export class Player extends SceneComponent implements GameObject{
         // Cast spell 1 of the first card in the card list
 
         let card: ICard = this._getActiveCard() as ICard;
+        if (!card) return;
         card.firstSpell(this._scene, this.position.clone());
         this._ui.updateCardsToStackPanel(this.cardList || []); // Update the UI
     }
@@ -188,6 +189,7 @@ export class Player extends SceneComponent implements GameObject{
         // Cast spell 2
 
         let card: ICard = this._getActiveCard() as ICard;
+        if (!card) return;
         card.secondSpell();
         this._ui.updateCardsToStackPanel(this.cardList || []); // Update the UI
     }
