@@ -20,8 +20,9 @@ import {Nullable} from "@babylonjs/core/types";
 import {PickingInfo} from "@babylonjs/core/Collisions/pickingInfo";
 import {State as PlayerState} from "./state";
 import {ICard} from "../../gameObjects/Card/ICard";
+import {CardSocle} from "../../gameObjects/Card/CardSocle.ts";
 
-export class Player extends SceneComponent{
+export class Player extends SceneComponent implements GameObject{
     private mesh!: Mesh;
     private isOnGround: boolean = true;
     private _ui: Hud;
@@ -44,6 +45,9 @@ export class Player extends SceneComponent{
     private _normalGravity: Vector3 = new Vector3(0, -9.81, 0);
     private _gravityScaleOnFalling: number = 2;
     private _isFallingGravitySet: boolean = false;
+
+    public canActOnCollision: boolean = true;
+    public canDetectCollision: boolean = true;
 
     constructor(playerState: PlayerState, scene: Scene){
         super();
@@ -331,5 +335,17 @@ export class Player extends SceneComponent{
         this._camera.dispose();
         this._meshes.forEach(mesh => mesh.dispose());
         this._materials.forEach(material => material.dispose());
+    }
+
+    public detectCollision(gameObjects: GameObject[]): void {
+        // console.log("Player can detect collision on: ", gameObjects);
+    }
+
+    public onCollisionCallback(gameObject: GameObject): void {
+        console.log("Player collision detected", gameObject);
+        if (gameObject instanceof CardSocle) {
+            console.log("Card collision detected", gameObject);
+            this.addCardToCart(gameObject.card);
+        }
     }
 }

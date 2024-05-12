@@ -48,7 +48,6 @@ export class PlayerInput {
 
         this.inputMap = {};
         this._scene.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnKeyDownTrigger, (evt) => {
-            console.log("evt: ", evt);
             this.inputMap[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
         }));
         this._scene.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnKeyUpTrigger, (evt) => {

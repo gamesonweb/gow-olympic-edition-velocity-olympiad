@@ -10,24 +10,25 @@ import {
 import "@babylonjs/loaders/glTF";
 import {ICard} from "./ICard.ts";
 import {SceneComponent} from "../../scenes/SceneComponent";
+import {Player} from "../../character/players";
 
-export class CardSocle extends SceneComponent {
+export class CardSocle extends SceneComponent implements GameObject{
     position: Vector3;
     scene: Scene;
     engine: Engine;
-    card: ICard;
-    private mesh: Nullable<Mesh>;
+    public card: ICard;
+    private mesh!: Nullable<Mesh>;
     private _meshes: Mesh[] = [];
-    private readonly callbackOnCollision: (...args) => void;
+    public canDetectCollision: boolean = true;
+    public canActOnCollision: boolean = false;
 
 
-    constructor(scene: Scene, card: ICard, position: Vector3, callbackOnCollision: (...args) => void) {
+    constructor(scene: Scene, card: ICard, position: Vector3) {
         super();
         this.scene = scene;
         this.engine = this.scene.getEngine();
         this.card = card;
         this.position = position;
-        this.callbackOnCollision = callbackOnCollision;
         this.init();
     }
 
@@ -69,15 +70,15 @@ export class CardSocle extends SceneComponent {
             // Apply rotation to mesh
             this.mesh.rotationQuaternion = rotationQuaternion;
             // Check for collision with camera
-            if (this.checkCollisionWithCamera()) {
-                // Log collision
-                console.log("Collision occurred!");
-
-                // Remove the mesh from the scene
-                this.mesh.dispose();
-                this.mesh = null; // Mark mesh as disposed
-                this.callbackOnCollision(this.card); // Call the callback function
-            }
+            // if (this.checkCollisionWithCamera()) {
+            //     // Log collision
+            //     console.log("Collision occurred!");
+            //
+            //     // Remove the mesh from the scene
+            //     this.mesh.dispose();
+            //     this.mesh = null; // Mark mesh as disposed
+            //     this.callbackOnCollision(this.card); // Call the callback function
+            // }
         }
     }
 
@@ -86,7 +87,7 @@ export class CardSocle extends SceneComponent {
         // Check if the camera is within 1 unit of the mesh
 
         // console.log("CHECKIN_COLLISION: ", this.mesh!.position.subtract(this.scene.activeCamera!.position).length() < 5)
-
+        if (!this.mesh || !this.scene.activeCamera) return false;
         return this.mesh!.position.subtract(this.scene.activeCamera!.position).length() < 4;
 
 
@@ -98,5 +99,20 @@ export class CardSocle extends SceneComponent {
         });
     }
 
+    public detectCollision(gameObjects: GameObject[]) {
+        for (let gameObject of gameObjects) {
+            if (gameObject.canActOnCollision && gameObject instanceof Player) {
+                if (this.checkCollisionWithCamera()) {
+                    gameObject.onCollisionCallback(this);
+                    this.destroy();
+                    gameObjects.splice(gameObjects.indexOf(this), 1);
+                }
+            }
+        }
+    }
+
+    public onCollisionCallback(gameObject: GameObject) {
+        throw new Error("CardSocle should not have an onCollisionCallback() method: " + gameObject.toString());
+    }
 
 }
