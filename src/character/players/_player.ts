@@ -36,14 +36,14 @@ export class Player extends SceneComponent implements GameObject{
     readonly _scene: Scene;
     public readonly playerState: PlayerState;
     private _speed: number = 1;
-    private _jumpForce: number = 5;
+    private _jumpForce: number = 10;
     private _targetCamaraRotationY: number | null = null;
     private _slerpAmount: number = 0;
     private _cameraAttached: boolean = true;
     private _dashRate: number = 5; // dash speed equals speed * dashRate
     private _dashAvailable: boolean = false;
     private _initialPosition: Vector3;
-    private _normalGravity: Vector3 = new Vector3(0, -9.81, 0);
+    private _normalGravity: Vector3 = new Vector3(0, -6, 0);
     private _gravityScaleOnFalling: number = 2;
     private _isFallingGravitySet: boolean = false;
 
