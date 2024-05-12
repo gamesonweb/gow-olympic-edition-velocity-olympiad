@@ -2,6 +2,7 @@ import {AdvancedDynamicTexture, Button, Control, Grid, Image, Rectangle, StackPa
 import {Effect, ParticleSystem, PostProcess, Scene, Sound} from "@babylonjs/core";
 import {ICard} from "../../gameObjects/Card/ICard";
 import {RareteCard} from "../../gameObjects/Card/RareteCard";
+import {length} from "vite-plugin-wasm";
 
 export class Hud {
     private _scene: Scene;
@@ -389,8 +390,16 @@ export class Hud {
         cardCountText.height = "40px";
         this._cardMenuStackPanel.addControl(cardCountText);
         if (cards.length > 0) {
-            this.addCardToStackPanel(cards[0], 0);
+            let activeCardPosition = cards.length - 1;
+
+            let card = cards[activeCardPosition];
+            this.activeCard(card);
+            if (activeCardPosition > 0) {
+                let previousCard = cards[activeCardPosition-1];
+                this.addCardToStackPanel(previousCard, 0);
+            }
         }
+
     }
 
     public addCardToStackPanel(card: ICard, index = 0): Control {

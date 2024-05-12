@@ -35,7 +35,7 @@ export class Player extends SceneComponent implements GameObject{
     private _input: PlayerInput;
     readonly _scene: Scene;
     public readonly playerState: PlayerState;
-    private _speed: number = .2;
+    private _speed: number = 2;
     private _jumpForce: number = 5;
     private _targetCamaraRotationY: number | null = null;
     private _slerpAmount: number = 0;
@@ -98,13 +98,11 @@ export class Player extends SceneComponent implements GameObject{
         this.cardList?.push(card);
         // this._ui.addCardToStackPanel(card)
         this._ui.updateCardsToStackPanel(this.cardList || []);
-        this._ui.activeCard(card);  // Active the card on the UI input later
     }
 
-    private _getfirstCard(): ICard | undefined {
-        if (this.cardList && this.cardList.length > 0) {
-            return this.cardList[0];
-        }
+    private _getActiveCard(): ICard | null {
+        if (!this.cardList || this.cardList.length == 0) return null;
+        return this.cardList?.pop() || null;
     }
 
     private _createLight(): void {
@@ -116,7 +114,6 @@ export class Player extends SceneComponent implements GameObject{
         this._camera.attachControl(this._scene, true);
         if (this._ui.isMobile) {
             this._camera.touchAngularSensibility = 10000;
-            // this._camera.touchMoveSensibility = 1000;
         }
 
     }
@@ -182,15 +179,15 @@ export class Player extends SceneComponent implements GameObject{
 
     private _castSpell1(): void {
         // Cast spell 1 of the first card in the card list
-        if (!this.cardList || this.cardList.length == 0) return;
-        let card: ICard = this.cardList?.shift();
+
+        let card: ICard = this._getActiveCard() as ICard;
         card.firstSpell(this._scene, this.position.clone());
         this._ui.updateCardsToStackPanel(this.cardList || []); // Update the UI
     }
     private _castSpell2(): void {
         // Cast spell 2
-        if (!this.cardList || this.cardList.length == 0) return;
-        let card: ICard = this.cardList?.shift();
+
+        let card: ICard = this._getActiveCard() as ICard;
         card.secondSpell();
         this._ui.updateCardsToStackPanel(this.cardList || []); // Update the UI
     }
