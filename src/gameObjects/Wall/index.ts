@@ -75,7 +75,6 @@ export class Wall extends SceneComponent implements GameObject {
                 // Continue animation
                 requestAnimationFrame(fadeAnimation);
             } else {
-                // Animation complete, dispose the mesh
                 this.mesh.dispose();
             }
         };

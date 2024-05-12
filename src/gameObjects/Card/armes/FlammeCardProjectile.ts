@@ -41,13 +41,12 @@ export class FlammeCardProjectile extends SceneComponent implements GameObject {
         let color2 = Color3.FromInts(222, 93, 54);
 
         this._material = new StandardMaterial("flammeCardProjectileMaterial", this._scene);
-        this._material.diffuseColor =  color1;
+        this._material.diffuseColor = color1;
         this._material.alpha = 0.1;
 
 
-
         // Calculate end position based on camera direction
-        let camera: Camera = <Camera> this._scene.activeCamera;
+        let camera: Camera = <Camera>this._scene.activeCamera;
         let start = this._position;
         start.y += 1;
 
@@ -92,9 +91,12 @@ export class FlammeCardProjectile extends SceneComponent implements GameObject {
         var points = [start, endVector];
         var path = new Path3D(points);
         var i = 0;
+
         this._loop_observer = this._scene.onBeforeRenderObservable.add(() => {
-            this._mesh.position = path.getPointAt(i);
-            i += 0.001;
+            // Calcule le déplacement en fonction de la vitesse du projectile
+            let newPosition = path.getPointAt(i).subtract(this._mesh.position).normalize()
+            this._mesh.position.addInPlace(newPosition);
+            i += 0.003;
         });
         setTimeout(() => {
             this._isExpired = true;
@@ -118,8 +120,8 @@ export class FlammeCardProjectile extends SceneComponent implements GameObject {
                 if (!this._mesh) break;
                 if (this._mesh.intersectsMesh(gameObject.mesh)) {
                     gameObject.onCollisionCallback(this);
+                    gameObjects.splice(gameObjects.indexOf(gameObject), 1);
                     this.destroy();
-                    gameObjects.splice(gameObjects.indexOf(this), 1);
                 }
             }
         }
