@@ -247,6 +247,9 @@ export class Player extends SceneComponent implements GameObject{
     }
 
     private _callbackBeforeRenderScene(): void {
+        // bloquer la rotation
+        this.mesh.rotation = Vector3.Zero();
+        this._aggregate.body.setAngularVelocity(Vector3.Zero());
         if (this._input.jumpKeyDown) {
             this._jump();
         }
