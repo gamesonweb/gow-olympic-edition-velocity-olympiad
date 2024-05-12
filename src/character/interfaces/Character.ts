@@ -2,7 +2,7 @@
  * Character interface
  */
 
-import {Camera, Mesh, Scene, Vector3} from "@babylonjs/core";
+import {Mesh, Scene, Vector3} from "@babylonjs/core";
 
 export interface Character {
     position: Vector3;

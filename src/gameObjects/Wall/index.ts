@@ -1,29 +1,32 @@
 import {
     Mesh,
     MeshBuilder,
+    PhysicsAggregate,
+    PhysicsShapeType,
     Scene,
     StandardMaterial,
-    Vector3,
-    PhysicsShapeType, PhysicsAggregate, Texture
+    Texture,
+    Vector3
 } from "@babylonjs/core";
 import {SceneComponent} from "../../scenes/SceneComponent.ts";
 import {FlammeCardProjectile} from "../Card/armes/FlammeCardProjectile.ts";
 
-export class Wall extends SceneComponent implements GameObject{
+export class Wall extends SceneComponent implements GameObject {
     mesh!: Mesh;
     private readonly scene: Scene;
     private readonly position: Vector3;
-    private aggregate: PhysicsAggregate| null;
+    private aggregate: PhysicsAggregate | null;
     public canDetectCollision: boolean = false;
     public canActOnCollision: boolean = true;
     public health: number = 100;
+    public actualhealth: number = this.health;
 
     constructor(scene: Scene, position: Vector3) {
         super();
         this.position = position;
         this.scene = scene;
         this.scene.collisionsEnabled = true;
-        this.aggregate= null
+        this.aggregate = null
         this.setup();
     }
 
@@ -49,17 +52,38 @@ export class Wall extends SceneComponent implements GameObject{
         this.mesh.position = this.position;
 
         // ajout d'une physique body au mur
-        const agg =  new PhysicsAggregate(this.mesh, PhysicsShapeType.BOX, {mass: 0}, this.scene);
+        const agg = new PhysicsAggregate(this.mesh, PhysicsShapeType.BOX, {mass: 0}, this.scene);
         this.aggregate = agg;
 
     }
 
     // Method to dispose the wall object
     destroy() {
-        // animation de destruction du mur
+        // Define animation parameters
+        let animationDuration = 1000; // Duration of the fade-out animation in milliseconds
+        let animationFrames = 60; // Number of frames for the animation
+        let opacityStep = 1 / animationFrames; // Amount to reduce opacity per frame
 
-        this.mesh.dispose();
+        // Start the fade-out animation
+        let frame = 0;
+        let fadeAnimation = () => {
+            // Reduce opacity
+            this.mesh.material.alpha -= opacityStep;
+
+            // Check if animation is complete
+            if (++frame < animationFrames) {
+                // Continue animation
+                requestAnimationFrame(fadeAnimation);
+            } else {
+                // Animation complete, dispose the mesh
+                this.mesh.dispose();
+            }
+        };
+
+        // Start the animation
+        fadeAnimation();
     }
+
 
     public detectCollision(gameObjects: GameObject[]): void {
         console.log("For now wall does not detect collision: ", gameObjects);
@@ -67,17 +91,18 @@ export class Wall extends SceneComponent implements GameObject{
 
     public takeDamage(damage: number): void {
         console.log('Wall take damage: ', damage);
-        this.health -= damage;
-        if (this.health <= 0) {
+        this.actualhealth -= damage;
+        if (this.actualhealth <= 0) {
             this.destroy();
         }
     }
 
     public onCollisionCallback(gameObject: GameObject): void {
-       if (gameObject instanceof FlammeCardProjectile) {
-           console.log('Fireball hit the wall');
-           this.takeDamage(50);
-       }
+        if (gameObject instanceof FlammeCardProjectile) {
+            console.log('Fireball hit the wall');
+            this.takeDamage(this.actualhealth);
+            console.log("wall health: ", this.actualhealth);
+        }
     }
 
 }

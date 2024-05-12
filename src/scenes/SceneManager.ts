@@ -4,11 +4,8 @@
  * It also contains the player object.
  */
 
-import {Engine, HavokPlugin, Scene} from "@babylonjs/core";
-import HavokPhysics from "@babylonjs/havok";
+import {Engine} from "@babylonjs/core";
 import {PlayerState} from "../character/players";
-import * as GUI from "@babylonjs/gui";
-import {WelcomeScene} from "../scenes/WelcomeScene";
 
 export class SceneManager {
 
