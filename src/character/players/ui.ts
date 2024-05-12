@@ -352,22 +352,23 @@ export class Hud {
     }
 
     private _getStackUIImageFromRarete(rareteCard: RareteCard): string {
+        console.log(rareteCard)
         let stackUIImage = "sprites/controls.jpeg"
         switch (rareteCard) {
             case RareteCard.COMMON:
-                stackUIImage = "TorchCardGray.glb";
+                stackUIImage = "sprites/cardPreview/TorchTextureGray.png";
                 break;
             case RareteCard.RARE:
-                stackUIImage = "TorchCardBlue.glb"
+                stackUIImage = "sprites/cardPreview/TorchTextureBlue.png"
                 break;
             case RareteCard.EPIC:
-                stackUIImage = "TorchCardPurple.glb";
+                stackUIImage = "sprites/cardPreview/TorchTexturePurple.png";
                 break;
             case RareteCard.LEGENDARY:
-                stackUIImage = "TorchCardGold.glb";
+                stackUIImage = "sprites/cardPreview/TorchTextureGold.png";
                 break;
         }
-        stackUIImage = "sprites/controls.jpeg"
+        console.log(stackUIImage)
         return stackUIImage;
     }
 
@@ -394,7 +395,7 @@ export class Hud {
 
     public addCardToStackPanel(card: ICard, index = 0): Control {
         if (index > 0) { return; }
-        let stackUIImage = this._getStackUIImageFromRarete(RareteCard.COMMON)
+        let stackUIImage = this._getStackUIImageFromRarete(card.rarete);
         let cardImage = new Image("card", stackUIImage);
         let width = "100px";
         let height = "150px";
@@ -423,7 +424,7 @@ export class Hud {
         cardActiveText.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
         cardActiveText.height = "20px";
         this._activeCardStackPanel.addControl(cardActiveText);
-        let stackUIImage = this._getStackUIImageFromRarete(RareteCard.COMMON)
+        let stackUIImage = this._getStackUIImageFromRarete(card.rarete);
         let cardImage = new Image("card", stackUIImage);
         cardImage.width = "200px";
         cardImage.height = "300px";
