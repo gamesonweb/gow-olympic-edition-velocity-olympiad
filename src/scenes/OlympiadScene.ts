@@ -12,6 +12,7 @@ import { Inspector } from '@babylonjs/inspector';
 export class OlympiadScene extends Scene {
 
     private _sceneComponents: SceneComponent[] = [];
+    private _gameObjects: GameObject[] = [];
     protected engine: Engine;
     protected physicsEngine!: HavokPlugin;
     protected player!: Player;
@@ -20,6 +21,13 @@ export class OlympiadScene extends Scene {
         super(engine, options);
         this.engine = engine;
         this._enableDebug();
+        this.onBeforeRenderObservable.add(() => {
+            this._gameObjects.forEach((gameObject) => {
+                if (gameObject.canDetectCollision) {
+                    gameObject.detectCollision(this._gameObjects);
+                }
+            });
+        });
     }
 
     async _createPhysicsEngine() {
@@ -55,6 +63,10 @@ export class OlympiadScene extends Scene {
 
     public addComponent(component: SceneComponent): void {
         this._sceneComponents.push(component);
+    }
+
+    public addGameObject(gameObject: GameObject): void {
+        this._gameObjects.push(gameObject);
     }
 
     private _enableDebug(): void {

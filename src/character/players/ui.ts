@@ -60,6 +60,8 @@ export class Hud {
     private _cardMenuStackPanel: StackPanel;
     private _activeCardStackPanel: StackPanel;
 
+    // keyboard
+    public isAzerty: boolean | null = null;
     constructor(scene: Scene) {
         this._scene = scene;
     }
@@ -68,6 +70,11 @@ export class Hud {
         const playerUI = AdvancedDynamicTexture.CreateFullscreenUI("UI");
         this._playerUI = playerUI;
         this._playerUI.idealHeight = 720;
+        if (this.isAzerty === null) {
+            // load from local storage if available
+            // unless check from language
+            this.isAzerty = navigator.language === "fr-FR";
+        }
 
         const lanternCnt = new TextBlock();
         lanternCnt.name = "Piece count";
@@ -364,7 +371,14 @@ export class Hud {
         return stackUIImage;
     }
 
+    /**
+     * @deprecated This function will be removed in future versions. Use updateCardsStackPanel instead.
+     */
     public addCardsToStackPanel(cards: ICard[]): void {
+        return this.updateCardsToStackPanel(cards);
+    }
+
+    public updateCardsToStackPanel(cards: ICard[]): void {
         this._cardMenuStackPanel.clearControls();
         let cardCountText = new TextBlock("cardCountText", `${cards.length}`);
         cardCountText.color = "black";

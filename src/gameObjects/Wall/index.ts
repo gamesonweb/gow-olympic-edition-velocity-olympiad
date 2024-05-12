@@ -7,12 +7,16 @@ import {
     PhysicsShapeType, PhysicsAggregate, Texture
 } from "@babylonjs/core";
 import {SceneComponent} from "../../scenes/SceneComponent.ts";
+import {FlammeCardProjectile} from "../Card/armes/FlammeCardProjectile.ts";
 
-export class Wall extends SceneComponent{
-    mesh: Mesh;
-    private scene: Scene;
-    private position: Vector3;
+export class Wall extends SceneComponent implements GameObject{
+    mesh!: Mesh;
+    private readonly scene: Scene;
+    private readonly position: Vector3;
     private aggregate: PhysicsAggregate| null;
+    public canDetectCollision: boolean = false;
+    public canActOnCollision: boolean = true;
+    public health: number = 100;
 
     constructor(scene: Scene, position: Vector3) {
         super();
@@ -48,30 +52,32 @@ export class Wall extends SceneComponent{
         const agg =  new PhysicsAggregate(this.mesh, PhysicsShapeType.BOX, {mass: 0}, this.scene);
         this.aggregate = agg;
 
-        // Detect collisions with the fireball
-
-
-        const observable = this.aggregate?.body.getCollisionObservable();
-        if (observable) {
-            const observer = observable.add((collisionEvent) => {
-                    if (collisionEvent.collidedAgainst.transformNode.name.includes("fireball") || collisionEvent.collider.transformNode.name.includes("fireball")) {
-                        console.log('Fireball hit the wall');
-                        this.mesh.dispose();
-                    }
-                    else console.log(collisionEvent.collidedAgainst.transformNode.name);
-                }
-            );
-        }
-
     }
 
     // Method to dispose the wall object
     destroy() {
         // animation de destruction du mur
 
-
-
         this.mesh.dispose();
+    }
+
+    public detectCollision(gameObjects: GameObject[]): void {
+        console.log("For now wall does not detect collision: ", gameObjects);
+    }
+
+    public takeDamage(damage: number): void {
+        console.log('Wall take damage: ', damage);
+        this.health -= damage;
+        if (this.health <= 0) {
+            this.destroy();
+        }
+    }
+
+    public onCollisionCallback(gameObject: GameObject): void {
+       if (gameObject instanceof FlammeCardProjectile) {
+           console.log('Fireball hit the wall');
+           this.takeDamage(50);
+       }
     }
 
 }

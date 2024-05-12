@@ -20,8 +20,9 @@ import {Nullable} from "@babylonjs/core/types";
 import {PickingInfo} from "@babylonjs/core/Collisions/pickingInfo";
 import {State as PlayerState} from "./state";
 import {ICard} from "../../gameObjects/Card/ICard";
+import {CardSocle} from "../../gameObjects/Card/CardSocle.ts";
 
-export class Player extends SceneComponent{
+export class Player extends SceneComponent implements GameObject{
     private mesh!: Mesh;
     private isOnGround: boolean = true;
     private _ui: Hud;
@@ -39,10 +40,14 @@ export class Player extends SceneComponent{
     private _slerpAmount: number = 0;
     private _cameraAttached: boolean = true;
     private _dashRate: number = 5; // dash speed equals speed * dashRate
+    private _dashAvailable: boolean = false;
     private _initialPosition: Vector3;
     private _normalGravity: Vector3 = new Vector3(0, -9.81, 0);
     private _gravityScaleOnFalling: number = 2;
     private _isFallingGravitySet: boolean = false;
+
+    public canActOnCollision: boolean = true;
+    public canDetectCollision: boolean = true;
 
     constructor(playerState: PlayerState, scene: Scene){
         super();
@@ -91,7 +96,7 @@ export class Player extends SceneComponent{
     public addCardToCart(card: ICard): void {
         this.cardList?.push(card);
         // this._ui.addCardToStackPanel(card)
-        this._ui.addCardsToStackPanel(this.cardList || []);
+        this._ui.updateCardsToStackPanel(this.cardList || []);
         this._ui.activeCard(card);  // Active the card on the UI input later
     }
 
@@ -166,18 +171,27 @@ export class Player extends SceneComponent{
     }
 
     private _dash(): void {
+        if (this.isOnGround) return;
+        if (!this._dashAvailable) return;
         let direction = this._getCameraDirection();
         this._aggregate.body.applyImpulse(direction.scale(this._speed * this._dashRate), this.position);
         this._input.dashing = false;
+        this._dashAvailable = false;
     }
 
     private _castSpell1(): void {
         // Cast spell 1 of the first card in the card list
-        this._getfirstCard()?.firstSpell(this._scene, this.position.clone());
+        if (!this.cardList || this.cardList.length == 0) return;
+        let card: ICard = this.cardList?.shift();
+        card.firstSpell(this._scene, this.position.clone());
+        this._ui.updateCardsToStackPanel(this.cardList || []); // Update the UI
     }
     private _castSpell2(): void {
         // Cast spell 2
-        this._getfirstCard()?.secondSpell();
+        if (!this.cardList || this.cardList.length == 0) return;
+        let card: ICard = this.cardList?.shift();
+        card.secondSpell();
+        this._ui.updateCardsToStackPanel(this.cardList || []); // Update the UI
     }
 
     private _getCameraDirection(): Vector3 {
@@ -223,7 +237,9 @@ export class Player extends SceneComponent{
             this.isOnGround = false;
         } else {
             this.isOnGround = true;
+            this._dashAvailable = true;
         }
+
     }
 
     private _isPlayerFalling(): boolean {
@@ -255,6 +271,7 @@ export class Player extends SceneComponent{
             this._castSpell1();
         }
         if (this._input.spell2) {
+            this._input.spell2 = false;
             this._castSpell2();
         }
         this._isGrounded();
@@ -282,6 +299,7 @@ export class Player extends SceneComponent{
                 this._scene.getPhysicsEngine()?.setGravity(this._normalGravity);
             }
         }
+        this._input.resetInputMap();
     }
 
     private _updateCameraInfos(): void {
@@ -317,5 +335,17 @@ export class Player extends SceneComponent{
         this._camera.dispose();
         this._meshes.forEach(mesh => mesh.dispose());
         this._materials.forEach(material => material.dispose());
+    }
+
+    public detectCollision(gameObjects: GameObject[]): void {
+        // console.log("Player can detect collision on: ", gameObjects);
+    }
+
+    public onCollisionCallback(gameObject: GameObject): void {
+        console.log("Player collision detected", gameObject);
+        if (gameObject instanceof CardSocle) {
+            console.log("Card collision detected", gameObject);
+            this.addCardToCart(gameObject.card);
+        }
     }
 }
