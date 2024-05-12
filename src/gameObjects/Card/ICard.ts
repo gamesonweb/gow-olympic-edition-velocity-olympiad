@@ -8,6 +8,7 @@ export interface ICard {
     description: string;
     meshname: any;
     rarete: RareteCard;
+    damage: number;
 
     setup(): void;
 }

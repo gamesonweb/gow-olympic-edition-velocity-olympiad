@@ -1,20 +1,21 @@
 import {
-    Scene,
-    Vector3,
-    MeshBuilder,
-    StandardMaterial,
+    AbstractMesh,
     Color3,
     HemisphericLight,
-    UniversalCamera,
+    Material,
     Mesh,
+    MeshBuilder,
     PhysicsAggregate,
     PhysicsShapeType,
-    Material,
+    Quaternion,
     Ray,
-    Quaternion, AbstractMesh
+    Scene,
+    StandardMaterial,
+    UniversalCamera,
+    Vector3
 } from '@babylonjs/core';
-import { PlayerInput } from './inputController';
-import { Hud } from './ui';
+import {PlayerInput} from './inputController';
+import {Hud} from './ui';
 import {SceneComponent} from "../../scenes/SceneComponent";
 import {Nullable} from "@babylonjs/core/types";
 import {PickingInfo} from "@babylonjs/core/Collisions/pickingInfo";

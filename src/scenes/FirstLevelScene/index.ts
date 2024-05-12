@@ -1,9 +1,4 @@
-import {
-  Engine,
-  MeshBuilder,
-  PhysicsAggregate,
-  PhysicsShapeType, Material, Vector3, Mesh
-} from "@babylonjs/core";
+import {Engine, Material, Mesh, MeshBuilder, PhysicsAggregate, PhysicsShapeType, Vector3} from "@babylonjs/core";
 import {OlympiadScene} from "../OlympiadScene";
 import {WelcomeEnemyManager} from "./enemyManager";
 import {Player, PlayerState} from "../../character/players";

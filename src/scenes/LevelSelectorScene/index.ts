@@ -1,6 +1,12 @@
 import {
-    Engine, Vector3, Mesh,
-    SceneLoader, PhysicsBody, PhysicsShapeMesh, PhysicsMotionType, Material
+    Engine,
+    Material,
+    Mesh,
+    PhysicsBody,
+    PhysicsMotionType,
+    PhysicsShapeMesh,
+    SceneLoader,
+    Vector3
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import {OlympiadScene} from "../OlympiadScene";

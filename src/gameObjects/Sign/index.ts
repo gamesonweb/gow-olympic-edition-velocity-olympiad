@@ -4,7 +4,8 @@ import {
     Mesh,
     MeshBuilder,
     Scene,
-    StandardMaterial, Texture,
+    StandardMaterial,
+    Texture,
     Vector3,
 } from "@babylonjs/core";
 

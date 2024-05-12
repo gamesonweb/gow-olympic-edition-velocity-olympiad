@@ -3,14 +3,18 @@ import {
     Color3,
     Color4,
     Mesh,
-    MeshBuilder, Observer,
-    ParticleSystem, Path3D,
+    MeshBuilder,
+    Observer,
+    ParticleSystem,
+    Path3D,
     Scene,
-    StandardMaterial, Texture,
+    StandardMaterial,
+    Texture,
     Vector3
 } from "@babylonjs/core";
 import {SceneComponent} from "../../../scenes/SceneComponent.ts";
 import {Wall} from "../../Wall";
+import {RareteCard} from "../RareteCard.ts";
 
 export class FlammeCardProjectile extends SceneComponent implements GameObject {
     canActOnCollision: boolean = true;
@@ -21,14 +25,17 @@ export class FlammeCardProjectile extends SceneComponent implements GameObject {
     private _material!: StandardMaterial;
     private _loop_observer!: Observer<Scene>;
     private _isExpired: boolean = false;
+    public damage: number;
+    public rarete: RareteCard;
 
     constructor() {
         super();
     }
 
-    init(scene: Scene, position: Vector3) {
+    init(scene: Scene, position: Vector3, damage: number) {
         this._scene = scene;
         this._position = position;
+        this.damage = damage;
         // Create the mesh
         let color1 = Color3.FromInts(249, 115, 0);
         let color2 = Color3.FromInts(222, 93, 54);

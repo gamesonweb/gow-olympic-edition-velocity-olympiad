@@ -1,5 +1,5 @@
-import { Scene, ActionManager, ExecuteCodeAction, Scalar } from '@babylonjs/core';
-import { Hud } from './ui';
+import {ActionManager, ExecuteCodeAction, Scalar, Scene} from '@babylonjs/core';
+import {Hud} from './ui';
 
 export class PlayerInput {
 
