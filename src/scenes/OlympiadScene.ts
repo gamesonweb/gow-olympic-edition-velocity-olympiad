@@ -2,11 +2,15 @@
  * OlympiadScene is equivalent to OurScene in the first version of the project.
  */
 
-import {Scene, Engine, SceneOptions, Vector3, HavokPlugin} from '@babylonjs/core';
+
+import {Scene, Engine, SceneOptions, Vector3, HavokPlugin,PhysicsViewer} from '@babylonjs/core';
+import * as GUI from "@babylonjs/gui";
 import {SceneComponent} from "./SceneComponent";
 import HavokPhysics from "@babylonjs/havok";
-import {Player} from "../character/players";
+import {PlayerState} from "../character/players/PlayerState";
 import { Inspector } from '@babylonjs/inspector';
+import {FirstPersonPlayer} from "../character/players/FirstPersonPlayer";
+import {Player} from "../character/players";
 
 
 export class OlympiadScene extends Scene {
@@ -61,13 +65,13 @@ export class OlympiadScene extends Scene {
         if (import.meta.env.DEV) {
             console.log("DEV MODE: Scene inspector enabled");
             Inspector.Show(this, {embedMode: true});
-            // this.debugLayer.show();
-            // var viewer = new PhysicsViewer(this);
-            // this.meshes.forEach((mesh) => {
-            //     if (mesh.physicsBody) {
-            //         viewer.showBody(mesh.physicsBody);
-            //     }
-            // });
+            this.debugLayer.show();
+            var viewer = new PhysicsViewer(this);
+            this.meshes.forEach((mesh) => {
+                if (mesh.physicsBody) {
+                    viewer.showBody(mesh.physicsBody);
+                }
+            });
         }
     }
 
