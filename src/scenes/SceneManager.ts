@@ -6,7 +6,7 @@
 
 import {Engine, HavokPlugin, Scene} from "@babylonjs/core";
 import HavokPhysics from "@babylonjs/havok";
-import {PlayerState} from "../character/players/PlayerState";
+import {PlayerState} from "../character/players";
 import * as GUI from "@babylonjs/gui";
 import {WelcomeScene} from "../scenes/WelcomeScene";
 
