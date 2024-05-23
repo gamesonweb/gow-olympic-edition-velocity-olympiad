@@ -168,31 +168,38 @@ export class Player extends SceneComponent implements GameObject{
         this.isOnGround = false;
     }
 
-    private _dash(): void {
+    _dashbyBtn(): void {
         if (this.isOnGround) return;
         if (!this._dashAvailable) return;
-        let direction = this._getCameraDirection();
-        this._aggregate.body.applyImpulse(direction.scale(this._speed * this._dashRate), this.position);
+        this._dash()
         this._input.dashing = false;
         this._dashAvailable = false;
     }
+    _dash(): void {
+        let direction = this._getCameraDirection();
+        this._aggregate.body.applyImpulse(direction.scale(this._speed * this._dashRate), this.position);
+    }
 
-    private _castSpell1(): void {
-        // Cast spell 1 of the first card in the card list
-
+    private _castSpell(n:number): void {
+        let keepCard = true;
         let card: ICard = this._getActiveCard() as ICard;
         if (!card) return;
-        card.firstSpell(this._scene, this.position.clone());
-        this._ui.updateCardsToStackPanel(this.cardList || []); // Update the UI
-    }
-    private _castSpell2(): void {
-        // Cast spell 2
+        if (n == 1) {
+            card.firstSpell(this._scene, this.position.clone());
+            keepCard = false;
+        }
+        if (n == 2) {
+            card.secondSpell(this)
+            if (card.durabilite == 0) {
+                keepCard = false;
+            }
+        }
+        if (!keepCard) {
+            this._ui.updateCardsToStackPanel(this.cardList || []); // Update the UI
+        }
 
-        let card: ICard = this._getActiveCard() as ICard;
-        if (!card) return;
-        card.secondSpell();
-        this._ui.updateCardsToStackPanel(this.cardList || []); // Update the UI
     }
+
 
     private _getCameraDirection(): Vector3 {
         let forwardRay = this._camera.getForwardRay();
@@ -268,14 +275,15 @@ export class Player extends SceneComponent implements GameObject{
             }
         }
         if (this._input.dashing) {
-            this._dash();
+            this._dashbyBtn();
         }
         if (this._input.spell1) {
-            this._castSpell1();
+            this._input.spell1 = false;
+            this._castSpell(1);
         }
         if (this._input.spell2) {
             this._input.spell2 = false;
-            this._castSpell2();
+            this._castSpell(2);
         }
         this._isGrounded();
         this._updateCameraInfos();

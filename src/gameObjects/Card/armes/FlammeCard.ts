@@ -3,11 +3,13 @@ import {RareteCard} from "../RareteCard.ts";
 import {Scene, Vector3} from "@babylonjs/core";
 
 import {FlammeCardProjectile} from "./FlammeCardProjectile.ts";
+import {Player} from "../../../character/players";
 
 export class FlammeCard implements ICard {
 
     public projectile!: FlammeCardProjectile;
-    private damage: number;
+    public damage: number;
+    public durabilite: number;
 
     constructor(rarete: RareteCard) {
         this.rarete = rarete;
@@ -15,18 +17,22 @@ export class FlammeCard implements ICard {
             case RareteCard.COMMON:
                 this.meshname = "TorchCardGray.glb";
                 this.damage = 10;
+                this.durabilite = 1;
                 break;
             case RareteCard.RARE:
                 this.meshname = "TorchCardBlue.glb"
                 this.damage = 20;
+                this.durabilite = 2;
                 break;
             case RareteCard.EPIC:
                 this.meshname = "TorchCardPurple.glb";
                 this.damage = 50;
+                this.durabilite = 3;
                 break;
             case RareteCard.LEGENDARY:
                 this.meshname = "TorchCardGold.glb";
                 this.damage = 100;
+                this.durabilite = 5;
                 break;
         }
         this.projectile = new FlammeCardProjectile();
@@ -36,9 +42,10 @@ export class FlammeCard implements ICard {
         this.projectile.init(_scene, position,this.damage);
     }
 
+    public secondSpell(_player: Player): void {
+        _player._dash()
+        this.durabilite -= 1;
 
-    secondSpell(): void {
-        console.log('Second spell');
     }
 
     name: string = 'Flamme';
