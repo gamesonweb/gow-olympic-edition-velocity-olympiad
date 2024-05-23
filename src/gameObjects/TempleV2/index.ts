@@ -31,6 +31,7 @@ export class TempleV2 extends SceneComponent {
             
             for (let child of childrens){
                 const mesh = child as Mesh;
+                mesh.renderingGroupId = 2;
                 const body = new PhysicsBody(mesh, PhysicsMotionType.STATIC,false, this.scene);
                 body.shape = new PhysicsShapeMesh(mesh,this.scene)
             }

@@ -34,7 +34,7 @@ export class Player extends SceneComponent{
     private readonly _scene: Scene;
     public readonly playerState: PlayerState;
     private _speed: number = .2;
-    private _jumpForce: number = 5;
+    private _jumpForce: number = 20;
     private _targetCamaraRotationY: number | null = null;
     private _slerpAmount: number = 0;
     private _cameraAttached: boolean = true;
@@ -96,16 +96,18 @@ export class Player extends SceneComponent{
     }
 
     private _createLight(): void {
-        this._light = new HemisphericLight("light", new Vector3(0, 1, 0), this._scene);
+        this._light = new HemisphericLight("light", new Vector3(0, 100, 0), this._scene);
     }
 
     private _createCamera(): void {
         this._camera = new UniversalCamera("FPS", new Vector3(0, 2, -10), this._scene);
         this._camera.attachControl(this._scene, true);
+        this._camera.inputs.removeByType("FreeCameraKeyboardMoveInput");
         if (this._ui.isMobile) {
             this._camera.touchAngularSensibility = 10000;
             // this._camera.touchMoveSensibility = 1000;
         }
+        //this._camera.parent = this._aggregate.transformNode;
 
     }
 
@@ -131,25 +133,37 @@ export class Player extends SceneComponent{
     private _moveForward(): void {
         let direction = this._getCameraDirection();
         this.rotation.y = Math.atan2(direction.x, direction.z);
-        this._aggregate.body.applyImpulse(direction.scale(this._speed), this.position);
+        //this._aggregate.body.applyImpulse(direction.scale(this._speed), this.position);
+        /////////////////
+        //this._aggregate.body.setTargetTransform(this.position.add(direction.scale(this._speed)), Quaternion.Identity());
+        //this._aggregate.transformNode.setAbsolutePosition(this.position.add(direction.scale(this._speed)));
+        /////////////////
+        this.mesh.position.addInPlace(direction.scale(this._speed));
+
     }
 
     private _moveBackward(): void {
         let direction = this._getCameraDirection().scale(-1);
         this.rotation.y = Math.atan2(direction.x, direction.z);
-        this._aggregate.body.applyImpulse(direction.scale(this._speed), this.position);
+        //this._aggregate.body.applyImpulse(direction.scale(this._speed), this.position);
+        //this._aggregate.body.setTargetTransform(this.position.add(direction.scale(this._speed)), Quaternion.Identity());
+        //this._aggregate.transformNode.setAbsolutePosition(this.position.add(direction.scale(this._speed)));
     }
 
     private _turnRight(): void {
         let direction: Vector3 = this._getCameraDirection().cross(Vector3.Down());
         this.rotation.y = Math.atan2(direction.x, direction.z);
-        this._aggregate.body.applyImpulse(direction.scale(this._speed), this.position);
+        //this._aggregate.body.applyImpulse(direction.scale(this._speed), this.position);
+        //this._aggregate.body.setTargetTransform(this.position.add(direction.scale(this._speed)), Quaternion.Identity());
+        //this._aggregate.transformNode.setAbsolutePosition(this.position.add(direction.scale(this._speed)));
     }
 
     private _turnLeft(): void {
         let direction: Vector3 = this._getCameraDirection().cross(Vector3.Up());
         this.rotation.y = Math.atan2(direction.x, direction.z);
-        this._aggregate.body.applyImpulse(direction.scale(this._speed), this.position);
+        //this._aggregate.body.applyImpulse(direction.scale(this._speed), this.position);
+        //this._aggregate.body.setTargetTransform(this.position.add(direction.scale(this._speed)), Quaternion.Identity());
+        //this._aggregate.transformNode.setAbsolutePosition(this.position.add(direction.scale(this._speed)));
     }
 
     private _jump(): void {
@@ -264,9 +278,7 @@ export class Player extends SceneComponent{
     }
 
     private _updateCameraInfos(): void {
-        this._camera.position.x = this.position.x;
-        this._camera.position.y = this.position.y + 2;
-        this._camera.position.z = this.position.z;
+        this._camera.position = this.position.clone().add(new Vector3(0, 2, 0));
         if (this._targetCamaraRotationY !== null) {
             // Supposons que targetQuaternion est défini correctement comme montré précédemment
             let targetQuaternion = Quaternion.RotationYawPitchRoll(this._targetCamaraRotationY, 0, 0);

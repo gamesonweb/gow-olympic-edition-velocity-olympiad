@@ -11,6 +11,8 @@ import "@babylonjs/loaders/glTF";
 import {OlympiadScene} from "../OlympiadScene";
 import {WelcomeEnemyManager} from "./enemyManager";
 import {Player, PlayerState} from "../../character/players";
+import { Temple } from "../../gameObjects/Temple";
+import { TempleV2 } from "../../gameObjects/TempleV2";
 
 export class LevelSelectorScene extends OlympiadScene {
     // noinspection JSUnusedGlobalSymbols
@@ -31,9 +33,9 @@ export class LevelSelectorScene extends OlympiadScene {
 
     public async init(): Promise<void> {
         await super.init();
-        this.player.init(new Vector3(0, 25, -80));
+        this.player.init(new Vector3(0, 50, -80));
         this.enemyManager.init();
-        this._buildlevelStatic();
+        await this._buildlevelStatic();
     }
 
     private _buildlevelStatic(): void {
@@ -65,6 +67,13 @@ export class LevelSelectorScene extends OlympiadScene {
         skyboxMaterial.reflectionTexture.coordinatesMode = Texture.SKYBOX_MODE;
         skybox.material = skyboxMaterial;
         skybox.infiniteDistance = true;
+
+        //Adding the end temple
+        
+        const temple = new TempleV2(this, new Vector3(125, 37, 157), new Vector3(0, -110 * (Math.PI / 180.0), 0), new Vector3(1, 1, 1));
+
+
+
     }
 
     public destroy(): void {

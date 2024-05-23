@@ -7,9 +7,7 @@ import {Scene, Engine, SceneOptions, Vector3, HavokPlugin,PhysicsViewer} from '@
 import * as GUI from "@babylonjs/gui";
 import {SceneComponent} from "./SceneComponent";
 import HavokPhysics from "@babylonjs/havok";
-import {PlayerState} from "../character/players/PlayerState";
 import { Inspector } from '@babylonjs/inspector';
-import {FirstPersonPlayer} from "../character/players/FirstPersonPlayer";
 import {Player} from "../character/players";
 
 
