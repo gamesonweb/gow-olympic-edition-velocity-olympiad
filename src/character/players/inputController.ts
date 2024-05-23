@@ -30,6 +30,12 @@ export class PlayerInput {
 
         this._scene = scene;
         this._ui = ui;
+        this.mobileDown = false;
+        this.mobileUp = false;
+        this.mobileRight = false;
+        this.mobileLeft = false;
+        this._mobileJump = false;
+        this._mobileDash = false;
     }
 
     public init(): void {
