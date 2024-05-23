@@ -1,0 +1,21 @@
+name: Deploy Vite.js Project
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Install Dependencies and Build
+        run: |
+          npm install
+          npm run build
+      - name: Run Application
+        run: npm run dev
