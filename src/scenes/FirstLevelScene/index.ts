@@ -46,8 +46,6 @@ export class FirstLevelScene extends OlympiadScene {
     // a 20 au dessus du sol
     levelGround.position.y = 0;
     levelGround.position.z = 0;
-    console.log(levelGround.position.y)
-    console.log(levelGround.position.z)
 
 
     const objetgroundYref = levelGround.position.y + levelgroundheight/2;

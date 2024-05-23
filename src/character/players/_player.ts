@@ -23,7 +23,7 @@ import {State as PlayerState} from "./state";
 import {ICard} from "../../gameObjects/Card/ICard";
 import {CardSocle} from "../../gameObjects/Card/CardSocle.ts";
 
-export class Player extends SceneComponent implements GameObject{
+export class Player extends SceneComponent implements GameObject {
     private mesh!: Mesh;
     private isOnGround: boolean = true;
     private _ui: Hud;
@@ -50,7 +50,7 @@ export class Player extends SceneComponent implements GameObject{
     public canActOnCollision: boolean = true;
     public canDetectCollision: boolean = true;
 
-    constructor(playerState: PlayerState, scene: Scene){
+    constructor(playerState: PlayerState, scene: Scene) {
         super();
         this._scene = scene;
         const ui = new Hud(scene);
@@ -102,7 +102,7 @@ export class Player extends SceneComponent implements GameObject{
 
     private _getActiveCard(): ICard | null {
         if (!this.cardList || this.cardList.length == 0) return null;
-        return this.cardList?.pop() || null;
+        return this.cardList[this.cardList.length - 1];
     }
 
     private _createLight(): void {
@@ -119,7 +119,7 @@ export class Player extends SceneComponent implements GameObject{
     }
 
     private _createPlayerMesh(): void {
-        this.mesh = MeshBuilder.CreateBox("player", { size: 2 }, this._scene);
+        this.mesh = MeshBuilder.CreateBox("player", {size: 2}, this._scene);
         this.mesh.position = this._initialPosition;
         this.mesh.isVisible = true;
         const playerMaterial = new StandardMaterial("playerMaterial", this._scene);
@@ -132,8 +132,10 @@ export class Player extends SceneComponent implements GameObject{
     }
 
     private _setupPhysics(): void {
-        this._aggregate = new PhysicsAggregate(<Mesh>this.mesh, PhysicsShapeType.BOX, { mass: 1, friction: 0.5,
-            restitution: 0.1 }, this._scene);
+        this._aggregate = new PhysicsAggregate(<Mesh>this.mesh, PhysicsShapeType.BOX, {
+            mass: 1, friction: 0.5,
+            restitution: 0.1
+        }, this._scene);
         this._aggregate.body.setCollisionCallbackEnabled(true);
     }
 
@@ -175,12 +177,13 @@ export class Player extends SceneComponent implements GameObject{
         this._input.dashing = false;
         this._dashAvailable = false;
     }
+
     _dash(): void {
         let direction = this._getCameraDirection();
         this._aggregate.body.applyImpulse(direction.scale(this._speed * this._dashRate), this.position);
     }
 
-    private _castSpell(n:number): void {
+    private _castSpell(n: number): void {
         let keepCard = true;
         let card: ICard = this._getActiveCard() as ICard;
         if (!card) return;
@@ -189,14 +192,18 @@ export class Player extends SceneComponent implements GameObject{
             keepCard = false;
         }
         if (n == 2) {
+            console.log("Card durabilite: ", card.durabilite)
             card.secondSpell(this)
+            console.log("Card durabilite afther ", card.durabilite)
             if (card.durabilite == 0) {
                 keepCard = false;
             }
         }
+        console.log("Keep card: ", keepCard)
         if (!keepCard) {
-            this._ui.updateCardsToStackPanel(this.cardList || []); // Update the UI
+            this.cardList?.pop();
         }
+        this._ui.updateCardsToStackPanel(this.cardList || []); // Update the UI
 
     }
 
@@ -211,7 +218,11 @@ export class Player extends SceneComponent implements GameObject{
 
     //--GROUND DETECTION--
     //Send raycast to the floor to detect if there are any hits with meshes below the character
-    private _floorRaycast(offsets: {x: Nullable<number>, y: Nullable<number>, z: Nullable<number>}, raycastlen: number): Vector3 {
+    private _floorRaycast(offsets: {
+        x: Nullable<number>,
+        y: Nullable<number>,
+        z: Nullable<number>
+    }, raycastlen: number): Vector3 {
         //position the raycast from bottom center of mesh
         let offsetx = offsets.x || 0;
         let offsety = offsets.y || 2.1; // La taille du mesh est 2, donc 2 / 2 + un petit delta
@@ -238,9 +249,9 @@ export class Player extends SceneComponent implements GameObject{
     }
 
     //raycast from the center of the player to check for whether player is grounded
-    private  _isGrounded(): void {
+    private _isGrounded(): void {
         let meshSize: number = this.mesh.getBoundingInfo().boundingBox.extendSize.y;
-        if (this._floorRaycast({x: 0, y: meshSize*0.9, z: 0}, 2).equals(Vector3.Zero())) {
+        if (this._floorRaycast({x: 0, y: meshSize * 0.9, z: 0}, 2).equals(Vector3.Zero())) {
             this.isOnGround = false;
         } else {
             this.isOnGround = true;
@@ -304,7 +315,7 @@ export class Player extends SceneComponent implements GameObject{
                 this._isFallingGravitySet = true;
                 this._scene.getPhysicsEngine()?.setGravity(this._normalGravity.scale(this._gravityScaleOnFalling));
             }
-        }else {
+        } else {
             if (this._isFallingGravitySet) {
                 this._isFallingGravitySet = false;
                 this._scene.getPhysicsEngine()?.setGravity(this._normalGravity);
@@ -339,6 +350,7 @@ export class Player extends SceneComponent implements GameObject{
             }
         }
     }
+
     public destroy() {
         this._scene.onKeyboardObservable.clear();
         this._aggregate.dispose();
