@@ -4,6 +4,7 @@ import {FireballDistanceEnemy} from "../../gameObjects/Spell/FireballDistanceEne
 import {SceneComponent} from "../../scenes/SceneComponent.ts";
 import {Player} from "../players";
 import {OlympiadScene} from "../../scenes/OlympiadScene.ts";
+import {FlammeCardProjectile} from "../../gameObjects/Card/armes/FlammeCardProjectile.ts";
 
 export class DistanceEnemy implements Character, GameObject, SceneComponent {
     position: Vector3;
@@ -12,7 +13,7 @@ export class DistanceEnemy implements Character, GameObject, SceneComponent {
     hp: number;
     isFlying: boolean;
     idleAnimation: AnimationGroup | null;
-    canActOnCollision: boolean = false; // Not an actor
+    canActOnCollision: boolean = true; // Can act on collision. Ex: take damage from player
     canDetectCollision: boolean = true; // Can detect object positions to attack them
     private _attackRange = 20;
     private _lastAttackTime: number = 0;
@@ -60,8 +61,11 @@ export class DistanceEnemy implements Character, GameObject, SceneComponent {
 
     takeDamage(amount: number): void {
         this.hp -= amount;
+        console.log("Enemy HP: " + this.hp);
         if (this.hp <= 0) {
-            this.mesh?.dispose();
+            this.destroy();
+            let olympiadScene = <OlympiadScene>this.scene;
+            olympiadScene.gameObjects.splice(olympiadScene.gameObjects.indexOf(this), 1);
         }
     }
 
@@ -97,7 +101,12 @@ export class DistanceEnemy implements Character, GameObject, SceneComponent {
 
 
     public onCollisionCallback(gameObject: GameObject): void {
-        throw new Error("DistanceEnemy should not act itself on collision" + gameObject.toString());
+        console.log("DistantEnemy collision detected:", gameObject);
+
+        if (gameObject instanceof FlammeCardProjectile) {
+            console.log("It is FlammeCardProjectile");
+            this.takeDamage(gameObject.damage);
+        }
     }
 
     public destroy() {

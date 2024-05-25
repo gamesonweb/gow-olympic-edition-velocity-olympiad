@@ -24,6 +24,7 @@ export class WelcomeEnemyManager extends SceneComponent {
         let distanceEnemy = new DistanceEnemy(this.scene, enemyDistancePosition);
         let _scene: OlympiadScene = <OlympiadScene>this.scene;
         _scene.gameObjects.push(distanceEnemy);
+        _scene.sceneComponents.push(distanceEnemy);
         distanceEnemy.init();
     }
 }

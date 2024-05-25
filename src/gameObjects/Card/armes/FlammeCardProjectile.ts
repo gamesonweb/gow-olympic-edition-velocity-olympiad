@@ -14,6 +14,7 @@ import {
 } from "@babylonjs/core";
 import {SceneComponent} from "../../../scenes/SceneComponent.ts";
 import {Wall} from "../../Wall";
+import {DistanceEnemy} from "../../../character/enemy/distance.ts";
 
 export class FlammeCardProjectile extends SceneComponent implements GameObject {
     canActOnCollision: boolean = true;
@@ -121,7 +122,19 @@ export class FlammeCardProjectile extends SceneComponent implements GameObject {
             if (gameObject.canActOnCollision && gameObject instanceof Wall) {
                 if (!this._mesh) break;
                 if (this._mesh.intersectsMesh(gameObject.mesh)) {
-                    gameObject.onCollisionCallback(this);
+                    gameObject.onCollisionCallback(this); // Tell the wall they collided with a fireball
+                    gameObjects.splice(gameObjects.indexOf(this), 1);
+                    this.destroy();
+                }
+            }
+
+            if (gameObject instanceof DistanceEnemy) {
+                if (!this._mesh) break;
+                let distance = Vector3.Distance(this._mesh.position, gameObject.position);
+                console.log("Distance: " + distance)
+                // console.log("FlammeCardProjectile collision with player: " + this._mesh.intersectsMesh(gameObject.mesh))
+                if (distance <= 5 ) {
+                    gameObject.onCollisionCallback(this); // Tell the distance enemy they collided with a fireball
                     gameObjects.splice(gameObjects.indexOf(this), 1);
                     this.destroy();
                 }

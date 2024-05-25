@@ -305,19 +305,12 @@ export class Player extends SceneComponent implements GameObject {
         if (this._ui.gamePaused) {
             this._camera.detachControl();
             this._cameraAttached = false;
-            // Stop rendering the scene
-            this._scene.getEngine().stopRenderLoop();
-            console.log("Rendering stopped");
         } else {
             // Check is camera is detached
             if (!this._cameraAttached) {
                 this._camera.attachControl(this._scene, true);
                 this._cameraAttached = true;
             }
-            // Restart rendering the scene
-            this._scene.getEngine().runRenderLoop(() => {
-                this._scene.render();
-            });
         }
 
         // Update gravity to initial gravity if player is grounded and not falling
@@ -377,7 +370,6 @@ export class Player extends SceneComponent implements GameObject {
     }
 
     public onCollisionCallback(gameObject: GameObject): void {
-        console.log("Player collision detected", gameObject);
         if (gameObject instanceof CardSocle) {
             console.log("Card collision detected", gameObject);
             this.addCardToCart(gameObject.card);
@@ -387,6 +379,7 @@ export class Player extends SceneComponent implements GameObject {
         }
 
         if (gameObject instanceof FireballDistanceEnemy) {
+            console.log("Player collision with FireballDistanceEnemy");
             this.takeDamage(gameObject.damage);
         }
     }

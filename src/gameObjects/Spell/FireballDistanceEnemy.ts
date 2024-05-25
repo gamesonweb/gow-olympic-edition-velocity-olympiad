@@ -25,7 +25,6 @@ export class FireballDistanceEnemy extends SceneComponent implements GameObject 
     private _isExpired: boolean = false;
     public damage!: number;
 
-
     constructor() {
         super();
     }

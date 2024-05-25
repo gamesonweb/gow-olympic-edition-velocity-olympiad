@@ -41,6 +41,7 @@ export class FlammeCard implements ICard {
 
     public firstSpell(_scene : Scene, position : Vector3): void {
         this.projectile.init(_scene, position, this.damage);
+        (<OlympiadScene>_scene).gameObjects.push(this.projectile);
     }
 
     public secondSpell(_scene : Scene, position : Vector3): void {
