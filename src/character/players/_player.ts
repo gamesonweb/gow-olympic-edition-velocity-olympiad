@@ -147,24 +147,28 @@ export class Player extends SceneComponent implements GameObject {
         let direction = this._getCameraDirection();
         this.rotation.y = Math.atan2(direction.x, direction.z);
         this._aggregate.body.applyImpulse(direction.scale(this._speed), this.position);
+        // this.mesh.moveWithCollisions(direction.scale(this._speed));
     }
 
     private _moveBackward(): void {
         let direction = this._getCameraDirection().scale(-1);
         this.rotation.y = Math.atan2(direction.x, direction.z);
         this._aggregate.body.applyImpulse(direction.scale(this._speed), this.position);
+        // this.mesh.moveWithCollisions(direction.scale(this._speed));
     }
 
     private _turnRight(): void {
         let direction: Vector3 = this._getCameraDirection().cross(Vector3.Down());
         this.rotation.y = Math.atan2(direction.x, direction.z);
         this._aggregate.body.applyImpulse(direction.scale(this._speed), this.position);
+        // this.mesh.moveWithCollisions(direction.scale(this._speed));
     }
 
     private _turnLeft(): void {
         let direction: Vector3 = this._getCameraDirection().cross(Vector3.Up());
-        this.rotation.y = Math.atan2(direction.x, direction.z);
+        // this.rotation.y = Math.atan2(direction.x, direction.z);
         this._aggregate.body.applyImpulse(direction.scale(this._speed), this.position);
+        // this.mesh.moveWithCollisions(direction.scale(this._speed));
     }
 
     private _jump(): void {

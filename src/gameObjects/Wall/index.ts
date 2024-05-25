@@ -16,7 +16,7 @@ export class Wall extends SceneComponent implements GameObject {
     public mesh!: Mesh;
     private readonly scene: Scene;
     private readonly position: Vector3;
-    private aggregate: PhysicsAggregate | null;
+    private aggregate!: PhysicsAggregate;
     public canDetectCollision: boolean = false;
     public canActOnCollision: boolean = true;
     public health: number = 100;
@@ -27,7 +27,6 @@ export class Wall extends SceneComponent implements GameObject {
         this.position = position;
         this.scene = scene;
         this.scene.collisionsEnabled = true;
-        this.aggregate = null
         this.setup();
     }
 
@@ -53,10 +52,7 @@ export class Wall extends SceneComponent implements GameObject {
         this.mesh.position = this.position;
 
         // ajout d'une physique body au mur
-        const agg = new PhysicsAggregate(this.mesh, PhysicsShapeType.BOX, {mass: 0}, this.scene);
-        this.aggregate = agg;
-        this.aggregate;
-
+        this.aggregate = new PhysicsAggregate(this.mesh, PhysicsShapeType.BOX, {mass: 0}, this.scene);
     }
 
     // Method to dispose the wall object
@@ -82,6 +78,7 @@ export class Wall extends SceneComponent implements GameObject {
 
         // Start the animation
         fadeAnimation();
+        this.aggregate.dispose();
     }
 
 

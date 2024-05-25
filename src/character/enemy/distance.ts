@@ -1,4 +1,13 @@
-import {AbstractMesh, AnimationGroup, Quaternion, Scene, SceneLoader, Vector3} from "@babylonjs/core";
+import {
+    AbstractMesh,
+    AnimationGroup,
+    Mesh,
+    PhysicsAggregate, PhysicsShapeType,
+    Quaternion,
+    Scene,
+    SceneLoader,
+    Vector3
+} from "@babylonjs/core";
 import {Character} from "../interfaces/Character.ts";
 import {FireballDistanceEnemy} from "../../gameObjects/Spell/FireballDistanceEnemy.ts";
 import {SceneComponent} from "../../scenes/SceneComponent.ts";
@@ -18,6 +27,7 @@ export class DistanceEnemy implements Character, GameObject, SceneComponent {
     private _attackRange = 20;
     private _lastAttackTime: number = 0;
     private _intervalMsBetweenAttacks = 3000;
+    private _aggregate!: PhysicsAggregate;
 
     constructor(scene: Scene, position: Vector3) {
         this.position = position;
@@ -39,7 +49,15 @@ export class DistanceEnemy implements Character, GameObject, SceneComponent {
             this.scene.onBeforeRenderObservable.add(() => {
                 this.rotateMeshTowardsCamera();
             });
+            this._setupPhysics();
+            this.mesh.checkCollisions = true;
         });
+    }
+
+    private _setupPhysics(): void {
+        this._aggregate = new PhysicsAggregate(<Mesh>this.mesh, PhysicsShapeType.BOX,
+            {mass: 0, friction: 0.5, restitution: 0.1 }, this.scene);
+        this._aggregate.body.setCollisionCallbackEnabled(true);
     }
 
     rotateMeshTowardsCamera() {
@@ -111,5 +129,6 @@ export class DistanceEnemy implements Character, GameObject, SceneComponent {
 
     public destroy() {
         this.mesh.dispose();
+        this._aggregate.dispose();
     }
 }
