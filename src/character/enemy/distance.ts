@@ -1,14 +1,33 @@
-import {AnimationGroup, AbstractMesh, Scene, SceneLoader, Vector3} from "@babylonjs/core";
+import {
+    AbstractMesh,
+    AnimationGroup,
+    Mesh,
+    PhysicsAggregate, PhysicsShapeType,
+    Quaternion,
+    Scene,
+    SceneLoader,
+    Vector3
+} from "@babylonjs/core";
 import {Character} from "../interfaces/Character.ts";
-import {fireballDistanceEnemy} from "../../gameObjects/Spell/fireballDistanceEnemy.ts";
+import {FireballDistanceEnemy} from "../../gameObjects/Spell/FireballDistanceEnemy.ts";
+import {SceneComponent} from "../../scenes/SceneComponent.ts";
+import {Player} from "../players";
+import {OlympiadScene} from "../../scenes/OlympiadScene.ts";
+import {FlammeCardProjectile} from "../../gameObjects/Card/armes/FlammeCardProjectile.ts";
 
-export class DistanceEnemy implements Character {
+export class DistanceEnemy implements Character, GameObject, SceneComponent {
     position: Vector3;
     mesh!: AbstractMesh;
     scene: Scene;
     hp: number;
     isFlying: boolean;
     idleAnimation: AnimationGroup | null;
+    canActOnCollision: boolean = true; // Can act on collision. Ex: take damage from player
+    canDetectCollision: boolean = true; // Can detect object positions to attack them
+    private _attackRange = 20;
+    private _lastAttackTime: number = 0;
+    private _intervalMsBetweenAttacks = 3000;
+    private _aggregate!: PhysicsAggregate;
 
     constructor(scene: Scene, position: Vector3) {
         this.position = position;
@@ -27,24 +46,89 @@ export class DistanceEnemy implements Character {
             this.mesh.position = this.position;
             let scale = 2;
             this.mesh.scaling = new Vector3(scale, scale, scale);
+            this.scene.onBeforeRenderObservable.add(() => {
+                this.rotateMeshTowardsCamera();
+            });
+            this._setupPhysics();
+            this.mesh.checkCollisions = true;
         });
+    }
 
-        setInterval(() => {
-            this.attack();
-        }, 10000);
+    private _setupPhysics(): void {
+        this._aggregate = new PhysicsAggregate(<Mesh>this.mesh, PhysicsShapeType.BOX,
+            {mass: 0, friction: 0.5, restitution: 0.1 }, this.scene);
+        this._aggregate.body.setCollisionCallbackEnabled(true);
+    }
+
+    rotateMeshTowardsCamera() {
+        // Ensure camera exists and mesh is loaded
+        if (this.scene.activeCamera && this.mesh) {
+            const cameraPosition = this.scene.activeCamera.position;
+            const meshPosition = this.mesh.position;
+
+            const directionXZ = cameraPosition.subtract(meshPosition);
+            directionXZ.y = 0; // Ignore the Y component
+
+            this.mesh.rotationQuaternion = Quaternion.RotationYawPitchRoll(
+                Math.atan2(directionXZ.x, directionXZ.z),
+                0, // Assuming you don't want any pitch (up and down rotation)
+                0  // Assuming you don't want any roll (sideways rotation)
+            );
+        }
     }
 
     takeDamage(amount: number): void {
         this.hp -= amount;
+        console.log("Enemy HP: " + this.hp);
         if (this.hp <= 0) {
-            this.mesh?.dispose();
+            this.destroy();
+            let olympiadScene = <OlympiadScene>this.scene;
+            olympiadScene.gameObjects.splice(olympiadScene.gameObjects.indexOf(this), 1);
         }
     }
 
-    attack(): void {
-        // Attack the player
-        // make him launch a projectile fireball
-        new fireballDistanceEnemy().init(this.scene, this.position.clone(), 10)
-        console.log(" is attacking the player")
+    public attack(playerPosition: Vector3): void {
+        // Check if the enemy can attack
+        if (this._lastAttackTime + this._intervalMsBetweenAttacks > Date.now()) {
+            return;
+        }
+        // Calculate the direction from the enemy to the player
+        const direction = playerPosition.subtract(this.position.clone()).normalize();
+
+        // Launch the fireball in the direction of the player
+        let fireballEnemy = new FireballDistanceEnemy()
+        fireballEnemy.init(this.scene, this.position.clone(), 10, direction);
+
+        let olympiadScene = <OlympiadScene>this.scene;
+        olympiadScene.gameObjects.push(fireballEnemy);
+
+        this._lastAttackTime = Date.now();
+    }
+
+    public detectCollision(gameObjects: GameObject[]) {
+        gameObjects.forEach((gameObject) => {
+            if (gameObject instanceof Player) {
+                // If the player is at a certain distance, attack
+                let distance = Vector3.Distance(this.position, gameObject.position);
+                if (distance <= this._attackRange) {
+                    this.attack(gameObject.position);
+                }
+            }
+        });
+    }
+
+
+    public onCollisionCallback(gameObject: GameObject): void {
+        console.log("DistantEnemy collision detected:", gameObject);
+
+        if (gameObject instanceof FlammeCardProjectile) {
+            console.log("It is FlammeCardProjectile");
+            this.takeDamage(gameObject.damage);
+        }
+    }
+
+    public destroy() {
+        this.mesh.dispose();
+        this._aggregate.dispose();
     }
 }

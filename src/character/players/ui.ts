@@ -165,8 +165,8 @@ export class Hud {
             this._prevTime = this.time;
 
             //--SOUNDS--
-            this._scene.getSoundByName("gameSong")!.pause();
-            this._pause.play(); //play pause music
+            // this._scene.getSoundByName("gameSong")!.pause();
+            // this._pause.play(); //play pause music
         });
 
         //popup tutorials + hint
@@ -626,13 +626,13 @@ export class Hud {
             this._startTime = new Date().getTime();
 
             //--SOUNDS--
-            this._scene.getSoundByName("gameSong")!.play();
-            this._pause.stop();
+            // this._scene.getSoundByName("gameSong")!.play();
+            // this._pause.stop();
 
-            if(this._sparkWarningSfx.isPaused) {
-                this._sparkWarningSfx.play();
-            }
-            this._sfx.play(); //play transition sound
+            // if(this._sparkWarningSfx.isPaused) {
+            //     this._sparkWarningSfx.play();
+            // }
+            // this._sfx.play(); //play transition sound
         });
 
         const controlsBtn = Button.CreateSimpleButton("controls", "CONTROLS");
