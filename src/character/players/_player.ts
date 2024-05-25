@@ -173,6 +173,7 @@ export class Player extends SceneComponent implements GameObject {
         this.isOnGround = false;
     }
 
+
     _dashbyBtn(): void {
         if (this.isOnGround) return;
         if (!this._dashAvailable) return;
