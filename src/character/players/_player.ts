@@ -1,28 +1,32 @@
 import {
-    Scene,
-    Vector3,
-    MeshBuilder,
-    StandardMaterial,
+    AbstractMesh,
     Color3,
     HemisphericLight,
-    UniversalCamera,
+    Material,
     Mesh,
+    MeshBuilder,
     PhysicsAggregate,
     PhysicsShapeType,
-    Material,
+    Quaternion,
     Ray,
-    Quaternion, AbstractMesh
+    Scene,
+    StandardMaterial,
+    UniversalCamera,
+    Vector3
 } from '@babylonjs/core';
-import { PlayerInput } from './inputController';
-import { Hud } from './ui';
+import {PlayerInput} from './inputController';
+import {Hud} from './ui';
 import {SceneComponent} from "../../scenes/SceneComponent";
 import {Nullable} from "@babylonjs/core/types";
 import {PickingInfo} from "@babylonjs/core/Collisions/pickingInfo";
 import {State as PlayerState} from "./state";
 import {ICard} from "../../gameObjects/Card/ICard";
+import {CardSocle} from "../../gameObjects/Card/CardSocle.ts";
+import {Wall} from "../../gameObjects/Wall";
+import {fireballDistanceEnemy} from "../../gameObjects/Spell/fireballDistanceEnemy.ts";
 
-export class Player extends SceneComponent{
-    private mesh!: Mesh;
+export class Player extends SceneComponent implements GameObject {
+    public mesh!: Mesh;
     private isOnGround: boolean = true;
     private _ui: Hud;
     private _aggregate!: PhysicsAggregate;
@@ -31,21 +35,25 @@ export class Player extends SceneComponent{
     private _meshes: Mesh[] = [];
     private _materials: Material[] = [];
     private _input: PlayerInput;
-    private readonly _scene: Scene;
+    readonly _scene: Scene;
     public readonly playerState: PlayerState;
-    private _speed: number = .2;
-    private _jumpForce: number = 5;
+    private _speed: number = 1;
+    private _jumpForce: number = 10;
     private _targetCamaraRotationY: number | null = null;
     private _slerpAmount: number = 0;
     private _cameraAttached: boolean = true;
     private _dashRate: number = 5; // dash speed equals speed * dashRate
     private _dashAvailable: boolean = false;
     private _initialPosition: Vector3;
-    private _normalGravity: Vector3 = new Vector3(0, -9.81, 0);
+    private _normalGravity: Vector3 = new Vector3(0, -6, 0);
     private _gravityScaleOnFalling: number = 2;
     private _isFallingGravitySet: boolean = false;
+    private hp: number = 100;
 
-    constructor(playerState: PlayerState, scene: Scene){
+    public canActOnCollision: boolean = true;
+    public canDetectCollision: boolean = true;
+
+    constructor(playerState: PlayerState, scene: Scene) {
         super();
         this._scene = scene;
         const ui = new Hud(scene);
@@ -92,8 +100,12 @@ export class Player extends SceneComponent{
     public addCardToCart(card: ICard): void {
         this.cardList?.push(card);
         // this._ui.addCardToStackPanel(card)
-        this._ui.addCardsToStackPanel(this.cardList || []);
-        this._ui.activeCard(card);  // Active the card on the UI input later
+        this._ui.updateCardsToStackPanel(this.cardList || []);
+    }
+
+    private _getActiveCard(): ICard | null {
+        if (!this.cardList || this.cardList.length == 0) return null;
+        return this.cardList[this.cardList.length - 1];
     }
 
     private _createLight(): void {
@@ -105,13 +117,12 @@ export class Player extends SceneComponent{
         this._camera.attachControl(this._scene, true);
         if (this._ui.isMobile) {
             this._camera.touchAngularSensibility = 10000;
-            // this._camera.touchMoveSensibility = 1000;
         }
 
     }
 
     private _createPlayerMesh(): void {
-        this.mesh = MeshBuilder.CreateBox("player", { size: 2 }, this._scene);
+        this.mesh = MeshBuilder.CreateBox("player", {size: 2}, this._scene);
         this.mesh.position = this._initialPosition;
         this.mesh.isVisible = true;
         const playerMaterial = new StandardMaterial("playerMaterial", this._scene);
@@ -124,8 +135,10 @@ export class Player extends SceneComponent{
     }
 
     private _setupPhysics(): void {
-        this._aggregate = new PhysicsAggregate(<Mesh>this.mesh, PhysicsShapeType.BOX, { mass: 1, friction: 0.5,
-            restitution: 0.1 }, this._scene);
+        this._aggregate = new PhysicsAggregate(<Mesh>this.mesh, PhysicsShapeType.BOX, {
+            mass: 1, friction: 0.5,
+            restitution: 0.1
+        }, this._scene);
         this._aggregate.body.setCollisionCallbackEnabled(true);
     }
 
@@ -160,14 +173,44 @@ export class Player extends SceneComponent{
         this.isOnGround = false;
     }
 
-    private _dash(): void {
+
+    _dashbyBtn(): void {
         if (this.isOnGround) return;
         if (!this._dashAvailable) return;
-        let direction = this._getCameraDirection();
-        this._aggregate.body.applyImpulse(direction.scale(this._speed * this._dashRate), this.position);
+        this._dash()
         this._input.dashing = false;
         this._dashAvailable = false;
     }
+
+    _dash(): void {
+        let direction = this._getCameraDirection();
+        this._aggregate.body.applyImpulse(direction.scale(this._speed * this._dashRate), this.position);
+    }
+
+    private _castSpell(n: number): void {
+        let keepCard = true;
+        let card: ICard = this._getActiveCard() as ICard;
+        if (!card) return;
+        if (n == 1) {
+            card.firstSpell(this._scene, this.position.clone());
+            keepCard = false;
+        }
+        if (n == 2) {
+            console.log("Card durabilite: ", card.durabilite)
+            card.secondSpell(this)
+            console.log("Card durabilite afther ", card.durabilite)
+            if (card.durabilite == 0) {
+                keepCard = false;
+            }
+        }
+        console.log("Keep card: ", keepCard)
+        if (!keepCard) {
+            this.cardList?.pop();
+        }
+        this._ui.updateCardsToStackPanel(this.cardList || []); // Update the UI
+
+    }
+
 
     private _getCameraDirection(): Vector3 {
         let forwardRay = this._camera.getForwardRay();
@@ -179,7 +222,11 @@ export class Player extends SceneComponent{
 
     //--GROUND DETECTION--
     //Send raycast to the floor to detect if there are any hits with meshes below the character
-    private _floorRaycast(offsets: {x: Nullable<number>, y: Nullable<number>, z: Nullable<number>}, raycastlen: number): Vector3 {
+    private _floorRaycast(offsets: {
+        x: Nullable<number>,
+        y: Nullable<number>,
+        z: Nullable<number>
+    }, raycastlen: number): Vector3 {
         //position the raycast from bottom center of mesh
         let offsetx = offsets.x || 0;
         let offsety = offsets.y || 2.1; // La taille du mesh est 2, donc 2 / 2 + un petit delta
@@ -206,9 +253,9 @@ export class Player extends SceneComponent{
     }
 
     //raycast from the center of the player to check for whether player is grounded
-    private  _isGrounded(): void {
+    private _isGrounded(): void {
         let meshSize: number = this.mesh.getBoundingInfo().boundingBox.extendSize.y;
-        if (this._floorRaycast({x: 0, y: meshSize*0.9, z: 0}, 2).equals(Vector3.Zero())) {
+        if (this._floorRaycast({x: 0, y: meshSize * 0.9, z: 0}, 2).equals(Vector3.Zero())) {
             this.isOnGround = false;
         } else {
             this.isOnGround = true;
@@ -222,6 +269,9 @@ export class Player extends SceneComponent{
     }
 
     private _callbackBeforeRenderScene(): void {
+        // bloquer la rotation
+        this.mesh.rotation = Vector3.Zero();
+        this._aggregate.body.setAngularVelocity(Vector3.Zero());
         if (this._input.jumpKeyDown) {
             this._jump();
         }
@@ -240,7 +290,15 @@ export class Player extends SceneComponent{
             }
         }
         if (this._input.dashing) {
-            this._dash();
+            this._dashbyBtn();
+        }
+        if (this._input.spell1) {
+            this._input.spell1 = false;
+            this._castSpell(1);
+        }
+        if (this._input.spell2) {
+            this._input.spell2 = false;
+            this._castSpell(2);
         }
         this._isGrounded();
         this._updateCameraInfos();
@@ -261,12 +319,13 @@ export class Player extends SceneComponent{
                 this._isFallingGravitySet = true;
                 this._scene.getPhysicsEngine()?.setGravity(this._normalGravity.scale(this._gravityScaleOnFalling));
             }
-        }else {
+        } else {
             if (this._isFallingGravitySet) {
                 this._isFallingGravitySet = false;
                 this._scene.getPhysicsEngine()?.setGravity(this._normalGravity);
             }
         }
+        this._input.resetInputMap();
     }
 
     private _updateCameraInfos(): void {
@@ -295,6 +354,7 @@ export class Player extends SceneComponent{
             }
         }
     }
+
     public destroy() {
         this._scene.onKeyboardObservable.clear();
         this._aggregate.dispose();
@@ -302,5 +362,38 @@ export class Player extends SceneComponent{
         this._camera.dispose();
         this._meshes.forEach(mesh => mesh.dispose());
         this._materials.forEach(material => material.dispose());
+    }
+
+    public detectCollision(gameObjects: GameObject[]): void {
+        // console.log("Player can detect collision on: ", gameObjects);
+        gameObjects;
+    }
+
+    public onCollisionCallback(gameObject: GameObject): void {
+        console.log("Player collision detected", gameObject);
+        if (gameObject instanceof CardSocle) {
+            console.log("Card collision detected", gameObject);
+            this.addCardToCart(gameObject.card);
+        }
+        if (gameObject instanceof Wall) {
+            console.log("Wall collision detected", gameObject);
+        }
+
+        if (gameObject instanceof fireballDistanceEnemy) {
+            this.takeDamage(gameObject.damage);
+        }
+    }
+
+    private takeDamage(damage: number) {
+        this.hp -= damage;
+        if (this.hp <= 0) {
+            this.dead();
+        }
+        console.log("Player hp: ", this.hp)
+    }
+
+    private dead() {
+        console.log("Player is dead");
+        this.hp = 100;
     }
 }

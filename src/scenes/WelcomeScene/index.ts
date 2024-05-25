@@ -1,13 +1,17 @@
 import {
-  Engine,
-  MeshBuilder,
-  PhysicsAggregate,
-  PhysicsShapeType, Material, HemisphericLight, Vector3, Mesh, StandardMaterial
+    Engine,
+    HemisphericLight,
+    Material,
+    Mesh,
+    MeshBuilder,
+    PhysicsAggregate,
+    PhysicsShapeType,
+    StandardMaterial,
+    Vector3
 } from "@babylonjs/core";
 import {OlympiadScene} from "../OlympiadScene";
 import {WelcomeEnemyManager} from "./enemyManager";
-import {PlayerState} from "../../character/players";
-import {Player} from "../../character/players";
+import {Player, PlayerState} from "../../character/players";
 import {FirstLevelScene} from "../FirstLevelScene";
 import {Temple} from "../../gameObjects/Temple";
 

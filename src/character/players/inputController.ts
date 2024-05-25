@@ -1,5 +1,5 @@
-import { Scene, ActionManager, ExecuteCodeAction, Observer, Scalar } from '@babylonjs/core';
-import { Hud } from './ui';
+import {ActionManager, ExecuteCodeAction, Scalar, Scene} from '@babylonjs/core';
+import {Hud} from './ui';
 
 export class PlayerInput {
 
@@ -17,14 +17,24 @@ export class PlayerInput {
     public jumpKeyDown: boolean = false;
     public dashing: boolean = false;
 
+    // spell casting
+    public spell1: boolean = false;
+    public spell2: boolean = false;
+
     //Mobile Input trackers
     private _ui: Hud;
-    public mobileLeft: boolean;
-    public mobileRight: boolean;
-    public mobileUp: boolean;
-    public mobileDown: boolean;
-    private _mobileJump: boolean;
-    private _mobileDash: boolean;
+    public mobileLeft: boolean = false;
+    public mobileRight: boolean= false;
+    public mobileUp: boolean= false;
+    public mobileDown: boolean= false;
+    private _mobileJump: boolean= false;
+    private _mobileDash: boolean= false;
+
+    //keyboard caracters default to azerty
+    private _keyboardUpCaracter: string = "z";
+    private _keyboardDownCaracter: string = "s"
+    private _keyboardLeftCaracter: string = "q";
+    private _keyboardRightCaracter: string = "d";
 
     constructor(scene: Scene, ui: Hud) {
 
@@ -38,12 +48,12 @@ export class PlayerInput {
 
         this.inputMap = {};
         this._scene.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnKeyDownTrigger, (evt) => {
-            console.log("evt: ", evt);
             this.inputMap[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
         }));
         this._scene.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnKeyUpTrigger, (evt) => {
             this.inputMap[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
         }));
+
 
         //add to the scene an observable that calls updateFromKeyboard before rendering
         this._scene.onBeforeRenderObservable.add(() => {
@@ -54,6 +64,23 @@ export class PlayerInput {
         if (this._ui.isMobile) {
             this._setUpMobile();
         }
+
+        // Set up the keyboard controls
+        this._setKeyboardCaracters();
+    }
+
+    private _setKeyboardCaracters(): void {
+        if (this._ui.isAzerty) {
+            this._keyboardUpCaracter = "z";
+            this._keyboardDownCaracter = "s";
+            this._keyboardLeftCaracter = "q";
+            this._keyboardRightCaracter = "d";
+        } else {
+            this._keyboardUpCaracter = "w";
+            this._keyboardDownCaracter = "s";
+            this._keyboardLeftCaracter = "a";
+            this._keyboardRightCaracter = "d";
+        }
     }
 
     // Keyboard controls & Mobile controls
@@ -61,11 +88,11 @@ export class PlayerInput {
     private _updateFromKeyboard(): void {
 
         //forward - backwards movement
-        if ((this.inputMap["ArrowUp"] || this.inputMap["z"] || this.mobileUp) && !this._ui.gamePaused) {
+        if ((this.inputMap["ArrowUp"] || this.inputMap[this._keyboardUpCaracter] || this.mobileUp) && !this._ui.gamePaused) {
             this.verticalAxis = 1;
             this.vertical = Scalar.Lerp(this.vertical, 1, 0.2);
 
-        } else if ((this.inputMap["ArrowDown"] || this.inputMap["s"] || this.mobileDown) && !this._ui.gamePaused) {
+        } else if ((this.inputMap["ArrowDown"] || this.inputMap[this._keyboardDownCaracter] || this.mobileDown) && !this._ui.gamePaused) {
             this.vertical = Scalar.Lerp(this.vertical, -1, 0.2);
             this.verticalAxis = -1;
         } else {
@@ -74,13 +101,13 @@ export class PlayerInput {
         }
 
         //left - right movement
-        if ((this.inputMap["ArrowLeft"] || this.inputMap["q"] || this.mobileLeft) && !this._ui.gamePaused) {
+        if ((this.inputMap["ArrowLeft"] || this.inputMap[this._keyboardLeftCaracter] || this.mobileLeft) && !this._ui.gamePaused) {
             //lerp will create a scalar linearly interpolated amt between start and end scalar
             //taking current horizontal and how long you hold, will go up to -1(all the way left)
             this.horizontal = Scalar.Lerp(this.horizontal, -1, 0.2);
             this.horizontalAxis = -1;
 
-        } else if ((this.inputMap["ArrowRight"] || this.inputMap["d"] || this.mobileRight) && !this._ui.gamePaused) {
+        } else if ((this.inputMap["ArrowRight"] || this.inputMap[this._keyboardRightCaracter] || this.mobileRight) && !this._ui.gamePaused) {
             this.horizontal = Scalar.Lerp(this.horizontal, 1, 0.2);
             this.horizontalAxis = 1;
         }
@@ -102,6 +129,10 @@ export class PlayerInput {
         } else {
             this.jumpKeyDown = false;
         }
+        // First Spell cast (a key)
+        this.spell1 = !!this.inputMap["a"];
+        // Second Spell cast (e key)
+        this.spell2 = !!this.inputMap["e"];
     }
 
     // Mobile controls
@@ -150,5 +181,9 @@ export class PlayerInput {
         this._ui.downBtn.onPointerUpObservable.add(() => {
             this.mobileDown = false;
         });
+    }
+
+    public resetInputMap(): void {
+        this.inputMap = {};
     }
 }

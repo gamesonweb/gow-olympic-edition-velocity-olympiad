@@ -7,59 +7,61 @@ export class Hud {
     private _scene: Scene;
 
     //Game Timer
-    public time: number; //keep track to signal end game REAL TIME
+    public time!: number; //keep track to signal end game REAL TIME
     private _prevTime: number = 0;
     private _clockTime: TextBlock | null = null; //GAME TIME
-    private _startTime: number;
-    private _stopTimer: boolean;
+    private _startTime!: number;
+    private _stopTimer!: boolean;
     private _sString = "00";
     private _mString = 11;
-    private _lanternCnt: TextBlock;
+    private _lanternCnt!: TextBlock;
 
     //Animated UI sprites
-    private _sparklerLife: Image;
-    private _spark: Image;
+    private _sparklerLife!: Image;
+    private _spark!: Image;
 
     //Timer handlers
-    public stopSpark: boolean;
-    private _handle;
-    private _sparkhandle;
+    public stopSpark!: boolean;
+    private _handle!: NodeJS.Timeout;
+    private _sparkhandle!: NodeJS.Timeout;
 
     //Pause toggle
-    public gamePaused: boolean;
+    public gamePaused!: boolean;
 
     //Quit game
-    public quit: boolean;
+    public quit!: boolean;
     public transition: boolean = false;
 
     //UI Elements
-    public pauseBtn: Button;
-    public fadeLevel: number;
-    private _playerUI;
-    private _pauseMenu;
-    private _controls;
-    public tutorial;
-    public hint;
+    public pauseBtn!: Button;
+    public fadeLevel!: number;
+    private _playerUI!: AdvancedDynamicTexture;
+    private _pauseMenu!: Rectangle;
+    private _controls!: Rectangle;
+    public tutorial!: Rectangle;
+    public hint!: Rectangle;
 
     //Mobile
-    public isMobile: boolean;
-    public jumpBtn: Button;
-    public dashBtn: Button;
-    public leftBtn: Button;
-    public rightBtn: Button;
-    public upBtn: Button;
-    public downBtn: Button;
+    public isMobile!: boolean;
+    public jumpBtn!: Button;
+    public dashBtn!: Button;
+    public leftBtn!: Button;
+    public rightBtn!: Button;
+    public upBtn!: Button;
+    public downBtn!: Button;
 
     //Sounds
-    public quitSfx: Sound;
-    private _sfx: Sound;
-    private _pause: Sound;
-    private _sparkWarningSfx: Sound;
+    public quitSfx!: Sound;
+    private _sfx!: Sound;
+    private _pause!: Sound;
+    private _sparkWarningSfx!: Sound;
 
     //ICard Menu
-    private _cardMenuStackPanel: StackPanel;
-    private _activeCardStackPanel: StackPanel;
+    private _cardMenuStackPanel!: StackPanel;
+    private _activeCardStackPanel!: StackPanel;
 
+    // keyboard
+    public isAzerty: boolean | null = null;
     constructor(scene: Scene) {
         this._scene = scene;
     }
@@ -68,6 +70,11 @@ export class Hud {
         const playerUI = AdvancedDynamicTexture.CreateFullscreenUI("UI");
         this._playerUI = playerUI;
         this._playerUI.idealHeight = 720;
+        if (this.isAzerty === null) {
+            // load from local storage if available
+            // unless check from language
+            this.isAzerty = navigator.language === "fr-FR";
+        }
 
         const lanternCnt = new TextBlock();
         lanternCnt.name = "Piece count";
@@ -345,26 +352,33 @@ export class Hud {
     }
 
     private _getStackUIImageFromRarete(rareteCard: RareteCard): string {
+        console.log(rareteCard)
         let stackUIImage = "sprites/controls.jpeg"
         switch (rareteCard) {
             case RareteCard.COMMON:
-                stackUIImage = "TorchCardGray.glb";
+                stackUIImage = "sprites/cardPreview/TorchTextureGray.png";
                 break;
             case RareteCard.RARE:
-                stackUIImage = "TorchCardBlue.glb"
+                stackUIImage = "sprites/cardPreview/TorchTextureBlue.png"
                 break;
             case RareteCard.EPIC:
-                stackUIImage = "TorchCardPurple.glb";
+                stackUIImage = "sprites/cardPreview/TorchTexturePurple.png";
                 break;
             case RareteCard.LEGENDARY:
-                stackUIImage = "TorchCardGold.glb";
+                stackUIImage = "sprites/cardPreview/TorchTextureGold.png";
                 break;
         }
-        stackUIImage = "sprites/controls.jpeg"
         return stackUIImage;
     }
 
+    /**
+     * @deprecated This function will be removed in future versions. Use updateCardsStackPanel instead.
+     */
     public addCardsToStackPanel(cards: ICard[]): void {
+        return this.updateCardsToStackPanel(cards);
+    }
+
+    public updateCardsToStackPanel(cards: ICard[]): void {
         this._cardMenuStackPanel.clearControls();
         let cardCountText = new TextBlock("cardCountText", `${cards.length}`);
         cardCountText.color = "black";
@@ -374,13 +388,26 @@ export class Hud {
         cardCountText.height = "40px";
         this._cardMenuStackPanel.addControl(cardCountText);
         if (cards.length > 0) {
-            this.addCardToStackPanel(cards[0], 0);
+            let activeCardPosition = cards.length - 1;
+            let card = cards[activeCardPosition];
+            this.activeCard(card);
+            if (activeCardPosition > 0) {
+                let previousCard = cards[activeCardPosition-1];
+                this.addCardToStackPanel(previousCard, 0);
+            }
+        }else {
+            this._activeCardStackPanel.clearControls();
+            this._cardMenuStackPanel.clearControls();
         }
+
+
+
+
     }
 
-    public addCardToStackPanel(card: ICard, index = 0): Control {
+    public addCardToStackPanel(card: ICard, index = 0): Control | undefined {
         if (index > 0) { return; }
-        let stackUIImage = this._getStackUIImageFromRarete(RareteCard.COMMON)
+        let stackUIImage = this._getStackUIImageFromRarete(card.rarete);
         let cardImage = new Image("card", stackUIImage);
         let width = "100px";
         let height = "150px";
@@ -409,7 +436,7 @@ export class Hud {
         cardActiveText.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
         cardActiveText.height = "20px";
         this._activeCardStackPanel.addControl(cardActiveText);
-        let stackUIImage = this._getStackUIImageFromRarete(RareteCard.COMMON)
+        let stackUIImage = this._getStackUIImageFromRarete(card.rarete);
         let cardImage = new Image("card", stackUIImage);
         cardImage.width = "200px";
         cardImage.height = "300px";
@@ -439,7 +466,7 @@ export class Hud {
     private _disablePointerLockOnPause(): void {
         const canvas: HTMLCanvasElement = <HTMLCanvasElement> this._scene.getEngine().getRenderingCanvas();
         if (this.gamePaused) {
-            canvas.requestPointerLock = null;
+            canvas.requestPointerLock = () => { };
             this.stopTimer();
         } else {
             if (document.pointerLockElement !== canvas) {

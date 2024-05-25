@@ -1,7 +1,12 @@
 // vite.config.ts
-import { defineConfig } from "file:///C:/Users/HP/Documents/Jeff/M1_MIAGE/Semestre%202/Game%20on%20Web/Velocity-Olympiad/node_modules/vite/dist/node/index.js";
-import wasm from "file:///C:/Users/HP/Documents/Jeff/M1_MIAGE/Semestre%202/Game%20on%20Web/Velocity-Olympiad/node_modules/vite-plugin-wasm/exports/import.mjs";
-import vue from "file:///C:/Users/HP/Documents/Jeff/M1_MIAGE/Semestre%202/Game%20on%20Web/Velocity-Olympiad/node_modules/@vitejs/plugin-vue/dist/index.mjs";
+import {
+    defineConfig
+} from "file:///C:/Users/HP/Documents/Jeff/M1_MIAGE/Semestre%202/Game%20on%20Web/Velocity-Olympiad/node_modules/vite/dist/node/index.js";
+import wasm
+    from "file:///C:/Users/HP/Documents/Jeff/M1_MIAGE/Semestre%202/Game%20on%20Web/Velocity-Olympiad/node_modules/vite-plugin-wasm/exports/import.mjs";
+import vue
+    from "file:///C:/Users/HP/Documents/Jeff/M1_MIAGE/Semestre%202/Game%20on%20Web/Velocity-Olympiad/node_modules/@vitejs/plugin-vue/dist/index.mjs";
+
 var vite_config_default = defineConfig({
   plugins: [
     wasm(),
