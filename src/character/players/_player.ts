@@ -26,7 +26,7 @@ import {Wall} from "../../gameObjects/Wall";
 import {fireballDistanceEnemy} from "../../gameObjects/Spell/fireballDistanceEnemy.ts";
 
 export class Player extends SceneComponent implements GameObject {
-    private mesh!: Mesh;
+    public mesh!: Mesh;
     private isOnGround: boolean = true;
     private _ui: Hud;
     private _aggregate!: PhysicsAggregate;
@@ -365,7 +365,7 @@ export class Player extends SceneComponent implements GameObject {
 
     public detectCollision(gameObjects: GameObject[]): void {
         // console.log("Player can detect collision on: ", gameObjects);
-        return;
+        gameObjects;
     }
 
     public onCollisionCallback(gameObject: GameObject): void {

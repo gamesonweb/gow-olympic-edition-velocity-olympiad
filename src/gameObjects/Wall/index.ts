@@ -12,7 +12,7 @@ import {SceneComponent} from "../../scenes/SceneComponent.ts";
 import {FlammeCardProjectile} from "../Card/armes/FlammeCardProjectile.ts";
 
 export class Wall extends SceneComponent implements GameObject {
-    mesh!: Mesh;
+    public mesh!: Mesh;
     private readonly scene: Scene;
     private readonly position: Vector3;
     private aggregate: PhysicsAggregate | null;
@@ -54,13 +54,13 @@ export class Wall extends SceneComponent implements GameObject {
         // ajout d'une physique body au mur
         const agg = new PhysicsAggregate(this.mesh, PhysicsShapeType.BOX, {mass: 0}, this.scene);
         this.aggregate = agg;
+        this.aggregate;
 
     }
 
     // Method to dispose the wall object
     destroy() {
         // Define animation parameters
-        let animationDuration = 1000; // Duration of the fade-out animation in milliseconds
         let animationFrames = 60; // Number of frames for the animation
         let opacityStep = 1 / animationFrames; // Amount to reduce opacity per frame
 
@@ -68,7 +68,7 @@ export class Wall extends SceneComponent implements GameObject {
         let frame = 0;
         let fadeAnimation = () => {
             // Reduce opacity
-            this.mesh.material.alpha -= opacityStep;
+            this.mesh.material!.alpha -= opacityStep;
 
             // Check if animation is complete
             if (++frame < animationFrames) {

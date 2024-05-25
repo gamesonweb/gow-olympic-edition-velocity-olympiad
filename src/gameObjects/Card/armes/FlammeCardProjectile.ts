@@ -1,5 +1,5 @@
 import {
-    Camera,
+    UniversalCamera,
     Color3,
     Color4,
     Mesh,
@@ -24,7 +24,7 @@ export class FlammeCardProjectile extends SceneComponent implements GameObject {
     private _material!: StandardMaterial;
     private _loop_observer!: Observer<Scene>;
     private _isExpired: boolean = false;
-    public damage: number;
+    public damage!: number;
 
     constructor() {
         super();
@@ -44,7 +44,7 @@ export class FlammeCardProjectile extends SceneComponent implements GameObject {
 
 
         // Calculate end position based on camera direction
-        let camera: Camera = <Camera>this._scene.activeCamera;
+        let camera: UniversalCamera = <UniversalCamera>this._scene.activeCamera;
         let start = this._position;
         start.y += 1;
 
