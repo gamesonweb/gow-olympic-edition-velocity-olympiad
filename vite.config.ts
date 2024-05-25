@@ -16,4 +16,8 @@ export default defineConfig({
   optimizeDeps: {
       exclude: ['@babylonjs/havok'],
   },
+    build: {
+        outDir: 'dist',
+        emptyOutDir: true,
+    },
 })
