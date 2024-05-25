@@ -6,7 +6,6 @@ import {
     MeshBuilder,
     Observer,
     ParticleSystem,
-    Path3D,
     Scene,
     StandardMaterial,
     Texture,
@@ -20,7 +19,6 @@ export class FlammeCardProjectile extends SceneComponent implements GameObject {
     canActOnCollision: boolean = true;
     canDetectCollision: boolean = true;
     private _scene!: Scene;
-    private _position!: Vector3;
     private _mesh!: Mesh;
     private _material!: StandardMaterial;
     private _loop_observer!: Observer<Scene>;
@@ -33,7 +31,6 @@ export class FlammeCardProjectile extends SceneComponent implements GameObject {
 
     init(scene: Scene, position: Vector3, damage: number) {
         this._scene = scene;
-        this._position = position;
         this.damage = damage;
         // Create the mesh
         let color1 = Color3.FromInts(249, 115, 0);
@@ -44,21 +41,9 @@ export class FlammeCardProjectile extends SceneComponent implements GameObject {
         this._material.alpha = 0.1;
 
 
-        // Calculate end position based on camera direction
-        let camera: UniversalCamera = <UniversalCamera>this._scene.activeCamera;
-        let start = this._position;
-        start.y += 1;
-
-        // Calculate end position based on camera direction
-        let end = camera.getTarget().subtract(camera.position).normalize().scaleInPlace(100).add(camera.position);
-        var angle = Math.atan2(start.z - end.z, start.x - end.x);
-
-
         this._mesh = MeshBuilder.CreateSphere("flammeCardProjectile", {diameter: 0.4}, this._scene);
-        this._mesh.position = this._position;
+        this._mesh.position = position;
         this._mesh.material = this._material;
-        this._mesh.position = start.clone();
-        this._mesh.rotation.y = Math.PI / 2 - angle;
 
         let texture = "https://raw.githubusercontent.com/oriongunning/t5c/main/public/textures/particle_01.png";
         let textureParticule = new Texture(texture);
@@ -86,21 +71,15 @@ export class FlammeCardProjectile extends SceneComponent implements GameObject {
         particleSystem.updateSpeed = 0.005;
         particleSystem.start();
 
-        var endVector = this._mesh.calcMovePOV(0, 0, 100).addInPlace(this._mesh.position);
-        var points = [start, endVector];
-        var path = new Path3D(points);
-        var i = 0;
+        // Get direction of the camera
+        let camera = <UniversalCamera>this._scene.activeCamera;
+        let direction = camera.getForwardRay().direction;
 
         this._loop_observer = this._scene.onBeforeRenderObservable.add(() => {
-            // Calcule le déplacement en fonction de la vitesse du projectile
-            if (this._isExpired) {
-                this.destroy();
-                return;
-            }
-            let newPosition = path.getPointAt(i).subtract(this._mesh.position).normalize()
-            this._mesh.position.addInPlace(newPosition);
-            i += 0.003;
+            let moveStep = direction.scale(0.3);
+            this._mesh.position.addInPlace(moveStep);
         });
+
         setTimeout(() => {
             this._isExpired = true;
         }, 5000);
@@ -131,8 +110,6 @@ export class FlammeCardProjectile extends SceneComponent implements GameObject {
             if (gameObject instanceof DistanceEnemy) {
                 if (!this._mesh) break;
                 let distance = Vector3.Distance(this._mesh.position, gameObject.position);
-                console.log("Distance: " + distance)
-                // console.log("FlammeCardProjectile collision with player: " + this._mesh.intersectsMesh(gameObject.mesh))
                 if (distance <= 5 ) {
                     gameObject.onCollisionCallback(this); // Tell the distance enemy they collided with a fireball
                     gameObjects.splice(gameObjects.indexOf(this), 1);
