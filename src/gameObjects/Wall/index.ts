@@ -10,6 +10,7 @@ import {
 } from "@babylonjs/core";
 import {SceneComponent} from "../../scenes/SceneComponent.ts";
 import {FlammeCardProjectile} from "../Card/armes/FlammeCardProjectile.ts";
+import {OlympiadScene} from "../../scenes/OlympiadScene.ts";
 
 export class Wall extends SceneComponent implements GameObject {
     public mesh!: Mesh;
@@ -92,6 +93,9 @@ export class Wall extends SceneComponent implements GameObject {
         console.log('Wall take damage: ', damage);
         this.actualhealth -= damage;
         if (this.actualhealth <= 0) {
+            let olympiadScene: OlympiadScene = <OlympiadScene> this.scene;
+            // Remove the wall from the gameObjects array
+            olympiadScene.gameObjects.splice(olympiadScene.gameObjects.indexOf(this), 1);
             this.destroy();
         }
     }

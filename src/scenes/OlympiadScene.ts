@@ -15,7 +15,7 @@ export class OlympiadScene extends Scene {
     private _gameObjects: GameObject[] = [];
     protected engine: Engine;
     protected physicsEngine!: HavokPlugin;
-    protected player!: Player;
+    public player!: Player;
 
     protected constructor(engine: Engine, options?: SceneOptions) {
         super(engine, options);
@@ -28,6 +28,10 @@ export class OlympiadScene extends Scene {
                 }
             });
         });
+    }
+
+    public get gameObjects(): GameObject[] {
+        return this._gameObjects;
     }
 
     async _createPhysicsEngine() {

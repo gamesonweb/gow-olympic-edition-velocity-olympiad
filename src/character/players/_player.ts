@@ -23,7 +23,7 @@ import {State as PlayerState} from "./state";
 import {ICard} from "../../gameObjects/Card/ICard";
 import {CardSocle} from "../../gameObjects/Card/CardSocle.ts";
 import {Wall} from "../../gameObjects/Wall";
-import {fireballDistanceEnemy} from "../../gameObjects/Spell/fireballDistanceEnemy.ts";
+import {FireballDistanceEnemy} from "../../gameObjects/Spell/FireballDistanceEnemy.ts";
 
 export class Player extends SceneComponent implements GameObject {
     public mesh!: Mesh;
@@ -51,7 +51,8 @@ export class Player extends SceneComponent implements GameObject {
     private hp: number = 100;
 
     public canActOnCollision: boolean = true;
-    public canDetectCollision: boolean = true;
+    public canDetectCollision: boolean = false; // Player can't detect collision on other objects. It's the oher object
+    // that detects collision on the player
 
     constructor(playerState: PlayerState, scene: Scene) {
         super();
@@ -196,7 +197,7 @@ export class Player extends SceneComponent implements GameObject {
         }
         if (n == 2) {
             console.log("Card durabilite: ", card.durabilite)
-            card.secondSpell(this)
+            card.secondSpell(this._scene, this.position.clone())
             console.log("Card durabilite afther ", card.durabilite)
             if (card.durabilite == 0) {
                 keepCard = false;
@@ -304,12 +305,19 @@ export class Player extends SceneComponent implements GameObject {
         if (this._ui.gamePaused) {
             this._camera.detachControl();
             this._cameraAttached = false;
+            // Stop rendering the scene
+            this._scene.getEngine().stopRenderLoop();
+            console.log("Rendering stopped");
         } else {
             // Check is camera is detached
             if (!this._cameraAttached) {
                 this._camera.attachControl(this._scene, true);
                 this._cameraAttached = true;
             }
+            // Restart rendering the scene
+            this._scene.getEngine().runRenderLoop(() => {
+                this._scene.render();
+            });
         }
 
         // Update gravity to initial gravity if player is grounded and not falling
@@ -378,7 +386,7 @@ export class Player extends SceneComponent implements GameObject {
             console.log("Wall collision detected", gameObject);
         }
 
-        if (gameObject instanceof fireballDistanceEnemy) {
+        if (gameObject instanceof FireballDistanceEnemy) {
             this.takeDamage(gameObject.damage);
         }
     }

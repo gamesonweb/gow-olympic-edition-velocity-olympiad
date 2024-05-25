@@ -92,13 +92,17 @@ export class FlammeCardProjectile extends SceneComponent implements GameObject {
 
         this._loop_observer = this._scene.onBeforeRenderObservable.add(() => {
             // Calcule le déplacement en fonction de la vitesse du projectile
+            if (this._isExpired) {
+                this.destroy();
+                return;
+            }
             let newPosition = path.getPointAt(i).subtract(this._mesh.position).normalize()
             this._mesh.position.addInPlace(newPosition);
             i += 0.003;
         });
         setTimeout(() => {
             this._isExpired = true;
-        }, 10000);
+        }, 5000);
     }
 
     destroy() {
@@ -118,7 +122,7 @@ export class FlammeCardProjectile extends SceneComponent implements GameObject {
                 if (!this._mesh) break;
                 if (this._mesh.intersectsMesh(gameObject.mesh)) {
                     gameObject.onCollisionCallback(this);
-                    gameObjects.splice(gameObjects.indexOf(gameObject), 1);
+                    gameObjects.splice(gameObjects.indexOf(this), 1);
                     this.destroy();
                 }
             }

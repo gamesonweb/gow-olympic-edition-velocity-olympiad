@@ -1,12 +1,10 @@
 import {
-    Camera,
     Color3,
     Color4,
     Mesh,
     MeshBuilder,
     Observer,
     ParticleSystem,
-    Path3D,
     Scene,
     StandardMaterial,
     Texture,
@@ -16,8 +14,8 @@ import {SceneComponent} from "../../scenes/SceneComponent.ts";
 import {Player} from "../../character/players";
 
 
-export class fireballDistanceEnemy extends SceneComponent implements GameObject {
-    canActOnCollision: boolean = true;
+export class FireballDistanceEnemy extends SceneComponent implements GameObject {
+    canActOnCollision: boolean = false;
     canDetectCollision: boolean = true;
     private _scene!: Scene;
     private _position!: Vector3;
@@ -32,7 +30,7 @@ export class fireballDistanceEnemy extends SceneComponent implements GameObject 
         super();
     }
 
-    init(scene: Scene, position: Vector3, damage: number) {
+    init(scene: Scene, position: Vector3, damage: number, direction: Vector3) {
         this._scene = scene;
         this._position = position;
         this.damage = damage;
@@ -44,23 +42,10 @@ export class fireballDistanceEnemy extends SceneComponent implements GameObject 
         this._material.diffuseColor = color1;
         this._material.alpha = 0.1;
 
-
-        // Calculate end position based on camera direction
-        let camera: Camera = <Camera>this._scene.activeCamera;
-        let start = this._position;
-        start.y += 1;
-
-        // Calculate end position based on camera direction
-        let end = camera.position.clone();
-        end.y -=2;
-        var angle = Math.atan2(start.z - end.z, start.x - end.x);
-
-
-        this._mesh = MeshBuilder.CreateSphere("bouleDeFeuEnemyProjectile", {diameter: 0.4}, this._scene);
+        this._mesh = MeshBuilder.CreateSphere("bouleDeFeuEnemyProjectile", { diameter: 0.4 }, this._scene);
         this._mesh.position = this._position;
         this._mesh.material = this._material;
-        this._mesh.position = start.clone();
-        this._mesh.rotation.y = Math.PI / 2 - angle;
+
 
         let texture = "https://raw.githubusercontent.com/oriongunning/t5c/main/public/textures/particle_01.png";
         let textureParticule = new Texture(texture);
@@ -88,20 +73,17 @@ export class fireballDistanceEnemy extends SceneComponent implements GameObject 
         particleSystem.updateSpeed = 0.005;
         particleSystem.start();
 
-        var endVector = this._mesh.calcMovePOV(0, 0, 100).addInPlace(this._mesh.position);
-        var points = [start, endVector];
-        var path = new Path3D(points);
-        var i = 0;
+        let normalizedDirection = direction.normalize();
 
         this._loop_observer = this._scene.onBeforeRenderObservable.add(() => {
-            // Calcule le déplacement en fonction de la vitesse du projectile
-            let newPosition = path.getPointAt(i).subtract(this._mesh.position).normalize()
-            this._mesh.position.addInPlace(newPosition);
-            i += 0.003;
+            // Move the fireball in the direction of the player
+            let moveStep = normalizedDirection.scale(0.3); // Adjust the speed of the fireball by scaling the step
+            this._mesh.position.addInPlace(moveStep);
         });
+
         setTimeout(() => {
             this._isExpired = true;
-        }, 10000);
+        }, 5000);
     }
 
     destroy() {
@@ -112,8 +94,8 @@ export class fireballDistanceEnemy extends SceneComponent implements GameObject 
 
     public detectCollision(gameObjects: GameObject[]) {
         if (this._isExpired) {
-            this.destroy();
             gameObjects.splice(gameObjects.indexOf(this), 1);
+            this.destroy();
             return;
         }
 
@@ -121,9 +103,10 @@ export class fireballDistanceEnemy extends SceneComponent implements GameObject 
             gameObjects.forEach((gameObject) => {
                 if (gameObject instanceof Player) {
                     if (this._mesh.intersectsMesh(gameObject.mesh, true)) {
-                        console.log("fireballDistanceEnemy collision with player")
-                        gameObject.onCollisionCallback(this);
-                        this.onCollisionCallback();
+                        console.log("FireballDistanceEnemy collision with player")
+                        gameObject.onCollisionCallback(this); // Tell the player they collided with a enemy fireball
+                        gameObjects.splice(gameObjects.indexOf(this), 1); // Remove the fireball from the gameObjects array
+                        this.destroy();
                     }
                 }
             });
@@ -133,7 +116,7 @@ export class fireballDistanceEnemy extends SceneComponent implements GameObject 
 
     }
 
-    public onCollisionCallback() {
-        this.destroy();
+    public onCollisionCallback(gameObject: GameObject): void {
+        throw new Error("FireballDistanceEnemy should not act itself on collision" + gameObject.toString());
     }
 }

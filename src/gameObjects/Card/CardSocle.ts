@@ -61,16 +61,6 @@ export class CardSocle extends SceneComponent implements GameObject{
 
             // Apply rotation to mesh
             this.mesh.rotationQuaternion = rotationQuaternion;
-            // Check for collision with camera
-            // if (this.checkCollisionWithCamera()) {
-            //     // Log collision
-            //     console.log("Collision occurred!");
-            //
-            //     // Remove the mesh from the scene
-            //     this.mesh.dispose();
-            //     this.mesh = null; // Mark mesh as disposed
-            //     this.callbackOnCollision(this.card); // Call the callback function
-            // }
         }
     }
 
@@ -95,9 +85,10 @@ export class CardSocle extends SceneComponent implements GameObject{
         for (let gameObject of gameObjects) {
             if (gameObject.canActOnCollision && gameObject instanceof Player) {
                 if (this.checkCollisionWithCamera()) {
-                    gameObject.onCollisionCallback(this);
-                    this.destroy();
-                    gameObjects.splice(gameObjects.indexOf(this), 1);
+                    gameObject.onCollisionCallback(this); // Tell the player they collided with a card
+                    gameObjects.splice(gameObjects.indexOf(this), 1); // Remove the card from the gameObjects array
+                    this.destroy(); // Destroy the card
+
                 }
             }
         }
