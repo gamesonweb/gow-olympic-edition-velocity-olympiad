@@ -3,4 +3,5 @@ interface GameObject {
     canDetectCollision: boolean; // If true, the object will call detectCollision() to check for collisions with other objects
     detectCollision(gameObjects: GameObject[]): void;
     onCollisionCallback: (gameObject: GameObject) => void;
+
 }

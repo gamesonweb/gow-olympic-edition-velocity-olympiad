@@ -2,7 +2,6 @@ import {AdvancedDynamicTexture, Button, Control, Grid, Image, Rectangle, StackPa
 import {Effect, ParticleSystem, PostProcess, Scene, Sound} from "@babylonjs/core";
 import {ICard} from "../../gameObjects/Card/ICard";
 import {RareteCard} from "../../gameObjects/Card/RareteCard";
-import {length} from "vite-plugin-wasm";
 
 export class Hud {
     private _scene: Scene;

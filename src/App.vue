@@ -6,7 +6,6 @@
 import {defineComponent} from 'vue';
 import {SceneManager} from "./scenes/SceneManager";
 import {FirstLevelScene} from "./scenes/FirstLevelScene"
-import {LevelSelectorScene} from "./scenes/LevelSelectorScene"
 
 export default defineComponent({
   name: 'App',

@@ -14,7 +14,6 @@ import {
 } from "@babylonjs/core";
 import {SceneComponent} from "../../../scenes/SceneComponent.ts";
 import {Wall} from "../../Wall";
-import {RareteCard} from "../RareteCard.ts";
 
 export class FlammeCardProjectile extends SceneComponent implements GameObject {
     canActOnCollision: boolean = true;
@@ -26,7 +25,6 @@ export class FlammeCardProjectile extends SceneComponent implements GameObject {
     private _loop_observer!: Observer<Scene>;
     private _isExpired: boolean = false;
     public damage: number;
-    public rarete: RareteCard;
 
     constructor() {
         super();

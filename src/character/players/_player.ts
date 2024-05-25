@@ -22,6 +22,8 @@ import {PickingInfo} from "@babylonjs/core/Collisions/pickingInfo";
 import {State as PlayerState} from "./state";
 import {ICard} from "../../gameObjects/Card/ICard";
 import {CardSocle} from "../../gameObjects/Card/CardSocle.ts";
+import {Wall} from "../../gameObjects/Wall";
+import {fireballDistanceEnemy} from "../../gameObjects/Spell/fireballDistanceEnemy.ts";
 
 export class Player extends SceneComponent implements GameObject {
     private mesh!: Mesh;
@@ -46,6 +48,7 @@ export class Player extends SceneComponent implements GameObject {
     private _normalGravity: Vector3 = new Vector3(0, -6, 0);
     private _gravityScaleOnFalling: number = 2;
     private _isFallingGravitySet: boolean = false;
+    private hp: number = 100;
 
     public canActOnCollision: boolean = true;
     public canDetectCollision: boolean = true;
@@ -362,6 +365,7 @@ export class Player extends SceneComponent implements GameObject {
 
     public detectCollision(gameObjects: GameObject[]): void {
         // console.log("Player can detect collision on: ", gameObjects);
+        return;
     }
 
     public onCollisionCallback(gameObject: GameObject): void {
@@ -370,5 +374,25 @@ export class Player extends SceneComponent implements GameObject {
             console.log("Card collision detected", gameObject);
             this.addCardToCart(gameObject.card);
         }
+        if (gameObject instanceof Wall) {
+            console.log("Wall collision detected", gameObject);
+        }
+
+        if (gameObject instanceof fireballDistanceEnemy) {
+            this.takeDamage(gameObject.damage);
+        }
+    }
+
+    private takeDamage(damage: number) {
+        this.hp -= damage;
+        if (this.hp <= 0) {
+            this.dead();
+        }
+        console.log("Player hp: ", this.hp)
+    }
+
+    private dead() {
+        console.log("Player is dead");
+        this.hp = 100;
     }
 }
