@@ -20,5 +20,5 @@ export default defineConfig({
         outDir: 'dist',
         emptyOutDir: true,
     },
-    base: 'https://samsoucoupe.github.io/Velocity-Olympiad/'
+    base: './',
 })
