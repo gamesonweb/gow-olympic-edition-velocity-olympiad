@@ -99,11 +99,11 @@ export class Temple {
 
         if (!this._templeBoxMaterial) {
             this._templeBoxMaterial = new StandardMaterial(this.prefix + 'templeMaterial', this._scene);
-            this._templeBoxMaterial.diffuseTexture = new Texture("src/assets/textures/wall.jpg");
+            this._templeBoxMaterial.diffuseTexture = new Texture("src/assets/textures/wall.png");
         }
         if(!this._wallMaterial) {
             this._wallMaterial =  new StandardMaterial(this.prefix + "wallMaterial", this._scene)
-            this._wallMaterial.diffuseTexture = new Texture("src/assets/textures/wall.jpg");
+            this._wallMaterial.diffuseTexture = new Texture("src/assets/textures/wall.png");
         }
 
         if (!this._roofMaterial) {
@@ -118,7 +118,7 @@ export class Temple {
 
         if (!this._stairsMaterial) {
             this._stairsMaterial = new StandardMaterial(this.prefix + 'templeMaterial', this._scene);
-            this._stairsMaterial.diffuseTexture = new Texture("src/assets/textures/wall.jpg");
+            this._stairsMaterial.diffuseTexture = new Texture("src/assets/textures/wall.png");
         }
 
         if(!this._frontonMaterial) {
