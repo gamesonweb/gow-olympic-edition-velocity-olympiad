@@ -5,8 +5,6 @@
 <script lang="ts">
 import {defineComponent} from 'vue';
 import {SceneManager} from "./scenes/SceneManager";
-import {WelcomeScene} from "./scenes/WelcomeScene"
-import {FirstLevelScene} from "./scenes/FirstLevelScene"
 import {LevelSelectorScene} from "./scenes/LevelSelectorScene"
 
 export default defineComponent({

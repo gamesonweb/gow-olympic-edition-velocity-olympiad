@@ -39,8 +39,7 @@ export class FirstLevelScene extends OlympiadScene {
 
   public async init(): Promise<void> {
     await super.init();
-    this.player.init();
-    this.player.position = new Vector3(0, 100, 0);
+    this.player.init(new Vector3(0, 100, 0));
     this.enemyManager.init();
     this._buildWalls();
   }

@@ -13,6 +13,7 @@ import {WelcomeEnemyManager} from "./enemyManager";
 import {Player, PlayerState} from "../../character/players";
 import { Temple } from "../../gameObjects/Temple";
 import { TempleV2 } from "../../gameObjects/TempleV2";
+import { FirstLevelScene } from "../FirstLevelScene";
 
 export class LevelSelectorScene extends OlympiadScene {
     // noinspection JSUnusedGlobalSymbols
@@ -69,10 +70,9 @@ export class LevelSelectorScene extends OlympiadScene {
         skybox.infiniteDistance = true;
 
         //Adding the end temple
-        
-        const temple = new TempleV2(this, new Vector3(125, 37, 157), new Vector3(0, -110 * (Math.PI / 180.0), 0), new Vector3(1, 1, 1));
-
-
+        const nextScene = new FirstLevelScene(this.engine, this.player!.playerState);
+        this.engine.scenes.push(nextScene);
+        const temple = new TempleV2(this, new Vector3(125, 37, 157), new Vector3(0, -110 * (Math.PI / 180.0), 0), new Vector3(1, 1, 1), nextScene);
 
     }
 

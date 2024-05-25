@@ -34,7 +34,7 @@ export class Player extends SceneComponent{
     private readonly _scene: Scene;
     public readonly playerState: PlayerState;
     private _speed: number = 2;
-    private _jumpForce: number = 4;
+    private _jumpForce: number = 20;
     private _targetCamaraRotationY: number | null = null;
     private _slerpAmount: number = 0;
     private _cameraAttached: boolean = true;
