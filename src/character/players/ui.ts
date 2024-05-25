@@ -7,58 +7,58 @@ export class Hud {
     private _scene: Scene;
 
     //Game Timer
-    public time: number; //keep track to signal end game REAL TIME
+    public time!: number; //keep track to signal end game REAL TIME
     private _prevTime: number = 0;
     private _clockTime: TextBlock | null = null; //GAME TIME
-    private _startTime: number;
-    private _stopTimer: boolean;
+    private _startTime!: number;
+    private _stopTimer!: boolean;
     private _sString = "00";
     private _mString = 11;
-    private _lanternCnt: TextBlock;
+    private _lanternCnt!: TextBlock;
 
     //Animated UI sprites
-    private _sparklerLife: Image;
-    private _spark: Image;
+    private _sparklerLife!: Image;
+    private _spark!: Image;
 
     //Timer handlers
-    public stopSpark: boolean;
-    private _handle;
-    private _sparkhandle;
+    public stopSpark!: boolean;
+    private _handle!: NodeJS.Timeout;
+    private _sparkhandle!: NodeJS.Timeout;
 
     //Pause toggle
-    public gamePaused: boolean;
+    public gamePaused!: boolean;
 
     //Quit game
-    public quit: boolean;
+    public quit!: boolean;
     public transition: boolean = false;
 
     //UI Elements
-    public pauseBtn: Button;
-    public fadeLevel: number;
-    private _playerUI;
-    private _pauseMenu;
-    private _controls;
-    public tutorial;
-    public hint;
+    public pauseBtn!: Button;
+    public fadeLevel!: number;
+    private _playerUI!: AdvancedDynamicTexture;
+    private _pauseMenu!: Rectangle;
+    private _controls!: Rectangle;
+    public tutorial!: Rectangle;
+    public hint!: Rectangle;
 
     //Mobile
-    public isMobile: boolean;
-    public jumpBtn: Button;
-    public dashBtn: Button;
-    public leftBtn: Button;
-    public rightBtn: Button;
-    public upBtn: Button;
-    public downBtn: Button;
+    public isMobile!: boolean;
+    public jumpBtn!: Button;
+    public dashBtn!: Button;
+    public leftBtn!: Button;
+    public rightBtn!: Button;
+    public upBtn!: Button;
+    public downBtn!: Button;
 
     //Sounds
-    public quitSfx: Sound;
-    private _sfx: Sound;
-    private _pause: Sound;
-    private _sparkWarningSfx: Sound;
+    public quitSfx!: Sound;
+    private _sfx!: Sound;
+    private _pause!: Sound;
+    private _sparkWarningSfx!: Sound;
 
     //ICard Menu
-    private _cardMenuStackPanel: StackPanel;
-    private _activeCardStackPanel: StackPanel;
+    private _cardMenuStackPanel!: StackPanel;
+    private _activeCardStackPanel!: StackPanel;
 
     // keyboard
     public isAzerty: boolean | null = null;
@@ -405,7 +405,7 @@ export class Hud {
 
     }
 
-    public addCardToStackPanel(card: ICard, index = 0): Control {
+    public addCardToStackPanel(card: ICard, index = 0): Control | undefined {
         if (index > 0) { return; }
         let stackUIImage = this._getStackUIImageFromRarete(card.rarete);
         let cardImage = new Image("card", stackUIImage);
@@ -466,7 +466,7 @@ export class Hud {
     private _disablePointerLockOnPause(): void {
         const canvas: HTMLCanvasElement = <HTMLCanvasElement> this._scene.getEngine().getRenderingCanvas();
         if (this.gamePaused) {
-            canvas.requestPointerLock = null;
+            canvas.requestPointerLock = () => { };
             this.stopTimer();
         } else {
             if (document.pointerLockElement !== canvas) {

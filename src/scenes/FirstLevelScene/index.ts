@@ -74,7 +74,8 @@ export class FirstLevelScene extends OlympiadScene {
     })
 
     let signposition = new Vector3(5, objetgroundYref + 1, 0);
-    new Sign("test", signposition, this);
+    let sign = new Sign("test", signposition, this);
+    this.addComponent(sign);
 
     let enemydistanceposition = new Vector3(0, objetgroundYref, 30);
     this.enemyManager.addDistanceEnemy(enemydistanceposition);

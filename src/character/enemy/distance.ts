@@ -1,10 +1,10 @@
-import {AbstractMesh, AnimationGroup, Scene, SceneLoader, Vector3} from "@babylonjs/core";
+import {AnimationGroup, AbstractMesh, Scene, SceneLoader, Vector3} from "@babylonjs/core";
 import {Character} from "../interfaces/Character.ts";
 import {fireballDistanceEnemy} from "../../gameObjects/Spell/fireballDistanceEnemy.ts";
 
 export class DistanceEnemy implements Character {
     position: Vector3;
-    mesh: AbstractMesh;
+    mesh!: AbstractMesh;
     scene: Scene;
     hp: number;
     isFlying: boolean;
@@ -15,7 +15,6 @@ export class DistanceEnemy implements Character {
         this.scene = scene;
         this.hp = 100;
         this.isFlying = false;
-        this.mesh = null;
         this.idleAnimation = null;
     }
 

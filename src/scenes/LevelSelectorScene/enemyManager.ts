@@ -11,6 +11,7 @@ export class WelcomeEnemyManager extends SceneComponent {
 
     init() {
         // Create enemies
+        this.scene;
     }
 
     public destroy() {
