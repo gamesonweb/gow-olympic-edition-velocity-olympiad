@@ -66,6 +66,7 @@ export class PlayerInput {
         }
 
         // Set up the keyboard controls
+        this._setKeyboardCaracters();
     }
 
     private _setKeyboardCaracters(): void {

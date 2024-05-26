@@ -10,20 +10,20 @@ import {
 } from "@babylonjs/core";
 
 import * as GUI from "@babylonjs/gui";
+import {SceneComponent} from "../../scenes/SceneComponent.ts";
 
-export class Sign {
+export class Sign implements SceneComponent{
     private _text: string;
     private _position: Vector3;
     private scene: Scene;
     private advancedTexture: GUI.AdvancedDynamicTexture;
-    private signMesh: Mesh;
+    private signMesh!: Mesh;
 
     constructor(text: string, position: Vector3, scene: Scene) {
         this._text = text;
         this._position = position;
         this.scene = scene;
-        const advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
-        this.advancedTexture = advancedTexture;
+        this.advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
         this.setup();
     }
 
@@ -96,10 +96,7 @@ export class Sign {
         return this.signMesh;
     }
 
-
-
-
-    dispose() {
+    destroy() {
         this.advancedTexture.dispose();
         this.signMesh.dispose();
     }

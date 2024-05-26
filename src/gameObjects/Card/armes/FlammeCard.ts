@@ -4,6 +4,7 @@ import {Scene, Vector3} from "@babylonjs/core";
 
 import {FlammeCardProjectile} from "./FlammeCardProjectile.ts";
 import {Player} from "../../../character/players";
+import {OlympiadScene} from "../../../scenes/OlympiadScene.ts";
 
 export class FlammeCard implements ICard {
 
@@ -39,13 +40,16 @@ export class FlammeCard implements ICard {
     }
 
     public firstSpell(_scene : Scene, position : Vector3): void {
-        this.projectile.init(_scene, position,this.damage);
+        this.projectile.init(_scene, position, this.damage);
+        (<OlympiadScene>_scene).gameObjects.push(this.projectile);
     }
 
-    public secondSpell(_player: Player): void {
+    public secondSpell(_scene : Scene, position : Vector3): void {
+        position;
+        let olympiadScene: OlympiadScene = <OlympiadScene> _scene;
+        let _player: Player = olympiadScene.player;
         _player._dash()
         this.durabilite -= 1;
-
     }
 
     name: string = 'Flamme';

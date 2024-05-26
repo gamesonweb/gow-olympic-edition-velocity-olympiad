@@ -27,16 +27,16 @@ export class Temple {
     private readonly templeGroup: TransformNode;
     private _doorPositions: { x: number[]; y: number[]; z: number[] };
     private _doorIndexes: number[];
-    private _numberOfPillars: number;
-    private _spacingPillars: number;
+    private readonly _numberOfPillars: number;
+    private readonly _spacingPillars: number;
     private _pillarMaterial: StandardMaterial | undefined;
     private _wallMaterial: StandardMaterial | undefined;
     private _roofMaterial: StandardMaterial | undefined;
     private _stairsMaterial: StandardMaterial | undefined;
     private _templeBoxMaterial: StandardMaterial | undefined;
     private _frontonMaterial: StandardMaterial | undefined;
-    private _id: string;
-    private prefix: string;
+    private _id!: string;
+    private prefix!: string;
 
     constructor(scene: Scene, boxHeight: number = 1, boxWidth: number = 10, boxDepth: number = 5, camera?: Camera,
                 onlyConfigure: boolean = true) {
@@ -60,49 +60,19 @@ export class Temple {
 
     }
 
-    get id(): string {
-        return this._id;
-    }
 
     set id(value: string) {
         this._id = value;
         this.prefix = `temple_${this._id}_`;
     }
 
-    set doorIndexes(value: number[]) {
-        this._doorIndexes = value;
-    }
-
-    get doorIndexes(): number[] {
-        return this._doorIndexes;
-    }
-
-    set numberOfPillars(value: number) {
-        this._numberOfPillars = value;
-    }
-
-    get numberOfPillars(): number {
-        return this._numberOfPillars;
-    }
-
-    set spacingPillars(value: number) {
-        this._spacingPillars = value;
-    }
-
     set position(position: Vector3) {
         this.templeGroup.position = position;
     }
 
-    get position(): Vector3 {
-        return this.templeGroup.position;
-    }
 
     set rotation(rotation: Vector3) {
         this.templeGroup.rotation = rotation;
-    }
-
-    get rotation(): Vector3 {
-        return this.templeGroup.rotation;
     }
 
     set wallMaterial(value: StandardMaterial) {
@@ -113,52 +83,16 @@ export class Temple {
         return <StandardMaterial>this._wallMaterial;
     }
 
-    set roofMaterial(value: StandardMaterial) {
-        this._roofMaterial = value;
-    }
-
     get roofMaterial(): StandardMaterial {
         return <StandardMaterial>this._roofMaterial;
-    }
-
-    set pillarMaterial(value: StandardMaterial) {
-        this._pillarMaterial = value;
     }
 
     get pillarMaterial(): StandardMaterial {
         return <StandardMaterial>this._pillarMaterial;
     }
 
-    set stairsMaterial(value: StandardMaterial) {
-        this._stairsMaterial = value;
-    }
-
-    get stairsMaterial(): StandardMaterial {
-        return <StandardMaterial>this._stairsMaterial;
-    }
-
-    set templeBoxMaterial(value: StandardMaterial) {
-        this._templeBoxMaterial = value;
-    }
-
-    get templeBoxMaterial(): StandardMaterial {
-        return <StandardMaterial>this._templeBoxMaterial;
-    }
-
-    set frontonMaterial(value: StandardMaterial) {
-        this._frontonMaterial = value;
-    }
-
     get frontonMaterial(): StandardMaterial {
         return <StandardMaterial>this._frontonMaterial;
-    }
-
-    setCamera(camera: Camera) {
-        this.camera = camera;
-    }
-
-    setPillarHeight(pillarHeight: number) {
-        this.pillarHeight = pillarHeight;
     }
 
     _createMissingMaterials() {
@@ -219,7 +153,6 @@ export class Temple {
         // Les côtés du temple
         // Pour les côtés, nous devons positionner les piliers le long de l'axe z
 
-        let wallPillars = [];
         for (let i = 0; i < numberOfPillars + 1; i++) {
             let pillar = this.createPillar(this._scene, this.prefix + 'pillar_front' + i);
             pillar.position.x = (i - numberOfPillars / 2) * spacing;
@@ -295,7 +228,7 @@ export class Temple {
         stairs.parent = this.templeGroup;
     }
 
-    createPillar(scene, pillarName=undefined) {
+    createPillar(scene: Scene, pillarName: string | undefined = undefined) {
         if (pillarName === undefined) pillarName = 'pillar';
         const pillar = MeshBuilder.CreateCylinder(pillarName, {
             diameter: this.pillarDiameter, // diamètre du pilier
@@ -346,11 +279,6 @@ export class Temple {
         // Appliquer les normales inversées au mesh
         vertexData.applyToMesh(fronton, true);
 
-        let frontonLeftCornerPositions = [
-            new Vector3(- this.boxWidth/2, this.boxHeight, this.boxDepth/2), // Sommet 1
-            new Vector3(- this.boxWidth/2, this.boxHeight, this.boxDepth/2), // Sommet 2
-            new Vector3(- this.boxWidth/2, this.boxHeight, this.boxDepth/2) // Sommet 3
-        ];
 
         // Créer le fronton triangulaire gauche
         const frontonCloseTriangleHeight = Math.sin(roofAngle) * roofHeight; // roofHeight mean Hypotenuse
@@ -378,7 +306,7 @@ export class Temple {
 
     }
 
-    createTriangularPrism(name, width, height, depth) {
+    createTriangularPrism(name: string, width: number, height: number, depth: number) {
         // Créer un maillage vide
         let customMesh = new Mesh(name, this._scene);
 
@@ -467,7 +395,7 @@ export class Temple {
         wallLeftAfterDoor.position.z = doorMaxZ + this._spacingPillars + wallLeftAfterDoorDistance/2;
     }
 
-    createWallV2(name, upperRightCorner: Vector3, lowerLeftCorner: Vector3, thickness: number = 0.02): Mesh {
+    createWallV2(name: string, upperRightCorner: Vector3, lowerLeftCorner: Vector3, thickness: number = 0.02): Mesh {
         // Calculer la largeur et la hauteur du mur
         const width = Math.abs(upperRightCorner.x - lowerLeftCorner.x);
         const height = Math.abs(upperRightCorner.y - lowerLeftCorner.y);

@@ -15,7 +15,7 @@ export class OlympiadScene extends Scene {
     private _gameObjects: GameObject[] = [];
     protected engine: Engine;
     protected physicsEngine!: HavokPlugin;
-    protected player!: Player;
+    public player!: Player;
 
     protected constructor(engine: Engine, options?: SceneOptions) {
         super(engine, options);
@@ -23,13 +23,21 @@ export class OlympiadScene extends Scene {
         this._enableDebug();
         this.onBeforeRenderObservable.add(() => {
             this._gameObjects.forEach((gameObject) => {
-                if (gameObject.canDetectCollision) {
+                if (gameObject && gameObject.canDetectCollision) {
                     gameObject.detectCollision(this._gameObjects);
                 }
                 gameObject.updateState();
 
             });
         });
+    }
+
+    public get gameObjects(): GameObject[] {
+        return this._gameObjects;
+    }
+
+    public get sceneComponents(): SceneComponent[] {
+        return this._sceneComponents;
     }
 
     async _createPhysicsEngine() {
@@ -58,7 +66,11 @@ export class OlympiadScene extends Scene {
     // }
 
     public destroy(): void {
-        this._sceneComponents.forEach((component) => component.destroy());
+        this._sceneComponents.forEach((component) => {
+            if (component) {
+                component.destroy()
+            }
+        });
         this._sceneComponents = [];
         this.dispose();
     }
