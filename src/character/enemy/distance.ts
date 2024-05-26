@@ -1,4 +1,12 @@
-import {AbstractMesh, AnimationGroup, Scene, SceneLoader, Vector3} from "@babylonjs/core";
+import {
+    AbstractMesh,
+    AnimationGroup, Color3, Mesh,
+    PhysicsAggregate,
+    PhysicsBody, PhysicsMotionType, PhysicsShapeMesh,
+    Scene,
+    SceneLoader, StandardMaterial,
+    Vector3
+} from "@babylonjs/core";
 import {Character} from "../interfaces/Character.ts";
 import {fireballDistanceEnemy} from "../../gameObjects/Spell/FireballDistanceEnemy.ts";
 
@@ -14,6 +22,7 @@ export class DistanceEnemy implements Character, GameObject {
     canActOnCollision: boolean;
     canDetectCollision: boolean;
     private gameObject: GameObject[];
+    private meshEye: any[];
 
 
     constructor(scene: Scene, position: Vector3,gameObject: GameObject[]) {
@@ -25,21 +34,39 @@ export class DistanceEnemy implements Character, GameObject {
         this.idleAnimation = null;
         this.attackAvailable = true;
         this.gameObject = gameObject;
+        this.meshEye = [];
+
     }
 
     init(): void {
-        // this.mesh = MeshBuilder.CreateBox("distanceEnemy", {size: 2}, this.scene);
-        // this.mesh.position = this.position;
+
 
         SceneLoader.ImportMesh("", "models/character/enemy/", "enemy_distance.glb", this.scene, (meshes) => {
-            this.mesh = meshes[0];
-            this.mesh.position = this.position;
+            const root = meshes[0];
+            root.position = this.position;
             let scale = 0.3;
-            this.mesh.scaling = new Vector3(scale, scale, scale);
-            // rotate the mesh to make it vertical
-            this.mesh.rotation.y = 0;
-        });
+            root.scaling = new Vector3(scale, scale, scale);
 
+            const childMeshes = root.getChildMeshes();
+
+            for (let child of childMeshes) {
+                const mesh = child as Mesh;
+                const body = new PhysicsBody(mesh, PhysicsMotionType.STATIC, false, this.scene);
+                body.shape = new PhysicsShapeMesh(mesh, this.scene);
+
+            //     si c'est l'oeil on le fait look at le joueur
+                if (mesh.name.includes("Eye")) {
+                    mesh.parent = null;
+                    mesh.position = this.position;
+                    mesh.scaling = new Vector3(scale, scale, scale);
+                    this.meshEye.push(mesh);
+                }
+            }
+            this.mesh = root;
+
+
+
+        });
 
 
         //     make him attack if he is in range of the player
@@ -49,6 +76,12 @@ export class DistanceEnemy implements Character, GameObject {
                     if (this.mesh && this.mesh.position.subtract(this.scene.activeCamera.position).length() < distanceToAttack) {
                         this.lauchAttack();
                     }
+                    this.meshEye.forEach((eye) => {
+                        let goodposition = this.scene.activeCamera.position.clone();
+                        goodposition.y = eye.position.y+0.05;
+                        eye.lookAt(goodposition);
+                    });
+
                 }
             }
         );
@@ -77,7 +110,7 @@ export class DistanceEnemy implements Character, GameObject {
         // Attack the player
         // make him launch a projectile fireball
         let fireballposition = this.position.clone();
-        fireballposition.y += 0.5;
+        fireballposition.y += 2.5;
         let fireball = new fireballDistanceEnemy();
         fireball.init(this.scene, fireballposition, 10);
         this.gameObject.push(fireball);

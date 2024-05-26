@@ -24,7 +24,6 @@ export class OlympiadScene extends Scene {
                 if (gameObject && gameObject.canDetectCollision) {
                     gameObject.detectCollision(this._gameObjects);
                 }
-                console.log("updateState");
                 gameObject.updateState();
 
             });

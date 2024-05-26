@@ -58,6 +58,9 @@ export class fireballDistanceEnemy extends SceneComponent implements GameObject 
         var angle = Math.atan2(start.z - end.z, start.x - end.x);
 
 
+        var diffY = end.y - start.y;
+
+
         this._mesh = MeshBuilder.CreateSphere("bouleDeFeuEnemyProjectile", {diameter: 0.4}, this._scene);
         this._mesh.position = this._position;
         this._mesh.material = this._material;
@@ -90,7 +93,7 @@ export class fireballDistanceEnemy extends SceneComponent implements GameObject 
         particleSystem.updateSpeed = 0.005;
         particleSystem.start();
 
-        var endVector = this._mesh.calcMovePOV(0, 0, 100).addInPlace(this._mesh.position);
+        var endVector = this._mesh.calcMovePOV(0, diffY, 100).addInPlace(this._mesh.position);
         var points = [start, endVector];
         var path = new Path3D(points);
         var i = 0;
