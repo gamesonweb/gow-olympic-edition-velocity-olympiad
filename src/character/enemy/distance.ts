@@ -13,9 +13,10 @@ export class DistanceEnemy implements Character, GameObject {
     attackAvailable: boolean;
     canActOnCollision: boolean;
     canDetectCollision: boolean;
+    private gameObject: GameObject[];
 
 
-    constructor(scene: Scene, position: Vector3) {
+    constructor(scene: Scene, position: Vector3,gameObject: GameObject[]) {
         this.position = position;
         this.scene = scene;
         this.hp = 100;
@@ -23,6 +24,7 @@ export class DistanceEnemy implements Character, GameObject {
         this.mesh = null;
         this.idleAnimation = null;
         this.attackAvailable = true;
+        this.gameObject = gameObject;
     }
 
     init(): void {
@@ -96,7 +98,10 @@ export class DistanceEnemy implements Character, GameObject {
         // make him launch a projectile fireball
         let fireballposition = this.position.clone();
         fireballposition.y += 0.5;
-        new fireballDistanceEnemy().init(this.scene, fireballposition, 10)
+        let fireball = new fireballDistanceEnemy();
+        fireball.init(this.scene, fireballposition, 10);
+        this.gameObject.push(fireball);
+
     }
 
 

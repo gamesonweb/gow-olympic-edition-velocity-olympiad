@@ -22,7 +22,7 @@ export class WelcomeEnemyManager extends SceneComponent {
 
     addDistanceEnemy(enemydistanceposition: Vector3) {
         // Add a distance enemy to the scene
-        let distanceEnemy = new DistanceEnemy(this.scene, enemydistanceposition);
+        let distanceEnemy = new DistanceEnemy(this.scene, enemydistanceposition, this.gameObject);
         distanceEnemy.init();
         this.gameObject.push(distanceEnemy);
 
