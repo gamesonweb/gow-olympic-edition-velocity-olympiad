@@ -738,6 +738,58 @@ export class Hud {
         });
     }
 
+    public GameOverOverlay(): void {
+
+        // make cursor unlock
+        const canvas: HTMLCanvasElement = <HTMLCanvasElement>this._scene.getEngine().getRenderingCanvas();
+        canvas.requestPointerLock = () => {
+            };
+
+
+
+        // Create a rectangle to overlay the entire screen
+        const gameOverOverlay = new Rectangle();
+        gameOverOverlay.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        gameOverOverlay.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+        gameOverOverlay.height = 1;
+        gameOverOverlay.width = 1;
+        gameOverOverlay.color = "black";
+        gameOverOverlay.alpha = 0.7; // Semi-transparent black
+        this._playerUI.addControl(gameOverOverlay);
+
+        // Add text displaying "Game Over"
+        const gameOverText = new TextBlock();
+        gameOverText.text = "Game Over";
+        gameOverText.color = "white";
+        gameOverText.fontSize = "48px";
+        gameOverText.fontFamily = "Viga";
+        gameOverText.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+        gameOverText.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        gameOverOverlay.addControl(gameOverText);
+
+        // Add a button to restart the game
+        const restartButton = Button.CreateSimpleButton("restart", "Restart");
+        restartButton.width = "200px";
+        restartButton.height = "40px";
+        restartButton.color = "white";
+        restartButton.fontFamily = "Viga";
+        restartButton.fontSize = "18px";
+        restartButton.cornerRadius = 10;
+        restartButton.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
+        restartButton.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        restartButton.paddingBottom = "20px";
+        gameOverOverlay.addControl(restartButton);
+
+        // Event listener for restart button
+        restartButton.onPointerUpObservable.add(() => {
+            // je reload la page pour relancer
+            location.reload();
+
+            // TODO faire que ça relance le level
+        });
+    }
+
+
 
     //load all sounds needed for game ui interactions
     private _loadSounds(scene: Scene): void {
@@ -758,5 +810,10 @@ export class Hud {
             volume: 0.5,
             playbackRate: 0.6
         });
+    }
+
+    updateHP(hp: number) {
+        console.log("updateHP", hp)
+
     }
 }

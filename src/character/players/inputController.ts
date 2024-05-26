@@ -4,6 +4,7 @@ import {Hud} from './ui';
 export class PlayerInput {
 
     public inputMap: any;
+    private active: boolean = true;
     //simple movement
     public horizontal: number = 0;
     public vertical: number = 0;
@@ -41,7 +42,7 @@ export class PlayerInput {
     public init(): void {
         //scene action manager to detect inputs
         this._scene.actionManager = new ActionManager(this._scene);
-
+        if (!this.active) return;
         this.inputMap = {};
         this._scene.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnKeyDownTrigger, (evt) => {
             this.inputMap[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
@@ -67,6 +68,11 @@ export class PlayerInput {
 
     public resetInputMap(): void {
         this.inputMap = {};
+    }
+
+    public desactivateInputs(): void {
+        this.active = false;
+        this.init();
     }
 
     // Keyboard controls & Mobile controls

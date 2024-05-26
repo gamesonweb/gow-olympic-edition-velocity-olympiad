@@ -57,9 +57,7 @@ export class fireballDistanceEnemy extends SceneComponent implements GameObject 
         end.y -= 2;
         var angle = Math.atan2(start.z - end.z, start.x - end.x);
 
-
         var diffY = end.y - start.y;
-
 
         this._mesh = MeshBuilder.CreateSphere("bouleDeFeuEnemyProjectile", {diameter: 0.4}, this._scene);
         this._mesh.position = this._position;
@@ -134,15 +132,14 @@ export class fireballDistanceEnemy extends SceneComponent implements GameObject 
                     if (gameObject instanceof Player) {
                         if (this._mesh.intersectsMesh(gameObject.mesh, true)) {
                             gameObject.onCollisionCallback(this);
-                            this.onCollisionCallback();
                             this._asDamegePlayer = true;
+                            this.onCollisionCallback();
                         }
                     }
                 }
             });
 
         }
-
 
     }
 

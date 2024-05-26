@@ -14,6 +14,7 @@ export class FirstLevelScene extends OlympiadScene {
     private _meshes: Mesh[] = [];
     private _materials: Material[] = [];
     private readonly enemyManager: WelcomeEnemyManager;
+    private spawnPoint: Vector3;
 
     constructor(engine: Engine, playerState: PlayerState) {
 
@@ -21,14 +22,13 @@ export class FirstLevelScene extends OlympiadScene {
 
         this.enemyManager = new WelcomeEnemyManager(this, this.gameObjects);
         this.addComponent(this.enemyManager); // Ainsi, le manager sera détruit avec la scène
-
         this.player = new Player(playerState, this);
     }
 
     public async init(): Promise<void> {
         await super.init();
-        this.player.init();
-        this.player.position = new Vector3(0, 100, 0);
+        this.spawnPoint = new Vector3(0, 100, 0);
+        this.player.init(this.spawnPoint);
         this.enemyManager.init();
         this._buildWalls();
         this.addComponent(this.player);

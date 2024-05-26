@@ -52,6 +52,7 @@ export class Player extends SceneComponent implements GameObject {
     private _isFallingGravitySet: boolean = false;
     private hp: number = 100;
     // that detects collision on the player
+    private _death: boolean;
 
     constructor(playerState: PlayerState, scene: Scene) {
         super();
@@ -61,6 +62,7 @@ export class Player extends SceneComponent implements GameObject {
         this._input = new PlayerInput(scene, ui);
         this.playerState = playerState;
         this._initialPosition = Vector3.Zero();
+        this._death = false;
     }
 
     get cardList() {
@@ -168,7 +170,7 @@ export class Player extends SceneComponent implements GameObject {
     }
 
     private _createPlayerMesh(): void {
-        this.mesh = MeshBuilder.CreateBox("player", {size: 2}, this._scene);
+        this.mesh = MeshBuilder.CreateBox("player", {size: 4}, this._scene);
         this.mesh.position = this._initialPosition;
         this.mesh.isVisible = true;
         const playerMaterial = new StandardMaterial("playerMaterial", this._scene);
@@ -234,14 +236,13 @@ export class Player extends SceneComponent implements GameObject {
             keepCard = false;
         }
         if (n == 2) {
-            console.log("Card durabilite: ", card.durabilite)
             card.secondSpell(this._scene, this.position.clone())
-            console.log("Card durabilite afther ", card.durabilite)
+
             if (card.durabilite == 0) {
                 keepCard = false;
             }
         }
-        console.log("Keep card: ", keepCard)
+
         if (!keepCard) {
             this.cardList?.pop();
         }
@@ -393,14 +394,24 @@ export class Player extends SceneComponent implements GameObject {
 
     private takeDamage(damage: number) {
         this.hp -= damage;
+        this._ui.updateHP(this.hp);
+        console.log("Player HP: ", this.hp)
         if (this.hp <= 0) {
             this.dead();
         }
-        console.log("Player hp: ", this.hp)
+        setTimeout(() => {
+            this.dead();
+        }, 5000);
     }
 
     private dead() {
-        console.log("Player is dead");
+        console.log("Player is dead")
         this.hp = 100;
+        this._ui.GameOverOverlay();
+        this._death = true
+        // make that the player don't have any more control
+        this._input.desactivateInputs();
+
     }
+
 }
