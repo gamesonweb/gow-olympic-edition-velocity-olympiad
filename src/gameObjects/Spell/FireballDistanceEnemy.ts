@@ -111,7 +111,6 @@ export class fireballDistanceEnemy extends SceneComponent implements GameObject 
     }
 
     public updateState() {
-        console.log("fireballDistanceEnemy updateState")
         if (this._isExpired) {
             this.destroy();
         }
@@ -128,7 +127,6 @@ export class fireballDistanceEnemy extends SceneComponent implements GameObject 
             gameObjects.forEach((gameObject) => {
                 if (gameObject instanceof Player) {
                     if (this._mesh.intersectsMesh(gameObject.mesh, true)) {
-                        console.log("fireballDistanceEnemy collision with player")
                         gameObject.onCollisionCallback(this);
                         this.onCollisionCallback();
                     }

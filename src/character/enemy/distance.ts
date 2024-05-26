@@ -42,25 +42,6 @@ export class DistanceEnemy implements Character, GameObject {
         });
 
 
-        // make him always look at the player
-        this.scene.registerBeforeRender(() => {
-            if (this.scene.activeCamera) {
-                if (this.mesh) {
-                    this.mesh.lookAt(this.scene.activeCamera.position);
-                }
-
-            }
-        });
-        // make him move in a circle around the initial position in y and xz plane
-        let angle = 0;
-        let distance = 0.01;
-        this.scene.registerBeforeRender(() => {
-            if (this.mesh) {
-                angle += 0.01;
-                this.mesh.position.x = this.position.x + Math.cos(angle) * distance;
-                this.mesh.position.z = this.position.z + Math.sin(angle) * distance;
-            }
-        });
 
         //     make him attack if he is in range of the player
         let distanceToAttack = 50;
