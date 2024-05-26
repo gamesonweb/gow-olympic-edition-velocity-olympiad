@@ -88,6 +88,10 @@ export class Wall extends SceneComponent implements GameObject {
         console.log("For now wall does not detect collision: ", gameObjects);
     }
 
+    updateState() {
+        return;
+    }
+
     public takeDamage(damage: number): void {
         console.log('Wall take damage: ', damage);
         this.actualhealth -= damage;

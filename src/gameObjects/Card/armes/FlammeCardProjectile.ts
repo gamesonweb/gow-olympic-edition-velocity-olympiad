@@ -126,6 +126,12 @@ export class FlammeCardProjectile extends SceneComponent implements GameObject {
 
     }
 
+    public updateState() {
+        if (this._isExpired) {
+            this.destroy();
+        }
+    }
+
     public onCollisionCallback() {
         this.destroy();
     }

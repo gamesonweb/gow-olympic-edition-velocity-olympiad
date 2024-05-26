@@ -41,6 +41,12 @@ export class CardSocle extends SceneComponent implements GameObject{
         });
     }
 
+    public updateState(): void {
+        if (this.mesh) {
+            this.mesh.position = this.position;
+        }
+    }
+
     rotateMeshTowardsCamera() {
         // Ensure camera exists and mesh is loaded
         if (this.scene.activeCamera && this.mesh) {

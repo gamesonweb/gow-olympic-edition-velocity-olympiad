@@ -5,7 +5,7 @@ import {DistanceEnemy} from "../../character/enemy/distance.ts";
 export class WelcomeEnemyManager extends SceneComponent {
     private scene: Scene
 
-    constructor(scene: Scene) {
+    constructor(scene: Scene,gameOb) {
         super();
         this.scene = scene;
     }
@@ -22,6 +22,7 @@ export class WelcomeEnemyManager extends SceneComponent {
         // Add a distance enemy to the scene
         let distanceEnemy = new DistanceEnemy(this.scene, enemydistanceposition);
         distanceEnemy.init();
+
 
 
     }

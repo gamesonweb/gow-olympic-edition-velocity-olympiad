@@ -26,6 +26,8 @@ export class OlympiadScene extends Scene {
                 if (gameObject.canDetectCollision) {
                     gameObject.detectCollision(this._gameObjects);
                 }
+                gameObject.updateState();
+
             });
         });
     }

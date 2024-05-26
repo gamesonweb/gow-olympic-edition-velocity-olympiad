@@ -98,16 +98,23 @@ export class fireballDistanceEnemy extends SceneComponent implements GameObject 
             let newPosition = path.getPointAt(i).subtract(this._mesh.position).normalize()
             this._mesh.position.addInPlace(newPosition);
             i += 0.003;
+            if (i >= 1) {
+                this._isExpired = true;
+            }
         });
-        setTimeout(() => {
-            this._isExpired = true;
-        }, 10000);
     }
 
     destroy() {
         this._scene.onBeforeRenderObservable.remove(this._loop_observer);
         this._material.dispose();
         this._mesh.dispose();
+    }
+
+    public updateState() {
+        console.log("fireballDistanceEnemy updateState")
+         if (this._isExpired) {
+             this.destroy();
+         }
     }
 
     public detectCollision(gameObjects: GameObject[]) {

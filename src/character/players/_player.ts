@@ -353,6 +353,9 @@ export class Player extends SceneComponent implements GameObject {
             }
         }
     }
+    public updateState() {
+        return;
+    }
 
     public destroy() {
         this._scene.onKeyboardObservable.clear();
