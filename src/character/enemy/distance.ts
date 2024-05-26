@@ -34,8 +34,7 @@ export class DistanceEnemy implements Character, GameObject {
         SceneLoader.ImportMesh("", "models/character/enemy/", "enemy_distance.glb", this.scene, (meshes) => {
             this.mesh = meshes[0];
             this.mesh.position = this.position;
-            this.mesh.position.y += 3;
-            let scale = 0.05;
+            let scale = 0.3;
             this.mesh.scaling = new Vector3(scale, scale, scale);
             // rotate the mesh to make it vertical
             this.mesh.rotation.y = 0;

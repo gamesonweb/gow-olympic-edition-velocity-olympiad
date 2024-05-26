@@ -26,6 +26,7 @@ export class fireballDistanceEnemy extends SceneComponent implements GameObject 
     private _loop_observer!: Observer<Scene>;
     private _isExpired: boolean = false;
     private _damage: number;
+    private _asDamegePlayer: boolean ;
 
 
     constructor() {
@@ -36,6 +37,7 @@ export class fireballDistanceEnemy extends SceneComponent implements GameObject 
         this._scene = scene;
         this._position = position;
         this._damage = damage;
+        this._asDamegePlayer = false
         // Create the mesh
         let color1 = Color3.FromInts(70, 0, 130); // Violet
         let color2 = Color3.FromInts(0, 0, 255); // Bleu
@@ -125,13 +127,17 @@ export class fireballDistanceEnemy extends SceneComponent implements GameObject 
 
         if (this.canDetectCollision) {
             gameObjects.forEach((gameObject) => {
-                if (gameObject instanceof Player) {
-                    if (this._mesh.intersectsMesh(gameObject.mesh, true)) {
-                        gameObject.onCollisionCallback(this);
-                        this.onCollisionCallback();
+                if (!this._asDamegePlayer) {
+                    if (gameObject instanceof Player) {
+                        if (this._mesh.intersectsMesh(gameObject.mesh, true)) {
+                            gameObject.onCollisionCallback(this);
+                            this.onCollisionCallback();
+                            this._asDamegePlayer = true;
+                        }
                     }
                 }
             });
+
         }
 
 
