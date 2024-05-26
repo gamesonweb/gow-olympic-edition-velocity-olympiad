@@ -741,9 +741,7 @@ export class Hud {
     public GameOverOverlay(): void {
 
         // make cursor unlock
-        const canvas: HTMLCanvasElement = <HTMLCanvasElement>this._scene.getEngine().getRenderingCanvas();
-        canvas.requestPointerLock = () => {
-            };
+        document.exitPointerLock();
 
 
 

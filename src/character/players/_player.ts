@@ -116,10 +116,19 @@ export class Player extends SceneComponent implements GameObject {
     _dash(): void {
         let direction = this._getCameraDirection();
         this._aggregate.body.applyImpulse(direction.scale(this._speed * this._dashRate), this.position);
+
+        // check if colide with Enemy if it destroy the enemy
+        // TODO: make the enemy take damage
+        // TODO: Check if the player collide with the enemy
+
+
+
     }
 
     public updateState() {
-        return;
+        if(this.position.y < -10){
+            this.dead();
+        }
     }
 
     public destroy() {
