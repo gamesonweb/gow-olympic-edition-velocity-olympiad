@@ -12,9 +12,7 @@ import {
 import * as GUI from "@babylonjs/gui";
 import {SceneComponent} from "../../scenes/SceneComponent.ts";
 
-export class Sign implements SceneComponent{
-    private _text: string;
-    private _position: Vector3;
+export class Sign implements SceneComponent {
     private scene: Scene;
     private advancedTexture: GUI.AdvancedDynamicTexture;
     private signMesh!: Mesh;
@@ -27,9 +25,13 @@ export class Sign implements SceneComponent{
         this.setup();
     }
 
+    private _text: string;
+
     get text(): string {
         return this._text;
     }
+
+    private _position: Vector3;
 
     get position(): Vector3 {
         return this._position;
@@ -78,10 +80,12 @@ export class Sign implements SceneComponent{
         );
 
 
-
-
-
         console.log("Sign loaded at position: ", this.position.toString());
+    }
+
+    destroy() {
+        this.advancedTexture.dispose();
+        this.signMesh.dispose();
     }
 
     private createSignMesh(): Mesh {
@@ -94,10 +98,5 @@ export class Sign implements SceneComponent{
 
 
         return this.signMesh;
-    }
-
-    destroy() {
-        this.advancedTexture.dispose();
-        this.signMesh.dispose();
     }
 }

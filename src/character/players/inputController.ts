@@ -4,31 +4,27 @@ import {Hud} from './ui';
 export class PlayerInput {
 
     public inputMap: any;
-    private readonly _scene: Scene;
-
     //simple movement
     public horizontal: number = 0;
     public vertical: number = 0;
     //tracks whether or not there is movement in that axis
     public horizontalAxis: number = 0;
     public verticalAxis: number = 0;
-
     //jumping and dashing
     public jumpKeyDown: boolean = false;
     public dashing: boolean = false;
-
     // spell casting
     public spell1: boolean = false;
     public spell2: boolean = false;
-
+    public mobileLeft: boolean = false;
+    public mobileRight: boolean = false;
+    public mobileUp: boolean = false;
+    public mobileDown: boolean = false;
+    private readonly _scene: Scene;
     //Mobile Input trackers
     private _ui: Hud;
-    public mobileLeft: boolean = false;
-    public mobileRight: boolean= false;
-    public mobileUp: boolean= false;
-    public mobileDown: boolean= false;
-    private _mobileJump: boolean= false;
-    private _mobileDash: boolean= false;
+    private _mobileJump: boolean = false;
+    private _mobileDash: boolean = false;
 
     //keyboard caracters default to azerty
     private _keyboardUpCaracter: string = "z";
@@ -69,6 +65,12 @@ export class PlayerInput {
         this._setKeyboardCaracters();
     }
 
+    public resetInputMap(): void {
+        this.inputMap = {};
+    }
+
+    // Keyboard controls & Mobile controls
+
     private _setKeyboardCaracters(): void {
         if (this._ui.isAzerty) {
             this._keyboardUpCaracter = "z";
@@ -83,7 +85,6 @@ export class PlayerInput {
         }
     }
 
-    // Keyboard controls & Mobile controls
     //handles what is done when keys are pressed or if on mobile, when buttons are pressed
     private _updateFromKeyboard(): void {
 
@@ -110,8 +111,7 @@ export class PlayerInput {
         } else if ((this.inputMap["ArrowRight"] || this.inputMap[this._keyboardRightCaracter] || this.mobileRight) && !this._ui.gamePaused) {
             this.horizontal = Scalar.Lerp(this.horizontal, 1, 0.2);
             this.horizontalAxis = 1;
-        }
-        else {
+        } else {
             this.horizontal = 0;
             this.horizontalAxis = 0;
         }
@@ -181,9 +181,5 @@ export class PlayerInput {
         this._ui.downBtn.onPointerUpObservable.add(() => {
             this.mobileDown = false;
         });
-    }
-
-    public resetInputMap(): void {
-        this.inputMap = {};
     }
 }

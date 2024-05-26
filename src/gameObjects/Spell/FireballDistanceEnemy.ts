@@ -25,7 +25,7 @@ export class fireballDistanceEnemy extends SceneComponent implements GameObject 
     private _material!: StandardMaterial;
     private _loop_observer!: Observer<Scene>;
     private _isExpired: boolean = false;
-    public damage: number;
+    private _damage: number;
 
 
     constructor() {
@@ -35,7 +35,7 @@ export class fireballDistanceEnemy extends SceneComponent implements GameObject 
     init(scene: Scene, position: Vector3, damage: number) {
         this._scene = scene;
         this._position = position;
-        this.damage = damage;
+        this._damage = damage;
         // Create the mesh
         let color1 = Color3.FromInts(70, 0, 130); // Violet
         let color2 = Color3.FromInts(0, 0, 255); // Bleu
@@ -52,7 +52,7 @@ export class fireballDistanceEnemy extends SceneComponent implements GameObject 
 
         // Calculate end position based on camera direction
         let end = camera.position.clone();
-        end.y -=2;
+        end.y -= 2;
         var angle = Math.atan2(start.z - end.z, start.x - end.x);
 
 
@@ -112,9 +112,9 @@ export class fireballDistanceEnemy extends SceneComponent implements GameObject 
 
     public updateState() {
         console.log("fireballDistanceEnemy updateState")
-         if (this._isExpired) {
-             this.destroy();
-         }
+        if (this._isExpired) {
+            this.destroy();
+        }
     }
 
     public detectCollision(gameObjects: GameObject[]) {
@@ -135,7 +135,6 @@ export class fireballDistanceEnemy extends SceneComponent implements GameObject 
                 }
             });
         }
-
 
 
     }

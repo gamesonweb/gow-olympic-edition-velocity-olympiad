@@ -1,15 +1,19 @@
 import {AbstractMesh, AnimationGroup, Scene, SceneLoader, Vector3} from "@babylonjs/core";
 import {Character} from "../interfaces/Character.ts";
-import {fireballDistanceEnemy} from "../../gameObjects/Spell/fireballDistanceEnemy.ts";
+import {fireballDistanceEnemy} from "../../gameObjects/Spell/FireballDistanceEnemy.ts";
+
 
 export class DistanceEnemy implements Character, GameObject {
     position: Vector3;
-    mesh: AbstractMesh;
+    mesh: AbstractMesh | null;
     scene: Scene;
     hp: number;
     isFlying: boolean;
     idleAnimation: AnimationGroup | null;
     attackAvailable: boolean;
+    canActOnCollision: boolean;
+    canDetectCollision: boolean;
+
 
     constructor(scene: Scene, position: Vector3) {
         this.position = position;
@@ -29,7 +33,7 @@ export class DistanceEnemy implements Character, GameObject {
             this.mesh = meshes[0];
             this.mesh.position = this.position;
             this.mesh.position.y += 3;
-            let scale = 0.05    ;
+            let scale = 0.05;
             this.mesh.scaling = new Vector3(scale, scale, scale);
             // rotate the mesh to make it vertical
             this.mesh.rotation.y = 0;
@@ -39,7 +43,9 @@ export class DistanceEnemy implements Character, GameObject {
         // make him always look at the player
         this.scene.registerBeforeRender(() => {
             if (this.scene.activeCamera) {
-                if (this.mesh){this.mesh.lookAt(this.scene.activeCamera.position);}
+                if (this.mesh) {
+                    this.mesh.lookAt(this.scene.activeCamera.position);
+                }
 
             }
         });
@@ -54,15 +60,15 @@ export class DistanceEnemy implements Character, GameObject {
             }
         });
 
-    //     make him attack if he is in range of the player
+        //     make him attack if he is in range of the player
         let distanceToAttack = 50;
         this.scene.registerBeforeRender(() => {
-            if (this.scene.activeCamera) {
-                if (this.mesh && this.mesh.position.subtract(this.scene.activeCamera.position).length() < distanceToAttack) {
-                    this.lauchAttack();
+                if (this.scene.activeCamera) {
+                    if (this.mesh && this.mesh.position.subtract(this.scene.activeCamera.position).length() < distanceToAttack) {
+                        this.lauchAttack();
+                    }
                 }
             }
-        }
         );
     }
 
@@ -91,6 +97,20 @@ export class DistanceEnemy implements Character, GameObject {
         let fireballposition = this.position.clone();
         fireballposition.y += 0.5;
         new fireballDistanceEnemy().init(this.scene, fireballposition, 10)
-        console.log(" is attacking the player")
     }
+
+
+    onCollisionCallback(gameObject: GameObject): void {
+        return;
+    }
+
+    detectCollision(gameObjects: GameObject[]): void {
+        return;
+    }
+
+    updateState(): void {
+        return;
+    }
+
+
 }

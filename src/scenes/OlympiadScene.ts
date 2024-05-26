@@ -11,11 +11,9 @@ import {Inspector} from '@babylonjs/inspector';
 
 export class OlympiadScene extends Scene {
 
-    private _sceneComponents: SceneComponent[] = [];
-    private _gameObjects: GameObject[] = [];
+    public player!: Player;
     protected engine: Engine;
     protected physicsEngine!: HavokPlugin;
-    public player!: Player;
 
     protected constructor(engine: Engine, options?: SceneOptions) {
         super(engine, options);
@@ -26,18 +24,23 @@ export class OlympiadScene extends Scene {
                 if (gameObject && gameObject.canDetectCollision) {
                     gameObject.detectCollision(this._gameObjects);
                 }
+                console.log("updateState");
                 gameObject.updateState();
 
             });
         });
     }
 
-    public get gameObjects(): GameObject[] {
-        return this._gameObjects;
-    }
+    private _sceneComponents: SceneComponent[] = [];
 
     public get sceneComponents(): SceneComponent[] {
         return this._sceneComponents;
+    }
+
+    private _gameObjects: GameObject[] = [];
+
+    public get gameObjects(): GameObject[] {
+        return this._gameObjects;
     }
 
     async _createPhysicsEngine() {
@@ -83,6 +86,10 @@ export class OlympiadScene extends Scene {
         this._gameObjects.push(gameObject);
     }
 
+    public render(updateCameras?: boolean, ignoreAnimations?: boolean) {
+        super.render(updateCameras, ignoreAnimations);
+    }
+
     private _enableDebug(): void {
         if (import.meta.env.DEV) {
             console.log("DEV MODE: Scene inspector enabled");
@@ -95,9 +102,5 @@ export class OlympiadScene extends Scene {
             //     }
             // });
         }
-    }
-
-    public render(updateCameras?: boolean, ignoreAnimations?: boolean) {
-        super.render(updateCameras, ignoreAnimations);
     }
 }

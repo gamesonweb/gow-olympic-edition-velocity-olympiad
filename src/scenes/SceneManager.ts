@@ -11,9 +11,9 @@ export class SceneManager {
 
     // Manage the scenes and Havok physics engine
 
-    private readonly _canvas: HTMLCanvasElement;
     public engine: Engine;
     public playerState: PlayerState;
+    private readonly _canvas: HTMLCanvasElement;
 
     constructor(canvas: HTMLCanvasElement) {
         this._canvas = canvas;

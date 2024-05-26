@@ -4,43 +4,20 @@ import {ICard} from "../../gameObjects/Card/ICard";
 import {RareteCard} from "../../gameObjects/Card/RareteCard";
 
 export class Hud {
-    private _scene: Scene;
-
     //Game Timer
     public time!: number; //keep track to signal end game REAL TIME
-    private _prevTime: number = 0;
-    private _clockTime: TextBlock | null = null; //GAME TIME
-    private _startTime!: number;
-    private _stopTimer!: boolean;
-    private _sString = "00";
-    private _mString = 11;
-    private _lanternCnt!: TextBlock;
-
-    //Animated UI sprites
-    private _sparklerLife!: Image;
-    private _spark!: Image;
-
     //Timer handlers
     public stopSpark!: boolean;
-    private _handle!: NodeJS.Timeout;
-    private _sparkhandle!: NodeJS.Timeout;
-
     //Pause toggle
     public gamePaused!: boolean;
-
     //Quit game
     public quit!: boolean;
     public transition: boolean = false;
-
     //UI Elements
     public pauseBtn!: Button;
     public fadeLevel!: number;
-    private _playerUI!: AdvancedDynamicTexture;
-    private _pauseMenu!: Rectangle;
-    private _controls!: Rectangle;
     public tutorial!: Rectangle;
     public hint!: Rectangle;
-
     //Mobile
     public isMobile!: boolean;
     public jumpBtn!: Button;
@@ -49,19 +26,33 @@ export class Hud {
     public rightBtn!: Button;
     public upBtn!: Button;
     public downBtn!: Button;
-
     //Sounds
     public quitSfx!: Sound;
+    // keyboard
+    public isAzerty: boolean | null = null;
+    private _scene: Scene;
+    private _prevTime: number = 0;
+    private _clockTime: TextBlock | null = null; //GAME TIME
+    private _startTime!: number;
+    private _stopTimer!: boolean;
+    private _sString = "00";
+    private _mString = 11;
+    private _lanternCnt!: TextBlock;
+    //Animated UI sprites
+    private _sparklerLife!: Image;
+    private _spark!: Image;
+    private _handle!: NodeJS.Timeout;
+    private _sparkhandle!: NodeJS.Timeout;
+    private _playerUI!: AdvancedDynamicTexture;
+    private _pauseMenu!: Rectangle;
+    private _controls!: Rectangle;
     private _sfx!: Sound;
     private _pause!: Sound;
     private _sparkWarningSfx!: Sound;
-
     //ICard Menu
     private _cardMenuStackPanel!: StackPanel;
     private _activeCardStackPanel!: StackPanel;
 
-    // keyboard
-    public isAzerty: boolean | null = null;
     constructor(scene: Scene) {
         this._scene = scene;
     }
@@ -329,48 +320,6 @@ export class Hud {
         this._createICardMenu();
     }
 
-    private _createICardMenu(): void {
-        this._cardMenuStackPanel = new StackPanel("cardMenuStackPanel");
-        this._cardMenuStackPanel.width = "180px"; // La largeur du stack panel
-        this._cardMenuStackPanel.isVertical = true; // Alignement vertical des cartes
-        this._cardMenuStackPanel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
-        this._cardMenuStackPanel.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
-        this._cardMenuStackPanel.left = "-230px"
-        this._cardMenuStackPanel.rotation = -Math.PI / 18;
-        this._playerUI.addControl(this._cardMenuStackPanel);
-
-        this._activeCardStackPanel = new StackPanel("activeCardStackPanel");
-        this._activeCardStackPanel.width = "150px";
-        this._activeCardStackPanel.isVertical = true;
-        this._activeCardStackPanel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
-        this._activeCardStackPanel.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
-        // this._activeCardStackPanel.rotate(Axis.Z, -Math.PI / 18); // Inclinaison légère du StackPanel
-        // this._activeCardStackPanel.rotation = -Math.PI / 18;
-        this._activeCardStackPanel.left = "-10px"; // Ajuster la position à gauche par rapport au centre du StackPanel des cartes du menu
-        this._playerUI.addControl(this._activeCardStackPanel);
-        this._playerUI.addControl(this._activeCardStackPanel);
-    }
-
-    private _getStackUIImageFromRarete(rareteCard: RareteCard): string {
-        console.log(rareteCard)
-        let stackUIImage = "sprites/controls.jpeg"
-        switch (rareteCard) {
-            case RareteCard.COMMON:
-                stackUIImage = "sprites/cardPreview/TorchTextureGray.png";
-                break;
-            case RareteCard.RARE:
-                stackUIImage = "sprites/cardPreview/TorchTextureBlue.png"
-                break;
-            case RareteCard.EPIC:
-                stackUIImage = "sprites/cardPreview/TorchTexturePurple.png";
-                break;
-            case RareteCard.LEGENDARY:
-                stackUIImage = "sprites/cardPreview/TorchTextureGold.png";
-                break;
-        }
-        return stackUIImage;
-    }
-
     /**
      * @deprecated This function will be removed in future versions. Use updateCardsStackPanel instead.
      */
@@ -392,27 +341,27 @@ export class Hud {
             let card = cards[activeCardPosition];
             this.activeCard(card);
             if (activeCardPosition > 0) {
-                let previousCard = cards[activeCardPosition-1];
+                let previousCard = cards[activeCardPosition - 1];
                 this.addCardToStackPanel(previousCard, 0);
             }
-        }else {
+        } else {
             this._activeCardStackPanel.clearControls();
             this._cardMenuStackPanel.clearControls();
         }
 
 
-
-
     }
 
     public addCardToStackPanel(card: ICard, index = 0): Control | undefined {
-        if (index > 0) { return; }
+        if (index > 0) {
+            return;
+        }
         let stackUIImage = this._getStackUIImageFromRarete(card.rarete);
         let cardImage = new Image("card", stackUIImage);
         let width = "100px";
         let height = "150px";
-        let paddingTop = (index == 0)? "10px" : "0px";
-        let paddingBottom = (index == 0)? "5px" : "0px";
+        let paddingTop = (index == 0) ? "10px" : "0px";
+        let paddingBottom = (index == 0) ? "5px" : "0px";
         let left = (index == 0) ? "0px" : index * -10 + "px";
 
         cardImage.width = width; // La largeur de la carte
@@ -445,36 +394,6 @@ export class Hud {
         this._activeCardStackPanel.addControl(cardImage);
     }
 
-    private _lockPointer(): void {
-        // When the element is clicked, request pointer lock
-        const canvas: HTMLCanvasElement = <HTMLCanvasElement> this._scene.getEngine().getRenderingCanvas();
-        canvas.onclick = function () {
-            let requestPointerLock = canvas.requestPointerLock ||
-                canvas.mozRequestPointerLock ||
-                canvas.webkitRequestPointerLock;
-            if (requestPointerLock) {
-                console.log("requestPointerLock exists")
-                canvas.requestPointerLock = requestPointerLock;
-                // Ask the browser to lock the pointer
-                canvas.requestPointerLock();
-            } else {
-                console.log("Pointer lock not supported");
-            }
-        };
-    }
-
-    private _disablePointerLockOnPause(): void {
-        const canvas: HTMLCanvasElement = <HTMLCanvasElement> this._scene.getEngine().getRenderingCanvas();
-        if (this.gamePaused) {
-            canvas.requestPointerLock = () => { };
-            this.stopTimer();
-        } else {
-            if (document.pointerLockElement !== canvas) {
-                this._lockPointer();
-            }
-        }
-    }
-
     public updateHud(): void {
         if (!this._stopTimer && this._startTime != null) {
             let curTime = Math.floor((new Date().getTime() - this._startTime) / 1000) + this._prevTime; // divide by 1000 to get seconds
@@ -488,31 +407,17 @@ export class Hud {
     public updateLanternCount(numLanterns: number): void {
         this._lanternCnt.text = "Lanterns: " + numLanterns + " / 22";
     }
+
     //---- Game Timer ----
     public startTimer(): void {
         this._startTime = new Date().getTime();
         this._stopTimer = false;
     }
+
     public stopTimer(): void {
         this._stopTimer = true;
     }
 
-    //format the time so that it is relative to 11:00 -- game time
-    private _formatTime(time: number): string {
-        let minsPassed = Math.floor(time / 60); //seconds in a min
-        let secPassed = time % 240; // goes back to 0 after 4mins/240sec
-        //gameclock works like: 4 mins = 1 hr
-        // 4sec = 1/15 = 1min game time
-        if (secPassed % 4 == 0) {
-            // this._mString = Math.floor(minsPassed / 4) + 11;
-            this._mString = Math.floor(minsPassed / 4);
-            this._sString = (secPassed / 4 < 10 ? "0" : "") + secPassed / 4;
-        }
-        let day = (this._mString == 11 ? " PM" : " AM");
-        return (this._mString + ":" + this._sString + day);
-    }
-
-    //---- Sparkler Timers ----
     //start and restart sparkler, handles setting the texture and animation frame
     public startSparklerTimer(sparkler: ParticleSystem): void {
         //reset the sparkler timers & animation frames
@@ -560,8 +465,7 @@ export class Hud {
                     this._spark.cellId++;
                 } else if (this._sparklerLife.cellId < 10 && this._spark.cellId >= 5) {
                     this._spark.cellId = 0;
-                }
-                else {
+                } else {
                     this._spark.cellId = 0;
                     clearInterval(this._sparkhandle);
                 }
@@ -577,6 +481,96 @@ export class Hud {
             sparkler.stop();
             this._scene.getLightByName("sparklight")!.intensity = 0;
         }
+    }
+
+    private _createICardMenu(): void {
+        this._cardMenuStackPanel = new StackPanel("cardMenuStackPanel");
+        this._cardMenuStackPanel.width = "180px"; // La largeur du stack panel
+        this._cardMenuStackPanel.isVertical = true; // Alignement vertical des cartes
+        this._cardMenuStackPanel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
+        this._cardMenuStackPanel.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
+        this._cardMenuStackPanel.left = "-230px"
+        this._cardMenuStackPanel.rotation = -Math.PI / 18;
+        this._playerUI.addControl(this._cardMenuStackPanel);
+
+        this._activeCardStackPanel = new StackPanel("activeCardStackPanel");
+        this._activeCardStackPanel.width = "150px";
+        this._activeCardStackPanel.isVertical = true;
+        this._activeCardStackPanel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
+        this._activeCardStackPanel.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
+        // this._activeCardStackPanel.rotate(Axis.Z, -Math.PI / 18); // Inclinaison légère du StackPanel
+        // this._activeCardStackPanel.rotation = -Math.PI / 18;
+        this._activeCardStackPanel.left = "-10px"; // Ajuster la position à gauche par rapport au centre du StackPanel des cartes du menu
+        this._playerUI.addControl(this._activeCardStackPanel);
+        this._playerUI.addControl(this._activeCardStackPanel);
+    }
+
+    private _getStackUIImageFromRarete(rareteCard: RareteCard): string {
+        console.log(rareteCard)
+        let stackUIImage = "sprites/controls.jpeg"
+        switch (rareteCard) {
+            case RareteCard.COMMON:
+                stackUIImage = "sprites/cardPreview/TorchTextureGray.png";
+                break;
+            case RareteCard.RARE:
+                stackUIImage = "sprites/cardPreview/TorchTextureBlue.png"
+                break;
+            case RareteCard.EPIC:
+                stackUIImage = "sprites/cardPreview/TorchTexturePurple.png";
+                break;
+            case RareteCard.LEGENDARY:
+                stackUIImage = "sprites/cardPreview/TorchTextureGold.png";
+                break;
+        }
+        return stackUIImage;
+    }
+
+    private _lockPointer(): void {
+        // When the element is clicked, request pointer lock
+        const canvas: HTMLCanvasElement = <HTMLCanvasElement>this._scene.getEngine().getRenderingCanvas();
+        canvas.onclick = function () {
+            let requestPointerLock = canvas.requestPointerLock ||
+                canvas.mozRequestPointerLock ||
+                canvas.webkitRequestPointerLock;
+            if (requestPointerLock) {
+                console.log("requestPointerLock exists")
+                canvas.requestPointerLock = requestPointerLock;
+                // Ask the browser to lock the pointer
+                canvas.requestPointerLock();
+            } else {
+                console.log("Pointer lock not supported");
+            }
+        };
+    }
+
+    //---- Sparkler Timers ----
+
+    private _disablePointerLockOnPause(): void {
+        const canvas: HTMLCanvasElement = <HTMLCanvasElement>this._scene.getEngine().getRenderingCanvas();
+        if (this.gamePaused) {
+            canvas.requestPointerLock = () => {
+            };
+            this.stopTimer();
+        } else {
+            if (document.pointerLockElement !== canvas) {
+                this._lockPointer();
+            }
+        }
+    }
+
+    //format the time so that it is relative to 11:00 -- game time
+    private _formatTime(time: number): string {
+        let minsPassed = Math.floor(time / 60); //seconds in a min
+        let secPassed = time % 240; // goes back to 0 after 4mins/240sec
+        //gameclock works like: 4 mins = 1 hr
+        // 4sec = 1/15 = 1min game time
+        if (secPassed % 4 == 0) {
+            // this._mString = Math.floor(minsPassed / 4) + 11;
+            this._mString = Math.floor(minsPassed / 4);
+            this._sString = (secPassed / 4 < 10 ? "0" : "") + secPassed / 4;
+        }
+        let day = (this._mString == 11 ? " PM" : " AM");
+        return (this._mString + ":" + this._sString + day);
     }
 
     //---- Pause Menu Popup ----
@@ -694,7 +688,7 @@ export class Hud {
 
             //--SOUNDS--
             this.quitSfx.play();
-            if(this._pause.isPlaying){
+            if (this._pause.isPlaying) {
                 this._pause.stop();
             }
         })

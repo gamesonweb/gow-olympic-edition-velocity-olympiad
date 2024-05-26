@@ -21,13 +21,13 @@ export class LevelSelectorScene extends OlympiadScene {
 
     constructor(engine: Engine, playerState: PlayerState) {
 
-      super(engine);
+        super(engine);
 
-      this.enemyManager = new WelcomeEnemyManager(this);
-      this.addComponent(this.enemyManager); // Ainsi, le manager sera détruit avec la scène
+        this.enemyManager = new WelcomeEnemyManager(this);
+        this.addComponent(this.enemyManager); // Ainsi, le manager sera détruit avec la scène
 
-      this.player = new Player(playerState, this);
-      this.addComponent(this.player);
+        this.player = new Player(playerState, this);
+        this.addComponent(this.player);
     }
 
     public async init(): Promise<void> {
@@ -35,6 +35,12 @@ export class LevelSelectorScene extends OlympiadScene {
         this.player.init(new Vector3(0, 100, 0));
         this.enemyManager.init();
         this._buildlevelStatic();
+    }
+
+    public destroy(): void {
+        this._meshes.forEach((mesh) => mesh.dispose());
+        this._materials.forEach((material) => material.dispose());
+        super.destroy();
     }
 
     private _buildlevelStatic(): void {
@@ -45,18 +51,12 @@ export class LevelSelectorScene extends OlympiadScene {
             root.scaling = new Vector3(1, 1, 1);
             const childrens = root.getChildren();
 
-            for (let child of childrens){
+            for (let child of childrens) {
                 const mesh = child as Mesh;
-                const body = new PhysicsBody(mesh, PhysicsMotionType.STATIC,false, this);
-                body.shape = new PhysicsShapeMesh(mesh,this)
+                const body = new PhysicsBody(mesh, PhysicsMotionType.STATIC, false, this);
+                body.shape = new PhysicsShapeMesh(mesh, this)
             }
             // new PhysicsAggregate(root, PhysicsShapeType.BOX, {mass: 0}, this);
         });
-    }
-
-    public destroy(): void {
-        this._meshes.forEach((mesh) => mesh.dispose());
-        this._materials.forEach((material) => material.dispose());
-        super.destroy();
     }
 }

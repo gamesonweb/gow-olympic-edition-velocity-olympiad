@@ -1,5 +1,4 @@
 import {
-    UniversalCamera,
     Color3,
     Color4,
     Mesh,
@@ -9,6 +8,7 @@ import {
     Scene,
     StandardMaterial,
     Texture,
+    UniversalCamera,
     Vector3
 } from "@babylonjs/core";
 import {SceneComponent} from "../../../scenes/SceneComponent.ts";
@@ -18,12 +18,12 @@ import {DistanceEnemy} from "../../../character/enemy/distance.ts";
 export class FlammeCardProjectile extends SceneComponent implements GameObject {
     canActOnCollision: boolean = true;
     canDetectCollision: boolean = true;
+    public damage!: number;
     private _scene!: Scene;
     private _mesh!: Mesh;
     private _material!: StandardMaterial;
     private _loop_observer!: Observer<Scene>;
     private _isExpired: boolean = false;
-    public damage!: number;
 
     constructor() {
         super();
@@ -110,7 +110,7 @@ export class FlammeCardProjectile extends SceneComponent implements GameObject {
             if (gameObject instanceof DistanceEnemy) {
                 if (!this._mesh) break;
                 let distance = Vector3.Distance(this._mesh.position, gameObject.position);
-                if (distance <= 5 ) {
+                if (distance <= 5) {
                     gameObject.onCollisionCallback(this); // Tell the distance enemy they collided with a fireball
                     gameObjects.splice(gameObjects.indexOf(this), 1);
                     this.destroy();

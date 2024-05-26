@@ -14,13 +14,13 @@ import {OlympiadScene} from "../../scenes/OlympiadScene.ts";
 
 export class Wall extends SceneComponent implements GameObject {
     public mesh!: Mesh;
-    private readonly scene: Scene;
-    private readonly position: Vector3;
-    private aggregate!: PhysicsAggregate;
     public canDetectCollision: boolean = false;
     public canActOnCollision: boolean = true;
     public health: number = 100;
     public actualhealth: number = this.health;
+    private readonly scene: Scene;
+    private readonly position: Vector3;
+    private aggregate!: PhysicsAggregate;
 
     constructor(scene: Scene, position: Vector3) {
         super();
@@ -94,7 +94,7 @@ export class Wall extends SceneComponent implements GameObject {
         console.log('Wall take damage: ', damage);
         this.actualhealth -= damage;
         if (this.actualhealth <= 0) {
-            let olympiadScene: OlympiadScene = <OlympiadScene> this.scene;
+            let olympiadScene: OlympiadScene = <OlympiadScene>this.scene;
             // Remove the wall from the gameObjects array
             olympiadScene.gameObjects.splice(olympiadScene.gameObjects.indexOf(this), 1);
             this.destroy();

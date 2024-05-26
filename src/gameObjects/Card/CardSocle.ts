@@ -4,16 +4,15 @@ import {ICard} from "./ICard.ts";
 import {SceneComponent} from "../../scenes/SceneComponent";
 import {Player} from "../../character/players";
 
-export class CardSocle extends SceneComponent implements GameObject{
+export class CardSocle extends SceneComponent implements GameObject {
     position: Vector3;
     scene: Scene;
     engine: Engine;
     public card: ICard;
-    private mesh!: Nullable<Mesh>;
-    private _meshes: Mesh[] = [];
     public canDetectCollision: boolean = true;
     public canActOnCollision: boolean = false;
-
+    private mesh!: Nullable<Mesh>;
+    private _meshes: Mesh[] = [];
 
     constructor(scene: Scene, card: ICard, position: Vector3) {
         super();

@@ -23,10 +23,14 @@ import {State as PlayerState} from "./state";
 import {ICard} from "../../gameObjects/Card/ICard";
 import {CardSocle} from "../../gameObjects/Card/CardSocle.ts";
 import {Wall} from "../../gameObjects/Wall";
-import {FireballDistanceEnemy} from "../../gameObjects/Spell/FireballDistanceEnemy.ts";
+import {fireballDistanceEnemy} from "../../gameObjects/Spell/FireballDistanceEnemy.ts";
 
 export class Player extends SceneComponent implements GameObject {
     public mesh!: Mesh;
+    readonly _scene: Scene;
+    public readonly playerState: PlayerState;
+    public canActOnCollision: boolean = true;
+    public canDetectCollision: boolean = false; // Player can't detect collision on other objects. It's the oher object
     private isOnGround: boolean = true;
     private _ui: Hud;
     private _aggregate!: PhysicsAggregate;
@@ -35,8 +39,6 @@ export class Player extends SceneComponent implements GameObject {
     private _meshes: Mesh[] = [];
     private _materials: Material[] = [];
     private _input: PlayerInput;
-    readonly _scene: Scene;
-    public readonly playerState: PlayerState;
     private _speed: number = 1;
     private _jumpForce: number = 10;
     private _targetCamaraRotationY: number | null = null;
@@ -49,9 +51,6 @@ export class Player extends SceneComponent implements GameObject {
     private _gravityScaleOnFalling: number = 2;
     private _isFallingGravitySet: boolean = false;
     private hp: number = 100;
-
-    public canActOnCollision: boolean = true;
-    public canDetectCollision: boolean = false; // Player can't detect collision on other objects. It's the oher object
     // that detects collision on the player
 
     constructor(playerState: PlayerState, scene: Scene) {
@@ -102,6 +101,52 @@ export class Player extends SceneComponent implements GameObject {
         this.cardList?.push(card);
         // this._ui.addCardToStackPanel(card)
         this._ui.updateCardsToStackPanel(this.cardList || []);
+    }
+
+    _dashbyBtn(): void {
+        if (this.isOnGround) return;
+        if (!this._dashAvailable) return;
+        this._dash()
+        this._input.dashing = false;
+        this._dashAvailable = false;
+    }
+
+    _dash(): void {
+        let direction = this._getCameraDirection();
+        this._aggregate.body.applyImpulse(direction.scale(this._speed * this._dashRate), this.position);
+    }
+
+    public updateState() {
+        return;
+    }
+
+    public destroy() {
+        this._scene.onKeyboardObservable.clear();
+        this._aggregate.dispose();
+        this._light.dispose();
+        this._camera.dispose();
+        this._meshes.forEach(mesh => mesh.dispose());
+        this._materials.forEach(material => material.dispose());
+    }
+
+    public detectCollision(gameObjects: GameObject[]): void {
+        // console.log("Player can detect collision on: ", gameObjects);
+        gameObjects;
+    }
+
+    public onCollisionCallback(gameObject: GameObject): void {
+        if (gameObject instanceof CardSocle) {
+            console.log("Card collision detected", gameObject);
+            this.addCardToCart(gameObject.card);
+        }
+        if (gameObject instanceof Wall) {
+            console.log("Wall collision detected", gameObject);
+        }
+
+        if (gameObject instanceof fireballDistanceEnemy) {
+            console.log("FireballDistanceEnemy collision detected", gameObject);
+            this.takeDamage(10);
+        }
     }
 
     private _getActiveCard(): ICard | null {
@@ -164,6 +209,8 @@ export class Player extends SceneComponent implements GameObject {
         // this.mesh.moveWithCollisions(direction.scale(this._speed));
     }
 
+    //--GROUND DETECTION--
+
     private _turnLeft(): void {
         let direction: Vector3 = this._getCameraDirection().cross(Vector3.Up());
         // this.rotation.y = Math.atan2(direction.x, direction.z);
@@ -176,20 +223,6 @@ export class Player extends SceneComponent implements GameObject {
         // Intensify the gravity to make the jump more realistic
         this._aggregate.body.applyImpulse(Vector3.Up().scale(this._jumpForce), this.position);
         this.isOnGround = false;
-    }
-
-
-    _dashbyBtn(): void {
-        if (this.isOnGround) return;
-        if (!this._dashAvailable) return;
-        this._dash()
-        this._input.dashing = false;
-        this._dashAvailable = false;
-    }
-
-    _dash(): void {
-        let direction = this._getCameraDirection();
-        this._aggregate.body.applyImpulse(direction.scale(this._speed * this._dashRate), this.position);
     }
 
     private _castSpell(n: number): void {
@@ -216,7 +249,6 @@ export class Player extends SceneComponent implements GameObject {
 
     }
 
-
     private _getCameraDirection(): Vector3 {
         let forwardRay = this._camera.getForwardRay();
         let direction = forwardRay.direction.normalize();
@@ -225,7 +257,6 @@ export class Player extends SceneComponent implements GameObject {
         return direction;
     }
 
-    //--GROUND DETECTION--
     //Send raycast to the floor to detect if there are any hits with meshes below the character
     private _floorRaycast(offsets: {
         x: Nullable<number>,
@@ -357,38 +388,6 @@ export class Player extends SceneComponent implements GameObject {
                     this._slerpAmount = 0; // Réinitialisez pour la prochaine fois
                 }
             }
-        }
-    }
-    public updateState() {
-        return;
-    }
-
-    public destroy() {
-        this._scene.onKeyboardObservable.clear();
-        this._aggregate.dispose();
-        this._light.dispose();
-        this._camera.dispose();
-        this._meshes.forEach(mesh => mesh.dispose());
-        this._materials.forEach(material => material.dispose());
-    }
-
-    public detectCollision(gameObjects: GameObject[]): void {
-        // console.log("Player can detect collision on: ", gameObjects);
-        gameObjects;
-    }
-
-    public onCollisionCallback(gameObject: GameObject): void {
-        if (gameObject instanceof CardSocle) {
-            console.log("Card collision detected", gameObject);
-            this.addCardToCart(gameObject.card);
-        }
-        if (gameObject instanceof Wall) {
-            console.log("Wall collision detected", gameObject);
-        }
-
-        if (gameObject instanceof FireballDistanceEnemy) {
-            console.log("Player collision with FireballDistanceEnemy");
-            this.takeDamage(gameObject.damage);
         }
     }
 

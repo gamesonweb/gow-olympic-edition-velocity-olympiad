@@ -10,6 +10,8 @@ export interface Character {
     scene: Scene;
     hp: number;
     isFlying: boolean;
+
     init(): void;
+
     takeDamage(amount: number): void;
 }
