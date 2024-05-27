@@ -9,6 +9,7 @@ import {
 import {Character} from "../interfaces/Character.ts";
 import {FireballDistanceEnemy} from "../../gameObjects/Spell/FireballDistanceEnemy.ts";
 import {OlympiadScene} from "../../scenes/OlympiadScene.ts";
+import {Player} from "../players";
 
 
 export class DistanceEnemy implements Character, GameObject {
@@ -19,7 +20,7 @@ export class DistanceEnemy implements Character, GameObject {
     isFlying: boolean;
     idleAnimation: AnimationGroup | null;
     public attackAvailable: boolean;
-    canActOnCollision: boolean = false;
+    canActOnCollision: boolean = true;
     canDetectCollision: boolean = false;
     private meshEye: any[];
 
@@ -88,9 +89,10 @@ export class DistanceEnemy implements Character, GameObject {
     takeDamage(amount: number): void {
         this.hp -= amount;
         if (this.hp <= 0) {
-            this.mesh?.dispose();
+            this.destroy();
         }
     }
+
 
     lauchAttack(): void {
         // Launch the attack
@@ -115,10 +117,20 @@ export class DistanceEnemy implements Character, GameObject {
 
     }
 
+    public destroy(): void {
+        this.mesh?.dispose();
+        this.meshEye.forEach((eye) => {
+            eye.dispose();
+        })
+        let olympiadScene = this.scene as OlympiadScene;
+        olympiadScene.gameObjects.splice(olympiadScene.gameObjects.indexOf(this), 1);
+    }
 
     onCollisionCallback(gameObject: GameObject): void {
-        throw new Error("Method not implemented yet.");
-        gameObject;
+        if (gameObject instanceof Player) {
+            this.takeDamage(10)
+            console.log("Player collision with enemy, enemy hp: ", this.hp);
+        }
     }
 
     detectCollision(gameObjects: GameObject[]): void {
