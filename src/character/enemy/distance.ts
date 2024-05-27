@@ -21,7 +21,6 @@ export class DistanceEnemy implements Character, GameObject {
     attackAvailable: boolean;
     canActOnCollision: boolean;
     canDetectCollision: boolean;
-    private gameObject: GameObject[];
     private meshEye: any[];
 
 

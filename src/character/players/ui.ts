@@ -2,6 +2,7 @@ import {AdvancedDynamicTexture, Button, Control, Grid, Image, Rectangle, StackPa
 import {Effect, ParticleSystem, PostProcess, Scene, Sound} from "@babylonjs/core";
 import {ICard} from "../../gameObjects/Card/ICard";
 import {RareteCard} from "../../gameObjects/Card/RareteCard";
+import {OlympiadScene} from "../../scenes/OlympiadScene.ts";
 
 export class Hud {
     //Game Timer
@@ -741,7 +742,7 @@ export class Hud {
     public GameOverOverlay(): void {
 
         // make cursor unlock
-        document.exitPointerLock();
+        // document.exitPointerLock();
 
 
 
@@ -781,8 +782,10 @@ export class Hud {
         // Event listener for restart button
         restartButton.onPointerUpObservable.add(() => {
             // je reload la page pour relancer
-            location.reload();
-
+            // location.reload();
+            console.log("Click restart");
+            let olympiaScene = <OlympiadScene>this._scene;
+            olympiaScene.restart();
             // TODO faire que ça relance le level
         });
     }

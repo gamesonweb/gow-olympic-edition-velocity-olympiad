@@ -102,4 +102,8 @@ export class OlympiadScene extends Scene {
             // });
         }
     }
+
+    public restart() {
+        throw new Error("Method not implemented.");
+    }
 }

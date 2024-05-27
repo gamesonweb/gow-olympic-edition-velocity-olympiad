@@ -101,6 +101,13 @@ export class FirstLevelScene extends OlympiadScene {
         this.addGameObject(wall);
     }
 
+    public restart() {
+        let newScene = new FirstLevelScene(this.getEngine(), this.player.playerState);
+        console.log("New scene created: ", newScene);
+        newScene.init().then(() => {
+            this.destroy()
+        });
+    }
 }
 
 

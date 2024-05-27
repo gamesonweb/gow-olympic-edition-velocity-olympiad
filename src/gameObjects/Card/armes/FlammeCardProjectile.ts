@@ -86,9 +86,11 @@ export class FlammeCardProjectile extends SceneComponent implements GameObject {
     }
 
     destroy() {
-        this._scene.onBeforeRenderObservable.remove(this._loop_observer);
-        this._material.dispose();
-        this._mesh.dispose();
+        if (this._scene) {
+            this._scene.onBeforeRenderObservable.remove(this._loop_observer);
+            this._material.dispose();
+            this._mesh.dispose();
+        }
     }
 
     public detectCollision(gameObjects: GameObject[]) {
