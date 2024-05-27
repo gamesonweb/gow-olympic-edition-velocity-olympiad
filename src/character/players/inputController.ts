@@ -70,10 +70,10 @@ export class PlayerInput {
         this.inputMap = {};
     }
 
-    public desactivateInputs(): void {
-        this.active = false;
-        this.init();
-    }
+    // public desactivateInputs(): void {
+    //     this.active = false;
+    //     this.init();
+    // }
 
     // Keyboard controls & Mobile controls
 

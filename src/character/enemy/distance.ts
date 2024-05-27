@@ -1,31 +1,30 @@
 import {
     AbstractMesh,
-    AnimationGroup, Color3, Mesh,
-    PhysicsAggregate,
+    AnimationGroup, Mesh,
     PhysicsBody, PhysicsMotionType, PhysicsShapeMesh,
     Scene,
-    SceneLoader, StandardMaterial,
+    SceneLoader,
     Vector3
 } from "@babylonjs/core";
 import {Character} from "../interfaces/Character.ts";
-import {fireballDistanceEnemy} from "../../gameObjects/Spell/FireballDistanceEnemy.ts";
+import {FireballDistanceEnemy} from "../../gameObjects/Spell/FireballDistanceEnemy.ts";
+import {OlympiadScene} from "../../scenes/OlympiadScene.ts";
 
 
 export class DistanceEnemy implements Character, GameObject {
     position: Vector3;
     mesh: AbstractMesh | null;
-    scene: Scene;
+    scene!: Scene;
     hp: number;
     isFlying: boolean;
     idleAnimation: AnimationGroup | null;
     attackAvailable: boolean;
-    canActOnCollision: boolean;
-    canDetectCollision: boolean;
-    private gameObject: GameObject[];
+    canActOnCollision: boolean = false;
+    canDetectCollision: boolean = false;
     private meshEye: any[];
 
 
-    constructor(scene: Scene, position: Vector3,gameObject: GameObject[]) {
+    constructor(scene: Scene, position: Vector3) {
         this.position = position;
         this.scene = scene;
         this.hp = 100;
@@ -33,9 +32,7 @@ export class DistanceEnemy implements Character, GameObject {
         this.mesh = null;
         this.idleAnimation = null;
         this.attackAvailable = true;
-        this.gameObject = gameObject;
         this.meshEye = [];
-
     }
 
     init(): void {
@@ -77,7 +74,7 @@ export class DistanceEnemy implements Character, GameObject {
                         this.lauchAttack();
                     }
                     this.meshEye.forEach((eye) => {
-                        let goodposition = this.scene.activeCamera.position.clone();
+                        let goodposition = this.scene.activeCamera!.position.clone();
                         goodposition.y = eye.position.y+0.05;
                         eye.lookAt(goodposition);
                     });
@@ -111,19 +108,22 @@ export class DistanceEnemy implements Character, GameObject {
         // make him launch a projectile fireball
         let fireballposition = this.position.clone();
         fireballposition.y += 2.5;
-        let fireball = new fireballDistanceEnemy();
+        let fireball = new FireballDistanceEnemy();
         fireball.init(this.scene, fireballposition, 10);
-        this.gameObject.push(fireball);
+        let olympiadScene = this.scene as OlympiadScene;
+        olympiadScene.addGameObject(fireball);
 
     }
 
 
     onCollisionCallback(gameObject: GameObject): void {
-        return;
+        throw new Error("Method not implemented yet.");
+        gameObject;
     }
 
     detectCollision(gameObjects: GameObject[]): void {
-        return;
+        throw new Error("Method not implemented yet.");
+        gameObjects;
     }
 
     updateState(): void {

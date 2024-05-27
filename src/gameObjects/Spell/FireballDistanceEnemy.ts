@@ -16,7 +16,7 @@ import {SceneComponent} from "../../scenes/SceneComponent.ts";
 import {Player} from "../../character/players";
 
 
-export class fireballDistanceEnemy extends SceneComponent implements GameObject {
+export class FireballDistanceEnemy extends SceneComponent implements GameObject {
     canActOnCollision: boolean = true;
     canDetectCollision: boolean = true;
     private _scene!: Scene;
@@ -25,8 +25,8 @@ export class fireballDistanceEnemy extends SceneComponent implements GameObject 
     private _material!: StandardMaterial;
     private _loop_observer!: Observer<Scene>;
     private _isExpired: boolean = false;
-    private _damage: number;
-    private _asDamegePlayer: boolean ;
+    private _damage!: number;
+    private _asDamegePlayer!: boolean ;
 
 
     constructor() {

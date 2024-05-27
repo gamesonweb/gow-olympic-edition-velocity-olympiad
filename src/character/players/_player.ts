@@ -23,7 +23,7 @@ import {State as PlayerState} from "./state";
 import {ICard} from "../../gameObjects/Card/ICard";
 import {CardSocle} from "../../gameObjects/Card/CardSocle.ts";
 import {Wall} from "../../gameObjects/Wall";
-import {fireballDistanceEnemy} from "../../gameObjects/Spell/FireballDistanceEnemy.ts";
+import {FireballDistanceEnemy} from "../../gameObjects/Spell/FireballDistanceEnemy.ts";
 
 export class Player extends SceneComponent implements GameObject {
     public mesh!: Mesh;
@@ -97,6 +97,9 @@ export class Player extends SceneComponent implements GameObject {
         this._setupPhysics();
         // Update the player position and rotation based on the physics body
         this._scene.registerBeforeRender(this._callbackBeforeRenderScene.bind(this));
+        setTimeout(() => {
+            this._ui.GameOverOverlay();
+        }, 2000);
     }
 
     public addCardToCart(card: ICard): void {
@@ -154,7 +157,7 @@ export class Player extends SceneComponent implements GameObject {
             console.log("Wall collision detected", gameObject);
         }
 
-        if (gameObject instanceof fireballDistanceEnemy) {
+        if (gameObject instanceof FireballDistanceEnemy) {
             console.log("FireballDistanceEnemy collision detected", gameObject);
             this.takeDamage(10);
         }
@@ -418,8 +421,6 @@ export class Player extends SceneComponent implements GameObject {
         this.hp = 100;
         this._ui.GameOverOverlay();
         this._death = true
-        // make that the player don't have any more control
-        this._input.desactivateInputs();
 
     }
 

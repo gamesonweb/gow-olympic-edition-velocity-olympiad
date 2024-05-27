@@ -14,13 +14,13 @@ export class FirstLevelScene extends OlympiadScene {
     private _meshes: Mesh[] = [];
     private _materials: Material[] = [];
     private readonly enemyManager: WelcomeEnemyManager;
-    private spawnPoint: Vector3;
+    private spawnPoint!: Vector3;
 
     constructor(engine: Engine, playerState: PlayerState) {
 
         super(engine);
 
-        this.enemyManager = new WelcomeEnemyManager(this, this.gameObjects);
+        this.enemyManager = new WelcomeEnemyManager(this);
         this.addComponent(this.enemyManager); // Ainsi, le manager sera détruit avec la scène
         this.player = new Player(playerState, this);
     }
@@ -101,6 +101,13 @@ export class FirstLevelScene extends OlympiadScene {
         this.addGameObject(wall);
     }
 
+    public restart() {
+        let newScene = new FirstLevelScene(this.getEngine(), this.player.playerState);
+        console.log("New scene created: ", newScene);
+        newScene.init().then(() => {
+            this.destroy()
+        });
+    }
 }
 
 

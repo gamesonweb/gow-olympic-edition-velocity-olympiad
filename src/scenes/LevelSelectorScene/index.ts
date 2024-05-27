@@ -59,4 +59,11 @@ export class LevelSelectorScene extends OlympiadScene {
             // new PhysicsAggregate(root, PhysicsShapeType.BOX, {mass: 0}, this);
         });
     }
+
+    public restart() {
+        let newScene = new LevelSelectorScene(this.getEngine(), this.player.playerState);
+        newScene.init().then(() => {
+            this.destroy()
+        });
+    }
 }
