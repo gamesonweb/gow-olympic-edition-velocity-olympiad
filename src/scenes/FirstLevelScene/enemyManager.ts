@@ -1,15 +1,14 @@
 import {Scene, Vector3} from "@babylonjs/core";
 import {SceneComponent} from "../SceneComponent";
 import {DistanceEnemy} from "../../character/enemy/distance.ts";
+import {OlympiadScene} from "../OlympiadScene.ts";
 
 export class WelcomeEnemyManager extends SceneComponent {
     private scene: Scene
-    private gameObject: GameObject[];
 
-    constructor(scene: Scene, gameObject: GameObject[]) {
+    constructor(scene: Scene) {
         super();
         this.scene = scene;
-        this.gameObject = gameObject;
     }
 
     init() {
@@ -22,10 +21,9 @@ export class WelcomeEnemyManager extends SceneComponent {
 
     addDistanceEnemy(enemydistanceposition: Vector3) {
         // Add a distance enemy to the scene
-        let distanceEnemy = new DistanceEnemy(this.scene, enemydistanceposition, this.gameObject);
+        let distanceEnemy = new DistanceEnemy(this.scene, enemydistanceposition);
         distanceEnemy.init();
-        this.gameObject.push(distanceEnemy);
-
-
+        let olympiadScene = this.scene as OlympiadScene;
+        olympiadScene.addGameObject(distanceEnemy)
     }
 }

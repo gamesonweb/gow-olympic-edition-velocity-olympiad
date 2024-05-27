@@ -740,14 +740,11 @@ export class Hud {
     }
 
     public GameOverOverlay(): void {
-
         // make cursor unlock
         // document.exitPointerLock();
 
-
-
         // Create a rectangle to overlay the entire screen
-        const gameOverOverlay = new Rectangle();
+        const gameOverOverlay = new Rectangle("gameOverOverlay");
         gameOverOverlay.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
         gameOverOverlay.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
         gameOverOverlay.height = 1;
@@ -757,22 +754,33 @@ export class Hud {
         this._playerUI.addControl(gameOverOverlay);
 
         // Add text displaying "Game Over"
-        const gameOverText = new TextBlock();
+        const gameOverText = new TextBlock("gameOverText");
         gameOverText.text = "Game Over";
-        gameOverText.color = "white";
-        gameOverText.fontSize = "48px";
+        gameOverText.color = "rgb(46,199,192)";
+        gameOverText.fontSize = "72px";
         gameOverText.fontFamily = "Viga";
         gameOverText.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
         gameOverText.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
         gameOverOverlay.addControl(gameOverText);
 
+        // Add a countdown timer
+        const countdownText = new TextBlock("countdownText");
+        countdownText.text = "";
+        countdownText.color = "rgb(46,199,192)";
+        countdownText.fontSize = "48px";
+        countdownText.fontFamily = "Viga";
+        countdownText.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+        countdownText.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        countdownText.top = "80px"; // Position it below the "Game Over" text
+        gameOverOverlay.addControl(countdownText);
+
         // Add a button to restart the game
-        const restartButton = Button.CreateSimpleButton("restart", "Restart");
-        restartButton.width = "200px";
-        restartButton.height = "40px";
-        restartButton.color = "white";
+        const restartButton = Button.CreateSimpleButton("restart", "Restart Now");
+        restartButton.width = "250px";
+        restartButton.height = "100px";
+        restartButton.color = "black";
         restartButton.fontFamily = "Viga";
-        restartButton.fontSize = "18px";
+        restartButton.fontSize = "48px";
         restartButton.cornerRadius = 10;
         restartButton.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
         restartButton.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
@@ -781,15 +789,37 @@ export class Hud {
 
         // Event listener for restart button
         restartButton.onPointerUpObservable.add(() => {
-            // je reload la page pour relancer
-            // location.reload();
-            console.log("Click restart");
-            let olympiaScene = <OlympiadScene>this._scene;
-            olympiaScene.restart();
-            // TODO faire que ça relance le level
+            this.startCountdown(countdownText);
         });
+
+        // Automatically start countdown
+        // this.startCountdown(countdownText);
     }
 
+// Function to start the countdown
+    private startCountdown(countdownText: TextBlock): void {
+        let countdown = 3;
+        countdownText.text = `Restarting in ${countdown}...`;
+
+        const intervalId = setInterval(() => {
+            countdown--;
+            if (countdown > 0) {
+                countdownText.text = `Restarting in ${countdown}...`;
+            } else {
+                clearInterval(intervalId);
+                countdownText.text = "Restarting now...";
+                this.restartGame();
+            }
+        }, 1000);
+    }
+
+// Function to restart the game
+    private restartGame(): void {
+        this.gamePaused = true;
+        this._disablePointerLockOnPause();
+        let olympiaScene = <OlympiadScene>this._scene;
+        olympiaScene.restart();
+    }
 
 
     //load all sounds needed for game ui interactions
