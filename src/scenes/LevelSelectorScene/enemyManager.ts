@@ -1,8 +1,9 @@
 import {Scene} from "@babylonjs/core";
-import {SceneComponent} from "../SceneComponent";
+import {EnemyManager} from "../EnemyManager.ts";
 
-export class WelcomeEnemyManager extends SceneComponent {
-    private scene: Scene
+export class WelcomeEnemyManager extends EnemyManager {
+    protected scene: Scene
+    protected _stopAllAttacks: boolean = false;
 
     constructor(scene: Scene) {
         super();
@@ -16,5 +17,9 @@ export class WelcomeEnemyManager extends SceneComponent {
 
     public destroy() {
         // Destroy enemies and cleanup
+    }
+
+    public stopAllAttacks() {
+        super.stopAllAttacks();
     }
 }

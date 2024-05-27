@@ -12,12 +12,13 @@ import "@babylonjs/loaders/glTF";
 import {OlympiadScene} from "../OlympiadScene";
 import {WelcomeEnemyManager} from "./enemyManager";
 import {Player, PlayerState} from "../../character/players";
+import {EnemyManager} from "../EnemyManager.ts";
 
 export class LevelSelectorScene extends OlympiadScene {
     // noinspection JSUnusedGlobalSymbols
     private _meshes: Mesh[] = [];
     private _materials: Material[] = [];
-    private readonly enemyManager: WelcomeEnemyManager;
+    private readonly enemyManager: EnemyManager;
 
     constructor(engine: Engine, playerState: PlayerState) {
 

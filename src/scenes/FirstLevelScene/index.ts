@@ -1,6 +1,6 @@
 import {Engine, Material, Mesh, MeshBuilder, PhysicsAggregate, PhysicsShapeType, Vector3} from "@babylonjs/core";
 import {OlympiadScene} from "../OlympiadScene";
-import {WelcomeEnemyManager} from "./enemyManager";
+import {FirstLevelEnemyManager} from "./enemyManager";
 import {Player, PlayerState} from "../../character/players";
 import {CardSocle} from "../../gameObjects/Card/CardSocle";
 import {FlammeCard} from "../../gameObjects/Card/armes/FlammeCard";
@@ -13,14 +13,14 @@ export class FirstLevelScene extends OlympiadScene {
     public readonly player: Player;
     private _meshes: Mesh[] = [];
     private _materials: Material[] = [];
-    private readonly enemyManager: WelcomeEnemyManager;
+    protected enemyManager: FirstLevelEnemyManager;
     private spawnPoint!: Vector3;
 
     constructor(engine: Engine, playerState: PlayerState) {
 
         super(engine);
 
-        this.enemyManager = new WelcomeEnemyManager(this);
+        this.enemyManager = new FirstLevelEnemyManager(this);
         this.addComponent(this.enemyManager); // Ainsi, le manager sera détruit avec la scène
         this.player = new Player(playerState, this);
     }
@@ -107,6 +107,14 @@ export class FirstLevelScene extends OlympiadScene {
         newScene.init().then(() => {
             this.destroy()
         });
+    }
+
+    public onPauseState() {
+        this.enemyManager.stopAllAttacks();
+    }
+
+    public onResumeState() {
+        this.enemyManager.resumeAllAttacks();
     }
 }
 

@@ -18,7 +18,7 @@ export class DistanceEnemy implements Character, GameObject {
     hp: number;
     isFlying: boolean;
     idleAnimation: AnimationGroup | null;
-    attackAvailable: boolean;
+    public attackAvailable: boolean;
     canActOnCollision: boolean = false;
     canDetectCollision: boolean = false;
     private meshEye: any[];

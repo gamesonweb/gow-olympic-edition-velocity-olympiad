@@ -24,6 +24,7 @@ import {ICard} from "../../gameObjects/Card/ICard";
 import {CardSocle} from "../../gameObjects/Card/CardSocle.ts";
 import {Wall} from "../../gameObjects/Wall";
 import {FireballDistanceEnemy} from "../../gameObjects/Spell/FireballDistanceEnemy.ts";
+import {OlympiadScene} from "../../scenes/OlympiadScene.ts";
 
 export class Player extends SceneComponent implements GameObject {
     public mesh!: Mesh;
@@ -347,15 +348,19 @@ export class Player extends SceneComponent implements GameObject {
             this._castSpell(2);
         }
         this._isGrounded();
+
         this._updateCameraInfos();
+
         if (this._ui.gamePaused) {
             this._camera.detachControl();
             this._cameraAttached = false;
+            (this._scene as OlympiadScene).onPauseState();
         } else {
             // Check is camera is detached
             if (!this._cameraAttached) {
                 this._camera.attachControl(this._scene, true);
                 this._cameraAttached = true;
+                (this._scene as OlympiadScene).onResumeState();
             }
         }
 
@@ -410,11 +415,8 @@ export class Player extends SceneComponent implements GameObject {
     }
 
     private dead() {
-        console.log("Player is dead")
-        this.hp = 100;
         this._ui.GameOverOverlay();
         this._death = true
-
     }
 
 }
