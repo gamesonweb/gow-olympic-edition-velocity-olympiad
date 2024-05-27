@@ -156,7 +156,7 @@ export class Player extends SceneComponent implements GameObject {
 
         if (gameObject instanceof FireballDistanceEnemy) {
             console.log("FireballDistanceEnemy collision detected", gameObject);
-            this.takeDamage(10);
+            this.takeDamage(gameObject.damage);
         }
     }
 
@@ -404,7 +404,6 @@ export class Player extends SceneComponent implements GameObject {
     private takeDamage(damage: number) {
         this.hp -= damage;
         this._ui.updateHP(this.hp);
-        console.log("Player HP: ", this.hp)
         if (this.hp <= 0) {
             this.dead();
         }
