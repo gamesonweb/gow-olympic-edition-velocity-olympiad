@@ -33,6 +33,10 @@ export class FireballDistanceEnemy extends SceneComponent implements GameObject 
         super();
     }
 
+    public get damage(): number {
+        return this._damage;
+    }
+
     init(scene: Scene, position: Vector3, damage: number) {
         this._scene = scene;
         this._position = position;
@@ -133,7 +137,7 @@ export class FireballDistanceEnemy extends SceneComponent implements GameObject 
                         if (this._mesh.intersectsMesh(gameObject.mesh, true)) {
                             gameObject.onCollisionCallback(this);
                             this._asDamegePlayer = true;
-                            this.onCollisionCallback();
+                            this.destroy()
                         }
                     }
                 }
@@ -143,7 +147,8 @@ export class FireballDistanceEnemy extends SceneComponent implements GameObject 
 
     }
 
-    public onCollisionCallback() {
-        this.destroy();
+    public onCollisionCallback(gameObject: GameObject) {
+        throw new Error("FireballDistanceEnemy should not act on collision. It is supposed to be destroyed on " +
+            "collision." + gameObject.toString());
     }
 }

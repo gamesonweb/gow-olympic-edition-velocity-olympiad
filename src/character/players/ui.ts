@@ -845,6 +845,7 @@ export class Hud {
 
     updateHP(hp: number) {
         console.log("updateHP", hp)
-
+        if (!hp) return
+        this._sparklerLife.cellId = 10 - ( (hp == 0) ? 0 : parseInt(`${hp / 10}`))
     }
 }

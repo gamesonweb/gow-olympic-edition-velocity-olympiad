@@ -7,6 +7,7 @@ import {SceneComponent} from "./SceneComponent";
 import HavokPhysics from "@babylonjs/havok";
 import {Player} from "../character/players";
 import {Inspector} from '@babylonjs/inspector';
+import {EnemyManager} from "./EnemyManager.ts";
 
 
 export class OlympiadScene extends Scene {
@@ -14,6 +15,7 @@ export class OlympiadScene extends Scene {
     public player!: Player;
     protected engine: Engine;
     protected physicsEngine!: HavokPlugin;
+    protected enemyManager!: EnemyManager;
 
     protected constructor(engine: Engine, options?: SceneOptions) {
         super(engine, options);
@@ -104,6 +106,14 @@ export class OlympiadScene extends Scene {
     }
 
     public restart() {
-        throw new Error("Method not implemented.");
+        throw new Error("Method not implemented yet.");
+    }
+
+    public onPauseState() {
+        throw new Error("Method not implemented yet.");
+    }
+
+    public onResumeState() {
+        throw new Error("Method not implemented yet.");
     }
 }
