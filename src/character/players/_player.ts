@@ -97,9 +97,6 @@ export class Player extends SceneComponent implements GameObject {
         this._setupPhysics();
         // Update the player position and rotation based on the physics body
         this._scene.registerBeforeRender(this._callbackBeforeRenderScene.bind(this));
-        setTimeout(() => {
-            this._ui.GameOverOverlay();
-        }, 2000);
     }
 
     public addCardToCart(card: ICard): void {
