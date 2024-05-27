@@ -4,7 +4,8 @@ import {
     MeshBuilder,
     StandardMaterial,
     Texture,
-    HDRCubeTexture
+    HDRCubeTexture,
+    HemisphericLight
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import {OlympiadScene} from "../OlympiadScene";
@@ -30,7 +31,7 @@ export class Level1Scene extends OlympiadScene {
 
     public async init(): Promise<void> {
         await super.init();
-        this.player.init(new Vector3(0, 50, -80));
+        this.player.init(new Vector3(0, 50, 0));
         this.enemyManager.init();
         await this._buildlevelStatic();
     }
@@ -64,6 +65,10 @@ export class Level1Scene extends OlympiadScene {
         skyboxMaterial.reflectionTexture.coordinatesMode = Texture.SKYBOX_MODE;
         skybox.material = skyboxMaterial;
         skybox.infiniteDistance = true;
+
+        //Adding a light 
+
+        const light = new HemisphericLight("light", new Vector3(0, 10, 0), this);
 
     }
 

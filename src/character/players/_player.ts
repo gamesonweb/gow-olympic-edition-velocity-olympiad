@@ -34,7 +34,7 @@ export class Player extends SceneComponent{
     private readonly _scene: Scene;
     public readonly playerState: PlayerState;
     private _speed: number = 2;
-    private _jumpForce: number = 20;
+    private _jumpForce: number = 6;
     private _targetCamaraRotationY: number | null = null;
     private _slerpAmount: number = 0;
     private _cameraAttached: boolean = true;
@@ -136,6 +136,7 @@ export class Player extends SceneComponent{
         let direction = this._getCameraDirection();
         this.rotation.y = Math.atan2(direction.x, direction.z);
         this._aggregate.body.applyImpulse(direction.scale(this._speed), this.position);
+        
 
         let y_speed = this._aggregate.body.getLinearVelocity().y;
         let speedRelatedVector = new Vector3 (this._aggregate.body.getLinearVelocity()._x, 0, this._aggregate.body.getLinearVelocity()._z);
