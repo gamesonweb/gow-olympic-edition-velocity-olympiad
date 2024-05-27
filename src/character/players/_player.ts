@@ -139,7 +139,6 @@ export class Player extends SceneComponent implements GameObject {
                 if (this.mesh && gameObject.mesh) {
                     let distance = Vector3.Distance(this.mesh.position, gameObject.position);
                     if (distance <= 4) {
-                        console.log("Dashing: ", this._input.dashing)
                         if (this._input.dashing) {
                             console.log("Distant Enemy destroying")
                             gameObject.onCollisionCallback(this);
