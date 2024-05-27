@@ -41,7 +41,7 @@ export class Player extends SceneComponent implements GameObject {
     private _meshes: Mesh[] = [];
     private _materials: Material[] = [];
     private _input: PlayerInput;
-    private _speed: number = 1;
+    private _speed: number = 0.4;
     private _jumpForce: number = 10;
     private _targetCamaraRotationY: number | null = null;
     private _slerpAmount: number = 0;
@@ -110,7 +110,6 @@ export class Player extends SceneComponent implements GameObject {
         if (this.isOnGround) return;
         if (!this._dashAvailable) return;
         this._dash()
-        this._input.dashing = false;
         this._dashAvailable = false;
     }
 
@@ -140,13 +139,13 @@ export class Player extends SceneComponent implements GameObject {
                 if (this.mesh && gameObject.mesh) {
                     let distance = Vector3.Distance(this.mesh.position, gameObject.position);
                     if (distance <= 4) {
-                        gameObject.onCollisionCallback(this);
-                        // TODO: Call gameObject.onCollisionCallback(this) inside the condition
-                        // if (this._input.dashing) {
-                        //     console.log("Distant Enemy destroying")
-                        // } else {
-                        //     console.log("Distant Enemy can only be destroyed by dashing into it")
-                        // }
+                        console.log("Dashing: ", this._input.dashing)
+                        if (this._input.dashing) {
+                            console.log("Distant Enemy destroying")
+                            gameObject.onCollisionCallback(this);
+                        } else {
+                            console.log("Distant Enemy can only be destroyed by dashing into it")
+                        }
                     }
                 }
             }
@@ -382,7 +381,7 @@ export class Player extends SceneComponent implements GameObject {
                 this._scene.getPhysicsEngine()?.setGravity(this._normalGravity);
             }
         }
-        this._input.resetInputMap();
+        // this._input.resetInputMap();
     }
 
     private _updateCameraInfos(): void {
