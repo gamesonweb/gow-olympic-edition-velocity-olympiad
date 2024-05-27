@@ -408,9 +408,6 @@ export class Player extends SceneComponent implements GameObject {
         if (this.hp <= 0) {
             this.dead();
         }
-        setTimeout(() => {
-            this.dead();
-        }, 5000);
     }
 
     private dead() {

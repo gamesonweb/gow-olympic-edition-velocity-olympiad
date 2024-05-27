@@ -75,7 +75,19 @@ export class CardSocle extends SceneComponent implements GameObject {
 
         // console.log("CHECKIN_COLLISION: ", this.mesh!.position.subtract(this.scene.activeCamera!.position).length() < 5)
         if (!this.mesh || !this.scene.activeCamera) return false;
-        return this.mesh!.position.subtract(this.scene.activeCamera!.position).length() < 4;
+
+        // compare x and z coordinates first
+        const cameraPos = this.scene.activeCamera.position.clone();
+        const meshPos = this.mesh.position.clone();
+
+        let xDiff = Math.abs(cameraPos.x - meshPos.x);
+        let zDiff = Math.abs(cameraPos.z - meshPos.z);
+        let yDiff = Math.abs(cameraPos.y - meshPos.y);
+
+
+        if (xDiff > 2 || zDiff > 2) return false;
+        if (yDiff > 4) return false;
+        return true;
 
 
     }
