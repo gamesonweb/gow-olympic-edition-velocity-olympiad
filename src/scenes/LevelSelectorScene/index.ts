@@ -18,7 +18,7 @@ export class LevelSelectorScene extends OlympiadScene {
     // noinspection JSUnusedGlobalSymbols
     private _meshes: Mesh[] = [];
     private _materials: Material[] = [];
-    private readonly enemyManager: EnemyManager;
+    protected readonly enemyManager: EnemyManager;
 
     constructor(engine: Engine, playerState: PlayerState) {
 
