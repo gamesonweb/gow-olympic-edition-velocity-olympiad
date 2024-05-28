@@ -26,6 +26,7 @@ export class DistanceEnemy implements Character, GameObject {
     canActOnCollision: boolean = true;
     canDetectCollision: boolean = false;
     private meshEye: any[];
+    private dead: boolean;
 
 
     constructor(scene: Scene, position: Vector3) {
@@ -36,6 +37,7 @@ export class DistanceEnemy implements Character, GameObject {
         this.mesh = null;
         this.idleAnimation = null;
         this.attackAvailable = true;
+        this.dead = false;
         this.meshEye = [];
     }
 
@@ -98,6 +100,7 @@ export class DistanceEnemy implements Character, GameObject {
 
     lauchAttack(): void {
         // Launch the attack
+        if (this.dead) return;
         if (this.attackAvailable) {
             this.attack();
             this.attackAvailable = false;
@@ -108,7 +111,11 @@ export class DistanceEnemy implements Character, GameObject {
     }
 
     attack(): void {
+
+
+
         // Attack the player
+        if (!this.attackAvailable) return;
         // make him launch a projectile fireball
         let fireballposition = this.position.clone();
         fireballposition.y += 2.5;
@@ -130,8 +137,8 @@ export class DistanceEnemy implements Character, GameObject {
 
     onCollisionCallback(gameObject: GameObject): void {
         if (gameObject instanceof Player) {
-            this.takeDamage(10)
-            console.log("Player collision with enemy, enemy hp: ", this.hp);
+            this.takeDamage(this.hp)
+            this.dead = true;
         }
     }
 

@@ -43,11 +43,13 @@ export class Player extends SceneComponent implements GameObject {
     private _input: PlayerInput;
     private _speed: number = 15;
     private _jumpForce: number = 6;
+    private _castCooldown: number = 2;
     private _targetCamaraRotationY: number | null = null;
     private _slerpAmount: number = 0;
     private _cameraAttached: boolean = true;
     private _dashRate: number = 5; // dash speed equals speed * dashRate
     private _dashAvailable: boolean = false;
+    public  _isdashing: boolean = false;
     private _initialPosition: Vector3;
     private _normalGravity: Vector3 = new Vector3(0, -15, 0);
     private _slowdownRate: number = 0.5;
@@ -109,7 +111,6 @@ export class Player extends SceneComponent implements GameObject {
     }
 
     _dashbyBtn(): void {
-        // TODO: Fix isOnGround detection
         if (this.isOnGround) return;
         if (!this._dashAvailable) return;
         this._dash()
@@ -118,7 +119,11 @@ export class Player extends SceneComponent implements GameObject {
 
     _dash(): void {
         let direction = this._getCameraDirection();
+        this._isdashing = true;
         this._aggregate.body.applyImpulse(direction.scale(this._speed * this._dashRate), this.position);
+        setTimeout(() => {
+            this._isdashing = false;
+        }, 5000);
     }
 
     public updateState() {
@@ -141,8 +146,8 @@ export class Player extends SceneComponent implements GameObject {
             if (gameObject instanceof DistanceEnemy) {
                 if (this.mesh && gameObject.mesh) {
                     let distance = Vector3.Distance(this.mesh.position, gameObject.position);
-                    if (distance <= 4) {
-                        if (this._input.dashing) {
+                    if (distance <= 10) {
+                        if (this._isdashing) {
                             console.log("Distant Enemy destroying")
                             gameObject.onCollisionCallback(this);
                         } else {
@@ -284,12 +289,17 @@ export class Player extends SceneComponent implements GameObject {
 
 
     private _castSpell(n: number): void {
+
+        console.log("Casting spell: ", n)
+
         let keepCard = true;
         let card: ICard = this._getActiveCard() as ICard;
         if (!card) return;
         if (n == 1) {
             card.firstSpell(this._scene, this.position.clone());
             keepCard = false;
+
+
         }
         if (n == 2) {
             card.secondSpell(this._scene, this.position.clone())
@@ -302,6 +312,7 @@ export class Player extends SceneComponent implements GameObject {
         if (!keepCard) {
             this.cardList?.pop();
         }
+
         this._ui.updateCardsToStackPanel(this.cardList || []); // Update the UI
 
     }
@@ -390,6 +401,7 @@ export class Player extends SceneComponent implements GameObject {
             this._dashbyBtn();
         }
         if (this._input.spell1) {
+
             this._input.spell1 = false;
             this._castSpell(1);
         }

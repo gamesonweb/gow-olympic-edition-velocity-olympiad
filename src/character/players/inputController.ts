@@ -16,6 +16,9 @@ export class PlayerInput {
     // spell casting
     public spell1: boolean = false;
     public spell2: boolean = false;
+    // Spell key press flags
+    private spell1Pressed: boolean = false;
+    private spell2Pressed: boolean = false;
     public mobileLeft: boolean = false;
     public mobileRight: boolean = false;
     public mobileUp: boolean = false;
@@ -136,9 +139,31 @@ export class PlayerInput {
             this.jumpKeyDown = false;
         }
         // First Spell cast (a key)
-        this.spell1 = !!this.inputMap["a"];
+
+        if (this.inputMap["a"] && !this._ui.gamePaused) {
+            if (!this.spell1Pressed) {
+                this.spell1 = true;
+                this.spell1Pressed = true;
+            }
+
+        }
+        else {
+            this.spell1 = false;
+            this.spell1Pressed = false;
+        }
+
         // Second Spell cast (e key)
-        this.spell2 = !!this.inputMap["e"];
+        if (this.inputMap["e"] && !this._ui.gamePaused) {
+            if (!this.spell2Pressed) {
+                this.spell2 = true;
+                this.spell2Pressed = true;
+            }
+        }
+        else {
+            this.spell2 = false;
+            this.spell2Pressed = false;
+        }
+
     }
 
     // Mobile controls
