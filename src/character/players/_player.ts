@@ -12,7 +12,8 @@ import {
     Scene,
     StandardMaterial,
     UniversalCamera,
-    Vector3
+    Vector3,
+    RayHelper
 } from '@babylonjs/core';
 import {PlayerInput} from './inputController';
 import {Hud} from './ui';
@@ -189,7 +190,7 @@ export class Player extends SceneComponent implements GameObject {
     }
 
     private _createPlayerMesh(): void {
-        this.mesh = MeshBuilder.CreateBox("player", {size: 4}, this._scene);
+        this.mesh = MeshBuilder.CreateSphere("player", {diameter : 4}, this._scene);
         this.mesh.position = this._initialPosition;
         this.mesh.isVisible = true;
         const playerMaterial = new StandardMaterial("playerMaterial", this._scene);
@@ -202,7 +203,7 @@ export class Player extends SceneComponent implements GameObject {
     }
 
     private _setupPhysics(): void {
-        this._aggregate = new PhysicsAggregate(<Mesh>this.mesh, PhysicsShapeType.BOX, {
+        this._aggregate = new PhysicsAggregate(<Mesh>this.mesh, PhysicsShapeType.SPHERE, {
             mass: 1, friction: 0.5,
             restitution: 0.1
         }, this._scene);
@@ -253,7 +254,7 @@ export class Player extends SceneComponent implements GameObject {
         }
     }
 
-    //--GROUND DETECTION--
+    
 
     private _turnLeft(): void {
         let direction: Vector3 = this._getCameraDirection().cross(Vector3.Up());
@@ -268,7 +269,7 @@ export class Player extends SceneComponent implements GameObject {
             this._aggregate.body.setLinearVelocity(newVelocity);
         }
     }
-    
+
     private _noImpuse(): void {
         // Stop the player from moving in the X and Z axis
         this._aggregate.body.setLinearVelocity(new Vector3(this._aggregate.body.getLinearVelocity().x * this._slowdownRate, this._aggregate.body.getLinearVelocity().y, this._aggregate.body.getLinearVelocity().z * this._slowdownRate));
@@ -315,6 +316,7 @@ export class Player extends SceneComponent implements GameObject {
         return direction;
     }
 
+    //--GROUND DETECTION--
     //Send raycast to the floor to detect if there are any hits with meshes below the character
     private _floorRaycast(offsets: {
         x: Nullable<number>,
@@ -334,8 +336,8 @@ export class Player extends SceneComponent implements GameObject {
         };
 
         let pick: Nullable<PickingInfo> = this._scene.pickWithRay(ray, predicate);
-        // let rayHelper = new RayHelper(ray);
-        // rayHelper.show(this._scene, new Color3(1, 0, 0)); // Affiche le rayon en rouge
+        //let rayHelper = new RayHelper(ray);
+        //rayHelper.show(this._scene, new Color3(1, 0, 0)); // Affiche le rayon en rouge
 
         let pickedPointVector = Vector3.Zero();
         // console.log("pick: ", pick)
@@ -349,7 +351,7 @@ export class Player extends SceneComponent implements GameObject {
     //raycast from the center of the player to check for whether player is grounded
     private _isGrounded(): void {
         let meshSize: number = this.mesh.getBoundingInfo().boundingBox.extendSize.y;
-        if (this._floorRaycast({x: 0, y: meshSize * 0.9, z: 0}, 2).equals(Vector3.Zero())) {
+        if (this._floorRaycast({x: 0, y: meshSize * 0.9, z: 0}, 4).equals(Vector3.Zero())) {
             this.isOnGround = false;
         } else {
             this.isOnGround = true;

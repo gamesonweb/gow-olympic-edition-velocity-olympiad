@@ -1,7 +1,7 @@
 import {Scene} from "@babylonjs/core";
 import {EnemyManager} from "../EnemyManager.ts";
 
-export class LevelSelectorEnemyManager extends EnemyManager {
+export class FirstLevelEnemyManager extends EnemyManager {
     protected scene: Scene
     protected _stopAllAttacks: boolean = false;
 
@@ -21,5 +21,9 @@ export class LevelSelectorEnemyManager extends EnemyManager {
 
     public stopAllAttacks() {
         super.stopAllAttacks();
+    }
+
+    public resumeAllAttacks() {
+        super.resumeAllAttacks();
     }
 }

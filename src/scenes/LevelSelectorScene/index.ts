@@ -8,7 +8,7 @@ import {
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import {OlympiadScene} from "../OlympiadScene";
-import {LevelSelectorEnemyManager} from "./enemyManager";
+import {FirstLevelEnemyManager} from "./enemyManager";
 import {Player, PlayerState} from "../../character/players";
 import { TempleV2 } from "../../gameObjects/TempleV2";
 import { Level1Scene } from "../Level1Scene";
@@ -18,13 +18,13 @@ export class LevelSelectorScene extends OlympiadScene {
     // noinspection JSUnusedGlobalSymbols
     private _meshes: Mesh[] = [];
     private _materials: Material[] = [];
-    readonly enemyManager: EnemyManager;
+    private readonly enemyManager: EnemyManager;
 
     constructor(engine: Engine, playerState: PlayerState) {
 
         super(engine);
 
-        this.enemyManager = new LevelSelectorEnemyManager(this);
+        this.enemyManager = new FirstLevelEnemyManager(this);
         this.addComponent(this.enemyManager); // Ainsi, le manager sera détruit avec la scène
 
         this.player = new Player(playerState, this);

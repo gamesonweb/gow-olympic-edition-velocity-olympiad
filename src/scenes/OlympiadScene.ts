@@ -8,6 +8,7 @@ import HavokPhysics from "@babylonjs/havok";
 import {Player} from "../character/players";
 import {Inspector} from '@babylonjs/inspector';
 import {EnemyManager} from "./EnemyManager.ts";
+import { PhysicsViewer } from '@babylonjs/core';
 
 
 export class OlympiadScene extends Scene {
