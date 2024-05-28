@@ -24,13 +24,15 @@ import {ICard} from "../../gameObjects/Card/ICard";
 import {CardSocle} from "../../gameObjects/Card/CardSocle.ts";
 import {Wall} from "../../gameObjects/Wall";
 import {FireballDistanceEnemy} from "../../gameObjects/Spell/FireballDistanceEnemy.ts";
+import {OlympiadScene} from "../../scenes/OlympiadScene.ts";
+import {DistanceEnemy} from "../enemy/distance.ts";
 
 export class Player extends SceneComponent implements GameObject {
     public mesh!: Mesh;
     readonly _scene: Scene;
     public readonly playerState: PlayerState;
     public canActOnCollision: boolean = true;
-    public canDetectCollision: boolean = false; // Player can't detect collision on other objects. It's the oher object
+    public canDetectCollision: boolean = true;
     private isOnGround: boolean = true;
     private _ui: Hud;
     private _aggregate!: PhysicsAggregate;
@@ -39,9 +41,7 @@ export class Player extends SceneComponent implements GameObject {
     private _meshes: Mesh[] = [];
     private _materials: Material[] = [];
     private _input: PlayerInput;
-    private readonly _scene: Scene;
-    public readonly playerState: PlayerState;
-    private _speed: number = 2;
+    private _speed: number = 15;
     private _jumpForce: number = 6;
     private _targetCamaraRotationY: number | null = null;
     private _slerpAmount: number = 0;
@@ -56,7 +56,6 @@ export class Player extends SceneComponent implements GameObject {
     private _speedCap: number = 30;
     private hp: number = 100;
     // that detects collision on the player
-    private _death: boolean;
 
     constructor(playerState: PlayerState, scene: Scene) {
         super();
@@ -66,7 +65,6 @@ export class Player extends SceneComponent implements GameObject {
         this._input = new PlayerInput(scene, ui);
         this.playerState = playerState;
         this._initialPosition = Vector3.Zero();
-        this._death = false;
     }
 
     get cardList() {
@@ -110,23 +108,16 @@ export class Player extends SceneComponent implements GameObject {
     }
 
     _dashbyBtn(): void {
+        // TODO: Fix isOnGround detection
         if (this.isOnGround) return;
         if (!this._dashAvailable) return;
         this._dash()
-        this._input.dashing = false;
         this._dashAvailable = false;
     }
 
     _dash(): void {
         let direction = this._getCameraDirection();
         this._aggregate.body.applyImpulse(direction.scale(this._speed * this._dashRate), this.position);
-
-        // check if colide with Enemy if it destroy the enemy
-        // TODO: make the enemy take damage
-        // TODO: Check if the player collide with the enemy
-
-
-
     }
 
     public updateState() {
@@ -145,8 +136,21 @@ export class Player extends SceneComponent implements GameObject {
     }
 
     public detectCollision(gameObjects: GameObject[]): void {
-        // console.log("Player can detect collision on: ", gameObjects);
-        gameObjects;
+        gameObjects.forEach((gameObject) => {
+            if (gameObject instanceof DistanceEnemy) {
+                if (this.mesh && gameObject.mesh) {
+                    let distance = Vector3.Distance(this.mesh.position, gameObject.position);
+                    if (distance <= 4) {
+                        if (this._input.dashing) {
+                            console.log("Distant Enemy destroying")
+                            gameObject.onCollisionCallback(this);
+                        } else {
+                            console.log("Distant Enemy can only be destroyed by dashing into it")
+                        }
+                    }
+                }
+            }
+        });
     }
 
     public onCollisionCallback(gameObject: GameObject): void {
@@ -160,7 +164,7 @@ export class Player extends SceneComponent implements GameObject {
 
         if (gameObject instanceof FireballDistanceEnemy) {
             console.log("FireballDistanceEnemy collision detected", gameObject);
-            this.takeDamage(10);
+            this.takeDamage(gameObject.damage);
         }
     }
 
@@ -191,7 +195,7 @@ export class Player extends SceneComponent implements GameObject {
         const playerMaterial = new StandardMaterial("playerMaterial", this._scene);
         playerMaterial.diffuseColor = new Color3(0, 0, 1);
         // set the mesh transparent
-        playerMaterial.alpha = 0.5;
+        // playerMaterial.alpha = 0.5;
         this.mesh.material = playerMaterial;
         this._meshes.push(this.mesh);
         this._materials.push(playerMaterial);
@@ -351,7 +355,6 @@ export class Player extends SceneComponent implements GameObject {
             this.isOnGround = true;
             this._dashAvailable = true;
         }
-
     }
 
     private _isPlayerFalling(): boolean {
@@ -395,15 +398,19 @@ export class Player extends SceneComponent implements GameObject {
             this._castSpell(2);
         }
         this._isGrounded();
+
         this._updateCameraInfos();
+
         if (this._ui.gamePaused) {
             this._camera.detachControl();
             this._cameraAttached = false;
+            (this._scene as OlympiadScene).onPauseState();
         } else {
             // Check is camera is detached
             if (!this._cameraAttached) {
                 this._camera.attachControl(this._scene, true);
                 this._cameraAttached = true;
+                (this._scene as OlympiadScene).onResumeState();
             }
         }
 
@@ -419,7 +426,7 @@ export class Player extends SceneComponent implements GameObject {
                 this._scene.getPhysicsEngine()?.setGravity(this._normalGravity);
             }
         }
-        this._input.resetInputMap();
+        // this._input.resetInputMap();
     }
 
     private _updateCameraInfos(): void {
@@ -450,18 +457,14 @@ export class Player extends SceneComponent implements GameObject {
     private takeDamage(damage: number) {
         this.hp -= damage;
         this._ui.updateHP(this.hp);
-        console.log("Player HP: ", this.hp)
         if (this.hp <= 0) {
             this.dead();
         }
     }
 
     private dead() {
-        console.log("Player is dead")
-        this.hp = 100;
         this._ui.GameOverOverlay();
-        this._death = true
-
+        (this._scene as OlympiadScene).onPauseState();
     }
 
 }
