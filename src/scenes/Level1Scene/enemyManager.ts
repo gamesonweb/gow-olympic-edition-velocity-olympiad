@@ -1,9 +1,9 @@
-import {Scene,Vector3} from "@babylonjs/core";
-import { OlympiadScene } from "../OlympiadScene";
-import { EnemyManager } from "../EnemyManager";
-import { DistanceEnemy } from "../../character/enemy/distance";
+import {Scene, Vector3} from "@babylonjs/core";
+import {OlympiadScene} from "../OlympiadScene";
+import {EnemyManager} from "../EnemyManager";
+import {DistanceEnemy} from "../../character/enemy/distance";
 
-export class Level1EnemyManager  extends EnemyManager {
+export class Level1EnemyManager extends EnemyManager {
     protected scene: Scene
     protected _stopAllAttacks: boolean = false;
     private _distanceEnemy!: DistanceEnemy;

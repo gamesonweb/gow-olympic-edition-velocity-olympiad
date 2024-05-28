@@ -11,9 +11,9 @@ import {Wall} from "../../gameObjects/Wall";
 export class FirstLevelScene extends OlympiadScene {
 
     public readonly player: Player;
+    protected enemyManager: FirstLevelEnemyManager;
     private _meshes: Mesh[] = [];
     private _materials: Material[] = [];
-    protected enemyManager: FirstLevelEnemyManager;
     private spawnPoint!: Vector3;
 
     constructor(engine: Engine, playerState: PlayerState) {
@@ -43,6 +43,22 @@ export class FirstLevelScene extends OlympiadScene {
 
     public switchToSecondScene() {
 
+    }
+
+    public restart() {
+        let newScene = new FirstLevelScene(this.getEngine(), this.player.playerState);
+
+        newScene.init().then(() => {
+            this.destroy()
+        });
+    }
+
+    public onPauseState() {
+        this.enemyManager.stopAllAttacks();
+    }
+
+    public onResumeState() {
+        this.enemyManager.resumeAllAttacks();
     }
 
     private _buildWalls(): void {
@@ -99,22 +115,6 @@ export class FirstLevelScene extends OlympiadScene {
         let wall = new Wall(this, wallposition);
         this.addComponent(wall);
         this.addGameObject(wall);
-    }
-
-    public restart() {
-        let newScene = new FirstLevelScene(this.getEngine(), this.player.playerState);
-        console.log("New scene created: ", newScene);
-        newScene.init().then(() => {
-            this.destroy()
-        });
-    }
-
-    public onPauseState() {
-        this.enemyManager.stopAllAttacks();
-    }
-
-    public onResumeState() {
-        this.enemyManager.resumeAllAttacks();
     }
 }
 

@@ -1,7 +1,10 @@
 import {
     AbstractMesh,
-    AnimationGroup, Mesh,
-    PhysicsBody, PhysicsMotionType, PhysicsShapeMesh,
+    AnimationGroup,
+    Mesh,
+    PhysicsBody,
+    PhysicsMotionType,
+    PhysicsShapeMesh,
     Scene,
     SceneLoader,
     Vector3
@@ -52,7 +55,7 @@ export class DistanceEnemy implements Character, GameObject {
                 const body = new PhysicsBody(mesh, PhysicsMotionType.STATIC, false, this.scene);
                 body.shape = new PhysicsShapeMesh(mesh, this.scene);
 
-            //     si c'est l'oeil on le fait look at le joueur
+                //     si c'est l'oeil on le fait look at le joueur
                 if (mesh.name.includes("Eye")) {
                     mesh.parent = null;
                     mesh.position = this.position;
@@ -61,7 +64,6 @@ export class DistanceEnemy implements Character, GameObject {
                 }
             }
             this.mesh = root;
-
 
 
         });
@@ -76,7 +78,7 @@ export class DistanceEnemy implements Character, GameObject {
                     }
                     this.meshEye.forEach((eye) => {
                         let goodposition = this.scene.activeCamera!.position.clone();
-                        goodposition.y = eye.position.y+0.05;
+                        goodposition.y = eye.position.y + 0.05;
                         eye.lookAt(goodposition);
                     });
 

@@ -484,6 +484,70 @@ export class Hud {
         }
     }
 
+    public GameOverOverlay(): void {
+
+        // make cursor unlock
+        document.exitPointerLock();
+
+        // Create a rectangle to overlay the entire screen
+        const gameOverOverlay = new Rectangle("gameOverOverlay");
+        gameOverOverlay.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        gameOverOverlay.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+        gameOverOverlay.height = 1;
+        gameOverOverlay.width = 1;
+        gameOverOverlay.color = "black";
+        gameOverOverlay.alpha = 0.7; // Semi-transparent black
+        this._playerUI.addControl(gameOverOverlay);
+
+        // Add text displaying "Game Over"
+        const gameOverText = new TextBlock("gameOverText");
+        gameOverText.text = "Game Over";
+        gameOverText.color = "rgb(46,199,192)";
+        gameOverText.fontSize = "72px";
+        gameOverText.fontFamily = "Viga";
+        gameOverText.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+        gameOverText.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        gameOverOverlay.addControl(gameOverText);
+
+        // Add a countdown timer
+        const countdownText = new TextBlock("countdownText");
+        countdownText.text = "";
+        countdownText.color = "rgb(46,199,192)";
+        countdownText.fontSize = "48px";
+        countdownText.fontFamily = "Viga";
+        countdownText.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+        countdownText.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        countdownText.top = "80px"; // Position it below the "Game Over" text
+        gameOverOverlay.addControl(countdownText);
+
+        // Add a button to restart the game
+        const restartButton = Button.CreateSimpleButton("restart", "Restart Now");
+        restartButton.width = "250px";
+        restartButton.height = "100px";
+        restartButton.color = "black";
+        restartButton.fontFamily = "Viga";
+        restartButton.fontSize = "48px";
+        restartButton.cornerRadius = 10;
+        restartButton.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
+        restartButton.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        restartButton.paddingBottom = "20px";
+        gameOverOverlay.addControl(restartButton);
+
+        // Event listener for restart button
+        restartButton.onPointerUpObservable.add(() => {
+            this.startCountdown(countdownText);
+        });
+
+        // Automatically start countdown
+        // this.startCountdown(countdownText);
+    }
+
+    updateHP(hp: number) {
+        console.log("updateHP", hp)
+        if (!hp) return
+        this._sparklerLife.cellId = 10 - ((hp == 0) ? 0 : parseInt(`${hp / 10}`))
+    }
+
     private _createICardMenu(): void {
         this._cardMenuStackPanel = new StackPanel("cardMenuStackPanel");
         this._cardMenuStackPanel.width = "180px"; // La largeur du stack panel
@@ -505,6 +569,8 @@ export class Hud {
         this._playerUI.addControl(this._activeCardStackPanel);
         this._playerUI.addControl(this._activeCardStackPanel);
     }
+
+    //---- Sparkler Timers ----
 
     private _getStackUIImageFromRarete(rareteCard: RareteCard): string {
         console.log(rareteCard)
@@ -543,8 +609,6 @@ export class Hud {
             }
         };
     }
-
-    //---- Sparkler Timers ----
 
     private _disablePointerLockOnPause(): void {
         const canvas: HTMLCanvasElement = <HTMLCanvasElement>this._scene.getEngine().getRenderingCanvas();
@@ -739,63 +803,6 @@ export class Hud {
         });
     }
 
-    public GameOverOverlay(): void {
-        // make cursor unlock
-        // document.exitPointerLock();
-
-        // Create a rectangle to overlay the entire screen
-        const gameOverOverlay = new Rectangle("gameOverOverlay");
-        gameOverOverlay.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
-        gameOverOverlay.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
-        gameOverOverlay.height = 1;
-        gameOverOverlay.width = 1;
-        gameOverOverlay.color = "black";
-        gameOverOverlay.alpha = 0.7; // Semi-transparent black
-        this._playerUI.addControl(gameOverOverlay);
-
-        // Add text displaying "Game Over"
-        const gameOverText = new TextBlock("gameOverText");
-        gameOverText.text = "Game Over";
-        gameOverText.color = "rgb(46,199,192)";
-        gameOverText.fontSize = "72px";
-        gameOverText.fontFamily = "Viga";
-        gameOverText.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
-        gameOverText.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
-        gameOverOverlay.addControl(gameOverText);
-
-        // Add a countdown timer
-        const countdownText = new TextBlock("countdownText");
-        countdownText.text = "";
-        countdownText.color = "rgb(46,199,192)";
-        countdownText.fontSize = "48px";
-        countdownText.fontFamily = "Viga";
-        countdownText.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
-        countdownText.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
-        countdownText.top = "80px"; // Position it below the "Game Over" text
-        gameOverOverlay.addControl(countdownText);
-
-        // Add a button to restart the game
-        const restartButton = Button.CreateSimpleButton("restart", "Restart Now");
-        restartButton.width = "250px";
-        restartButton.height = "100px";
-        restartButton.color = "black";
-        restartButton.fontFamily = "Viga";
-        restartButton.fontSize = "48px";
-        restartButton.cornerRadius = 10;
-        restartButton.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
-        restartButton.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
-        restartButton.paddingBottom = "20px";
-        gameOverOverlay.addControl(restartButton);
-
-        // Event listener for restart button
-        restartButton.onPointerUpObservable.add(() => {
-            this.startCountdown(countdownText);
-        });
-
-        // Automatically start countdown
-        // this.startCountdown(countdownText);
-    }
-
 // Function to start the countdown
     private startCountdown(countdownText: TextBlock): void {
         let countdown = 3;
@@ -821,7 +828,6 @@ export class Hud {
         olympiaScene.restart();
     }
 
-
     //load all sounds needed for game ui interactions
     private _loadSounds(scene: Scene): void {
         this._pause = new Sound("pauseSong", "./sounds/Snowland.wav", scene, function () {
@@ -841,11 +847,5 @@ export class Hud {
             volume: 0.5,
             playbackRate: 0.6
         });
-    }
-
-    updateHP(hp: number) {
-        console.log("updateHP", hp)
-        if (!hp) return
-        this._sparklerLife.cellId = 10 - ( (hp == 0) ? 0 : parseInt(`${hp / 10}`))
     }
 }

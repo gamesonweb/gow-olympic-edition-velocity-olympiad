@@ -5,7 +5,8 @@ export abstract class EnemyManager extends SceneComponent {
     protected abstract scene: Scene
     protected abstract _stopAllAttacks: boolean;
 
-    init() {}
+    init() {
+    }
 
     public stopAllAttacks() {
         this._stopAllAttacks = true;

@@ -2,13 +2,12 @@
  * OlympiadScene is equivalent to OurScene in the first version of the project.
  */
 
-import {Engine, HavokPlugin, Scene, SceneOptions, Vector3} from '@babylonjs/core';
+import {Engine, HavokPlugin, PhysicsViewer, Scene, SceneOptions, Vector3} from '@babylonjs/core';
 import {SceneComponent} from "./SceneComponent";
 import HavokPhysics from "@babylonjs/havok";
 import {Player} from "../character/players";
 import {Inspector} from '@babylonjs/inspector';
 import {EnemyManager} from "./EnemyManager.ts";
-import { PhysicsViewer } from '@babylonjs/core';
 
 
 export class OlympiadScene extends Scene {
@@ -92,6 +91,18 @@ export class OlympiadScene extends Scene {
         super.render(updateCameras, ignoreAnimations);
     }
 
+    public restart() {
+        throw new Error("Method not implemented yet.");
+    }
+
+    public onPauseState() {
+        throw new Error("Method not implemented yet.");
+    }
+
+    public onResumeState() {
+        throw new Error("Method not implemented yet.");
+    }
+
     private _enableDebug(): void {
         if (import.meta.env.DEV) {
             console.log("DEV MODE: Scene inspector enabled");
@@ -104,17 +115,5 @@ export class OlympiadScene extends Scene {
                 }
             });
         }
-    }
-
-    public restart() {
-        throw new Error("Method not implemented yet.");
-    }
-
-    public onPauseState() {
-        throw new Error("Method not implemented yet.");
-    }
-
-    public onResumeState() {
-        throw new Error("Method not implemented yet.");
     }
 }

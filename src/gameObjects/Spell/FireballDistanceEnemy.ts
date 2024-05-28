@@ -25,13 +25,13 @@ export class FireballDistanceEnemy extends SceneComponent implements GameObject 
     private _material!: StandardMaterial;
     private _loop_observer!: Observer<Scene>;
     private _isExpired: boolean = false;
-    private _damage!: number;
-    private _asDamegePlayer!: boolean ;
-
+    private _asDamegePlayer!: boolean;
 
     constructor() {
         super();
     }
+
+    private _damage!: number;
 
     public get damage(): number {
         return this._damage;

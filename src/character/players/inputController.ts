@@ -4,7 +4,6 @@ import {Hud} from './ui';
 export class PlayerInput {
 
     public inputMap: any;
-    private active: boolean = true;
     //simple movement
     public horizontal: number = 0;
     public vertical: number = 0;
@@ -21,6 +20,7 @@ export class PlayerInput {
     public mobileRight: boolean = false;
     public mobileUp: boolean = false;
     public mobileDown: boolean = false;
+    private active: boolean = true;
     private readonly _scene: Scene;
     //Mobile Input trackers
     private _ui: Hud;

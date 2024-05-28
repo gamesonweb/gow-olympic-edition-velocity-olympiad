@@ -16,8 +16,8 @@ export default defineComponent({
 
     let sceneManager = new SceneManager(canvas);
 
-    //let _scene: FirstLevelScene = new FirstLevelScene(sceneManager.engine, sceneManager.playerState);
     let _scene2: LevelSelectorScene = new LevelSelectorScene(sceneManager.engine, sceneManager.playerState);
+
 
     _scene2.init().then(() => {
       sceneManager.renderScene();

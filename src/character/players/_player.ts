@@ -12,8 +12,7 @@ import {
     Scene,
     StandardMaterial,
     UniversalCamera,
-    Vector3,
-    RayHelper
+    Vector3
 } from '@babylonjs/core';
 import {PlayerInput} from './inputController';
 import {Hud} from './ui';
@@ -56,6 +55,7 @@ export class Player extends SceneComponent implements GameObject {
     private _isFallingGravitySet: boolean = false;
     private _speedCap: number = 30;
     private hp: number = 100;
+
     // that detects collision on the player
 
     constructor(playerState: PlayerState, scene: Scene) {
@@ -122,7 +122,7 @@ export class Player extends SceneComponent implements GameObject {
     }
 
     public updateState() {
-        if(this.position.y < -10){
+        if (this.position.y < -10) {
             this.dead();
         }
     }
@@ -190,7 +190,7 @@ export class Player extends SceneComponent implements GameObject {
     }
 
     private _createPlayerMesh(): void {
-        this.mesh = MeshBuilder.CreateSphere("player", {diameter : 4}, this._scene);
+        this.mesh = MeshBuilder.CreateSphere("player", {diameter: 4}, this._scene);
         this.mesh.position = this._initialPosition;
         this.mesh.isVisible = true;
         const playerMaterial = new StandardMaterial("playerMaterial", this._scene);
@@ -214,10 +214,10 @@ export class Player extends SceneComponent implements GameObject {
         let direction = this._getCameraDirection();
         this.rotation.y = Math.atan2(direction.x, direction.z);
         this._aggregate.body.applyImpulse(direction.scale(this._speed), this.position);
-        
+
 
         let y_speed = this._aggregate.body.getLinearVelocity().y;
-        let speedRelatedVector = new Vector3 (this._aggregate.body.getLinearVelocity()._x, 0, this._aggregate.body.getLinearVelocity()._z);
+        let speedRelatedVector = new Vector3(this._aggregate.body.getLinearVelocity()._x, 0, this._aggregate.body.getLinearVelocity()._z);
 
         if (speedRelatedVector.length() > this._speedCap) {
             let newVelocity = new Vector3(speedRelatedVector.normalize().x * this._speedCap, y_speed, speedRelatedVector.normalize().z * this._speedCap);
@@ -232,7 +232,7 @@ export class Player extends SceneComponent implements GameObject {
         this._aggregate.body.applyImpulse(direction.scale(this._speed), this.position);
 
         let y_speed = this._aggregate.body.getLinearVelocity().y;
-        let speedRelatedVector = new Vector3 (this._aggregate.body.getLinearVelocity()._x, 0, this._aggregate.body.getLinearVelocity()._z);
+        let speedRelatedVector = new Vector3(this._aggregate.body.getLinearVelocity()._x, 0, this._aggregate.body.getLinearVelocity()._z);
 
         if (speedRelatedVector.length() > this._speedCap) {
             let newVelocity = new Vector3(speedRelatedVector.normalize().x * this._speedCap, y_speed, speedRelatedVector.normalize().z * this._speedCap);
@@ -246,7 +246,7 @@ export class Player extends SceneComponent implements GameObject {
         this._aggregate.body.applyImpulse(direction.scale(this._speed), this.position);
 
         let y_speed = this._aggregate.body.getLinearVelocity().y;
-        let speedRelatedVector = new Vector3 (this._aggregate.body.getLinearVelocity()._x, 0, this._aggregate.body.getLinearVelocity()._z);
+        let speedRelatedVector = new Vector3(this._aggregate.body.getLinearVelocity()._x, 0, this._aggregate.body.getLinearVelocity()._z);
 
         if (speedRelatedVector.length() > this._speedCap) {
             let newVelocity = new Vector3(speedRelatedVector.normalize().x * this._speedCap, y_speed, speedRelatedVector.normalize().z * this._speedCap);
@@ -254,7 +254,6 @@ export class Player extends SceneComponent implements GameObject {
         }
     }
 
-    
 
     private _turnLeft(): void {
         let direction: Vector3 = this._getCameraDirection().cross(Vector3.Up());
@@ -262,7 +261,7 @@ export class Player extends SceneComponent implements GameObject {
         this._aggregate.body.applyImpulse(direction.scale(this._speed), this.position);
 
         let y_speed = this._aggregate.body.getLinearVelocity().y;
-        let speedRelatedVector = new Vector3 (this._aggregate.body.getLinearVelocity()._x, 0, this._aggregate.body.getLinearVelocity()._z);
+        let speedRelatedVector = new Vector3(this._aggregate.body.getLinearVelocity()._x, 0, this._aggregate.body.getLinearVelocity()._z);
 
         if (speedRelatedVector.length() > this._speedCap) {
             let newVelocity = new Vector3(speedRelatedVector.normalize().x * this._speedCap, y_speed, speedRelatedVector.normalize().z * this._speedCap);
@@ -273,7 +272,7 @@ export class Player extends SceneComponent implements GameObject {
     private _noImpuse(): void {
         // Stop the player from moving in the X and Z axis
         this._aggregate.body.setLinearVelocity(new Vector3(this._aggregate.body.getLinearVelocity().x * this._slowdownRate, this._aggregate.body.getLinearVelocity().y, this._aggregate.body.getLinearVelocity().z * this._slowdownRate));
-        
+
     }
 
     private _jump(): void {
@@ -283,7 +282,6 @@ export class Player extends SceneComponent implements GameObject {
         this.isOnGround = false;
     }
 
-    
 
     private _castSpell(n: number): void {
         let keepCard = true;
