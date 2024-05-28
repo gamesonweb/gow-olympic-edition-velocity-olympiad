@@ -1,17 +1,17 @@
 import {
-    Engine,
-    Material,
-    Mesh,
-    PhysicsBody,
-    PhysicsMotionType,
-    PhysicsShapeMesh,
-    SceneLoader,
-    Vector3
+    Engine, Vector3, Mesh,
+    SceneLoader, PhysicsBody, PhysicsShapeMesh, PhysicsMotionType, Material,
+    MeshBuilder,
+    StandardMaterial,
+    Texture,
+    HDRCubeTexture
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import {OlympiadScene} from "../OlympiadScene";
 import {WelcomeEnemyManager} from "./enemyManager";
 import {Player, PlayerState} from "../../character/players";
+import { TempleV2 } from "../../gameObjects/TempleV2";
+import { Level1Scene } from "../Level1Scene";
 
 export class LevelSelectorScene extends OlympiadScene {
     // noinspection JSUnusedGlobalSymbols
@@ -32,15 +32,9 @@ export class LevelSelectorScene extends OlympiadScene {
 
     public async init(): Promise<void> {
         await super.init();
-        this.player.init(new Vector3(0, 100, 0));
+        this.player.init(new Vector3(0, 50, -80));
         this.enemyManager.init();
-        this._buildlevelStatic();
-    }
-
-    public destroy(): void {
-        this._meshes.forEach((mesh) => mesh.dispose());
-        this._materials.forEach((material) => material.dispose());
-        super.destroy();
+        await this._buildlevelStatic();
     }
 
     private _buildlevelStatic(): void {
@@ -53,17 +47,36 @@ export class LevelSelectorScene extends OlympiadScene {
 
             for (let child of childrens) {
                 const mesh = child as Mesh;
-                const body = new PhysicsBody(mesh, PhysicsMotionType.STATIC, false, this);
-                body.shape = new PhysicsShapeMesh(mesh, this)
+                mesh.renderingGroupId = 2;
+                const body = new PhysicsBody(mesh, PhysicsMotionType.STATIC,false, this);
+                body.shape = new PhysicsShapeMesh(mesh,this)
             }
             // new PhysicsAggregate(root, PhysicsShapeType.BOX, {mass: 0}, this);
         });
+
+        //Adding a Skybox 
+
+        const skybox = MeshBuilder.CreateBox("skyBox", {size: 1024}, this);
+        skybox.renderingGroupId = 0;
+        const skyboxMaterial = new StandardMaterial("skyBox", this);
+        skyboxMaterial.backFaceCulling = false;
+        skyboxMaterial.disableLighting = true;
+        
+        skyboxMaterial.reflectionTexture = new HDRCubeTexture("textures/skybox/skybox.hdr", this,512);
+        skyboxMaterial.reflectionTexture.coordinatesMode = Texture.SKYBOX_MODE;
+        skybox.material = skyboxMaterial;
+        skybox.infiniteDistance = true;
+
+        //Adding the end temple
+        const nextScene = new Level1Scene(this.engine, this.player!.playerState);
+        this.engine.scenes.push(nextScene);
+        const temple = new TempleV2(this, new Vector3(125, 37, 157), new Vector3(0, -110 * (Math.PI / 180.0), 0), new Vector3(1, 1, 1), nextScene);
+
     }
 
-    public restart() {
-        let newScene = new LevelSelectorScene(this.getEngine(), this.player.playerState);
-        newScene.init().then(() => {
-            this.destroy()
-        });
+    public destroy(): void {
+        this._meshes.forEach((mesh) => mesh.dispose());
+        this._materials.forEach((material) => material.dispose());
+        super.destroy();
     }
 }

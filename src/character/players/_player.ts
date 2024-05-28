@@ -39,17 +39,21 @@ export class Player extends SceneComponent implements GameObject {
     private _meshes: Mesh[] = [];
     private _materials: Material[] = [];
     private _input: PlayerInput;
-    private _speed: number = 1;
-    private _jumpForce: number = 10;
+    private readonly _scene: Scene;
+    public readonly playerState: PlayerState;
+    private _speed: number = 2;
+    private _jumpForce: number = 6;
     private _targetCamaraRotationY: number | null = null;
     private _slerpAmount: number = 0;
     private _cameraAttached: boolean = true;
     private _dashRate: number = 5; // dash speed equals speed * dashRate
     private _dashAvailable: boolean = false;
     private _initialPosition: Vector3;
-    private _normalGravity: Vector3 = new Vector3(0, -6, 0);
-    private _gravityScaleOnFalling: number = 2;
+    private _normalGravity: Vector3 = new Vector3(0, -15, 0);
+    private _slowdownRate: number = 0.5;
+    private _gravityScaleOnFalling: number = 1.5;
     private _isFallingGravitySet: boolean = false;
+    private _speedCap: number = 30;
     private hp: number = 100;
     // that detects collision on the player
     private _death: boolean;
@@ -166,15 +170,17 @@ export class Player extends SceneComponent implements GameObject {
     }
 
     private _createLight(): void {
-        this._light = new HemisphericLight("light", new Vector3(0, 1, 0), this._scene);
+        this._light = new HemisphericLight("light", new Vector3(0, 100, 0), this._scene);
     }
 
     private _createCamera(): void {
         this._camera = new UniversalCamera("FPS", new Vector3(0, 2, -10), this._scene);
         this._camera.attachControl(this._scene, true);
+        this._camera.inputs.removeByType("FreeCameraKeyboardMoveInput");
         if (this._ui.isMobile) {
             this._camera.touchAngularSensibility = 10000;
         }
+        //this._camera.parent = this._aggregate.transformNode;
 
     }
 
@@ -203,21 +209,44 @@ export class Player extends SceneComponent implements GameObject {
         let direction = this._getCameraDirection();
         this.rotation.y = Math.atan2(direction.x, direction.z);
         this._aggregate.body.applyImpulse(direction.scale(this._speed), this.position);
-        // this.mesh.moveWithCollisions(direction.scale(this._speed));
+        
+
+        let y_speed = this._aggregate.body.getLinearVelocity().y;
+        let speedRelatedVector = new Vector3 (this._aggregate.body.getLinearVelocity()._x, 0, this._aggregate.body.getLinearVelocity()._z);
+
+        if (speedRelatedVector.length() > this._speedCap) {
+            let newVelocity = new Vector3(speedRelatedVector.normalize().x * this._speedCap, y_speed, speedRelatedVector.normalize().z * this._speedCap);
+            this._aggregate.body.setLinearVelocity(newVelocity);
+        }
+
     }
 
     private _moveBackward(): void {
         let direction = this._getCameraDirection().scale(-1);
         this.rotation.y = Math.atan2(direction.x, direction.z);
         this._aggregate.body.applyImpulse(direction.scale(this._speed), this.position);
-        // this.mesh.moveWithCollisions(direction.scale(this._speed));
+
+        let y_speed = this._aggregate.body.getLinearVelocity().y;
+        let speedRelatedVector = new Vector3 (this._aggregate.body.getLinearVelocity()._x, 0, this._aggregate.body.getLinearVelocity()._z);
+
+        if (speedRelatedVector.length() > this._speedCap) {
+            let newVelocity = new Vector3(speedRelatedVector.normalize().x * this._speedCap, y_speed, speedRelatedVector.normalize().z * this._speedCap);
+            this._aggregate.body.setLinearVelocity(newVelocity);
+        }
     }
 
     private _turnRight(): void {
         let direction: Vector3 = this._getCameraDirection().cross(Vector3.Down());
         this.rotation.y = Math.atan2(direction.x, direction.z);
         this._aggregate.body.applyImpulse(direction.scale(this._speed), this.position);
-        // this.mesh.moveWithCollisions(direction.scale(this._speed));
+
+        let y_speed = this._aggregate.body.getLinearVelocity().y;
+        let speedRelatedVector = new Vector3 (this._aggregate.body.getLinearVelocity()._x, 0, this._aggregate.body.getLinearVelocity()._z);
+
+        if (speedRelatedVector.length() > this._speedCap) {
+            let newVelocity = new Vector3(speedRelatedVector.normalize().x * this._speedCap, y_speed, speedRelatedVector.normalize().z * this._speedCap);
+            this._aggregate.body.setLinearVelocity(newVelocity);
+        }
     }
 
     //--GROUND DETECTION--
@@ -226,7 +255,20 @@ export class Player extends SceneComponent implements GameObject {
         let direction: Vector3 = this._getCameraDirection().cross(Vector3.Up());
         // this.rotation.y = Math.atan2(direction.x, direction.z);
         this._aggregate.body.applyImpulse(direction.scale(this._speed), this.position);
-        // this.mesh.moveWithCollisions(direction.scale(this._speed));
+
+        let y_speed = this._aggregate.body.getLinearVelocity().y;
+        let speedRelatedVector = new Vector3 (this._aggregate.body.getLinearVelocity()._x, 0, this._aggregate.body.getLinearVelocity()._z);
+
+        if (speedRelatedVector.length() > this._speedCap) {
+            let newVelocity = new Vector3(speedRelatedVector.normalize().x * this._speedCap, y_speed, speedRelatedVector.normalize().z * this._speedCap);
+            this._aggregate.body.setLinearVelocity(newVelocity);
+        }
+    }
+    
+    private _noImpuse(): void {
+        // Stop the player from moving in the X and Z axis
+        this._aggregate.body.setLinearVelocity(new Vector3(this._aggregate.body.getLinearVelocity().x * this._slowdownRate, this._aggregate.body.getLinearVelocity().y, this._aggregate.body.getLinearVelocity().z * this._slowdownRate));
+        
     }
 
     private _jump(): void {
@@ -235,6 +277,8 @@ export class Player extends SceneComponent implements GameObject {
         this._aggregate.body.applyImpulse(Vector3.Up().scale(this._jumpForce), this.position);
         this.isOnGround = false;
     }
+
+    
 
     private _castSpell(n: number): void {
         let keepCard = true;
@@ -335,6 +379,10 @@ export class Player extends SceneComponent implements GameObject {
                 this._turnLeft();
             }
         }
+        if (this._input.verticalAxis == 0 && this._input.horizontalAxis == 0) {
+            this._noImpuse();
+        }
+
         if (this._input.dashing) {
             this._dashbyBtn();
         }
@@ -375,9 +423,7 @@ export class Player extends SceneComponent implements GameObject {
     }
 
     private _updateCameraInfos(): void {
-        this._camera.position.x = this.position.x;
-        this._camera.position.y = this.position.y + 2;
-        this._camera.position.z = this.position.z;
+        this._camera.position = this.position.clone().add(new Vector3(0, 2, 0));
         if (this._targetCamaraRotationY !== null) {
             // Supposons que targetQuaternion est défini correctement comme montré précédemment
             let targetQuaternion = Quaternion.RotationYawPitchRoll(this._targetCamaraRotationY, 0, 0);

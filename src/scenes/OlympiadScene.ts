@@ -93,13 +93,13 @@ export class OlympiadScene extends Scene {
         if (import.meta.env.DEV) {
             console.log("DEV MODE: Scene inspector enabled");
             Inspector.Show(this, {embedMode: true});
-            // this.debugLayer.show();
-            // var viewer = new PhysicsViewer(this);
-            // this.meshes.forEach((mesh) => {
-            //     if (mesh.physicsBody) {
-            //         viewer.showBody(mesh.physicsBody);
-            //     }
-            // });
+            this.debugLayer.show();
+            var viewer = new PhysicsViewer(this);
+            this.meshes.forEach((mesh) => {
+                if (mesh.physicsBody) {
+                    viewer.showBody(mesh.physicsBody);
+                }
+            });
         }
     }
 
