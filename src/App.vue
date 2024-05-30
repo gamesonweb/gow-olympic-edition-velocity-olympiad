@@ -34,6 +34,20 @@ Préparez-vous à vivre une aventure palpitante, où chaque choix que vous ferez
     firstLevelScene.init().then(() => {
       sceneManager.renderScene();
     });
+    // Ensure canvas resizes with the window
+    const resizeCanvas = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      console.log("Resized canvas to " + canvas.width + "x" + canvas.height);
+      console.log("Window is " + window.innerWidth + "x" + window.innerHeight);
+    };
+
+    // Initial resize
+    resizeCanvas();
+
+    // Resize on window resize
+    window.addEventListener('resize', resizeCanvas);
   },
   methods: {
     startGame() {
@@ -44,15 +58,12 @@ Préparez-vous à vivre une aventure palpitante, où chaque choix que vous ferez
 </script>
 
 <style scoped>
+/*
+
 #app {
   position: relative;
   width: 100%;
   height: 100vh;
-}
-
-canvas#renderCanvas {
-  width: 100%;
-  height: 100%;
 }
 
 .overlay {
@@ -79,6 +90,19 @@ canvas#renderCanvas {
   margin-bottom: 20px;
 }
 
+body, html {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+}
+
+#renderCanvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
 .overlay button {
   background-color: #42b983;
   color: white;

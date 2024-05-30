@@ -27,6 +27,7 @@ export class Hud {
     public rightBtn!: Button;
     public upBtn!: Button;
     public downBtn!: Button;
+    // public spaceBtn!: Button;
     //Sounds
     public quitSfx!: Sound;
     // keyboard
@@ -219,6 +220,8 @@ export class Hud {
         if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
             this.isMobile = true; // tells inputController to track mobile inputs
 
+            this._prepareMobileScreen();
+
             //tutorial image
             movementPC.isVisible = false;
             let movementMobile = new Image("pause", "sprites/tutorialMobile.jpeg");
@@ -316,6 +319,24 @@ export class Hud {
             grid.addControl(upBtn, 0, 1);
             grid.addControl(downBtn, 1, 1);
 
+            // Add a new container for the space button to ensure it's not overlapping
+            // const spaceContainer = new Rectangle();
+            // spaceContainer.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+            // spaceContainer.verticalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+            // spaceContainer.height = 0.2;
+            // spaceContainer.width = 0.2;
+            // spaceContainer.left = "-2%";
+            // spaceContainer.top = "-2%";
+            // spaceContainer.thickness = 0;
+            // playerUI.addControl(spaceContainer);
+
+            // const spaceBtn = Button.CreateImageOnlyButton("space", "./sprites/rectSpaceBtn.png");
+            // spaceBtn.thickness = 0;
+            // spaceBtn.alpha = 0.8;
+            // spaceBtn.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+            // this.spaceBtn = spaceBtn;
+            //
+            // spaceContainer.addControl(spaceBtn); // Adding the space button to the new container
         }
 
         this._createICardMenu();
@@ -847,5 +868,63 @@ export class Hud {
             volume: 0.5,
             playbackRate: 0.6
         });
+    }
+
+    private _prepareMobileScreen(): void {
+
+        //--GUI--
+        const guiMenu = AdvancedDynamicTexture.CreateFullscreenUI("UI");
+        guiMenu.idealHeight = 720;
+
+        //popup for mobile to rotate screen
+        const rect1 = new Rectangle();
+        rect1.height = 0.2;
+        rect1.width = 0.3;
+        rect1.verticalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        rect1.horizontalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+        rect1.background = "white";
+        rect1.alpha = 0.8;
+        guiMenu.addControl(rect1);
+
+        const rect = new Rectangle();
+        rect.height = 0.2;
+        rect.width = 0.3;
+        rect.verticalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        rect.horizontalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+        rect.color = "whites";
+        guiMenu.addControl(rect);
+
+        const stackPanel = new StackPanel();
+        stackPanel.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
+        rect.addControl(stackPanel);
+
+        //image
+        const image = new Image("rotate", "./sprites/rotate.png")
+        image.width = 0.4;
+        image.height = 0.6;
+        image.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+        rect.addControl(image);
+
+        const alert = new TextBlock("alert", "For the best experience, please rotate your device");
+        alert.fontSize = "16px";
+        alert.fontFamily = "Viga";
+        alert.color = "black";
+        alert.resizeToFit = true;
+        alert.textWrapping = true;
+        stackPanel.addControl(alert);
+
+        const closealert = Button.CreateSimpleButton("close", "X");
+        closealert.height = "24px";
+        closealert.width = "24px";
+        closealert.color = "black";
+        stackPanel.addControl(closealert);
+
+
+        closealert.onPointerUpObservable.add(() => {
+            guiMenu.removeControl(rect);
+            guiMenu.removeControl(rect1);
+
+            this._scene.getEngine().enterFullscreen(true);
+        })
     }
 }

@@ -43,7 +43,6 @@ export class Player extends SceneComponent implements GameObject {
     private _input: PlayerInput;
     private _speed: number = 15;
     private _jumpForce: number = 6;
-    private _castCooldown: number = 2;
     private _targetCamaraRotationY: number | null = null;
     private _slerpAmount: number = 0;
     private _cameraAttached: boolean = true;
@@ -189,8 +188,10 @@ export class Player extends SceneComponent implements GameObject {
         this._camera.inputs.removeByType("FreeCameraKeyboardMoveInput");
         if (this._ui.isMobile) {
             this._camera.touchAngularSensibility = 10000;
+            this._camera.touchMoveSensibility = 200; // Adjust for touch movement
         }
         //this._camera.parent = this._aggregate.transformNode;
+
 
     }
 
