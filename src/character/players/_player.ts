@@ -42,7 +42,7 @@ export class Player extends SceneComponent implements GameObject {
     private _materials: Material[] = [];
     private _input: PlayerInput;
     private _speed: number = 15;
-    private _jumpForce: number = 6;
+    private _jumpForce: number = 4.5;
     private _targetCamaraRotationY: number | null = null;
     private _slerpAmount: number = 0;
     private _cameraAttached: boolean = true;
@@ -50,7 +50,7 @@ export class Player extends SceneComponent implements GameObject {
     private _dashAvailable: boolean = false;
     public  _isdashing: boolean = false;
     private _initialPosition: Vector3;
-    private _normalGravity: Vector3 = new Vector3(0, -15, 0);
+    private _normalGravity: Vector3 = new Vector3(0, -12, 0);
     private _slowdownRate: number = 0.5;
     private _gravityScaleOnFalling: number = 1.5;
     private _isFallingGravitySet: boolean = false;
@@ -123,6 +123,11 @@ export class Player extends SceneComponent implements GameObject {
         setTimeout(() => {
             this._isdashing = false;
         }, 5000);
+    }
+
+    _superJump(): void {
+        this._aggregate.body.applyImpulse(Vector3.Up().scale(15), this.position);
+        this.isOnGround = false;
     }
 
     public updateState() {
@@ -440,6 +445,7 @@ export class Player extends SceneComponent implements GameObject {
             }
         }
         // this._input.resetInputMap();
+        console.log("Player position: ", this.position)
     }
 
     private _updateCameraInfos(): void {

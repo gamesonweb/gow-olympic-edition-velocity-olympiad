@@ -76,13 +76,13 @@ export class FlammeCardProjectile extends SceneComponent implements GameObject {
         let direction = camera.getForwardRay().direction;
 
         this._loop_observer = this._scene.onBeforeRenderObservable.add(() => {
-            let moveStep = direction.scale(0.3);
+            let moveStep = direction.scale(1);
             this._mesh.position.addInPlace(moveStep);
         });
 
         setTimeout(() => {
             this._isExpired = true;
-        }, 5000);
+        }, 10000);
     }
 
     destroy() {
