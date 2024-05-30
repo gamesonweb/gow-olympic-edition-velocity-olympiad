@@ -49,7 +49,7 @@ export class Wall extends SceneComponent implements GameObject {
         // Ajouter un material au mur qui es un image qui s'ajuste a la taille du mur
 
         const wallMaterial = new StandardMaterial("", this.scene);
-        wallMaterial.diffuseTexture = new Texture("src/assets/textures/wall.jpeg", this.scene);
+         wallMaterial.diffuseTexture = new Texture("sprites/gameObject/wall.png", this.scene);
 
 
         this.mesh.material = wallMaterial;

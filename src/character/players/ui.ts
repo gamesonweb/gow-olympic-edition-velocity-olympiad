@@ -382,7 +382,8 @@ export class Hud {
         if (index > 0) {
             return;
         }
-        let stackUIImage = this._getStackUIImageFromRarete(card.rarete);
+        let nameofCard = card.name;
+        let stackUIImage = this._getStackUIImageFromRarete(card.rarete, nameofCard);
         let cardImage = new Image("card", stackUIImage);
         let width = "100px";
         let height = "150px";
@@ -403,7 +404,7 @@ export class Hud {
 
     public activeCard(card: ICard): void {
         this._activeCardStackPanel.clearControls();
-        let cardMeshName = card.meshname.split(".")[0];
+        let cardMeshName = card.name;
         let cardActiveText = new TextBlock("cardActiveText", `${cardMeshName}`);
         cardActiveText.color = "black";
         cardActiveText.fontSize = "18px";
@@ -411,7 +412,7 @@ export class Hud {
         cardActiveText.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
         cardActiveText.height = "20px";
         this._activeCardStackPanel.addControl(cardActiveText);
-        let stackUIImage = this._getStackUIImageFromRarete(card.rarete);
+        let stackUIImage = this._getStackUIImageFromRarete(card.rarete, cardMeshName);
         let cardImage = new Image("card", stackUIImage);
         cardImage.width = "200px";
         cardImage.height = "300px";
@@ -596,21 +597,22 @@ public updateHud(): void {
 
     //---- Sparkler Timers ----
 
-    private _getStackUIImageFromRarete(rareteCard: RareteCard): string {
+    private _getStackUIImageFromRarete(rareteCard: RareteCard,nameofCard: string): string {
 
         let stackUIImage = "sprites/controls.jpeg"
         switch (rareteCard) {
             case RareteCard.COMMON:
-                stackUIImage = "sprites/cardPreview/TorchTextureGray.png";
+                console.log("sprites/cardPreview/"+nameofCard+"Gray.png")
+                stackUIImage = "sprites/cardPreview/"+nameofCard+"Gray.png";
                 break;
             case RareteCard.RARE:
-                stackUIImage = "sprites/cardPreview/TorchTextureBlue.png"
+                stackUIImage = "sprites/cardPreview/"+nameofCard+"Blue.png"
                 break;
             case RareteCard.EPIC:
-                stackUIImage = "sprites/cardPreview/TorchTexturePurple.png";
+                stackUIImage = "sprites/cardPreview/"+nameofCard+"Purple.png";
                 break;
             case RareteCard.LEGENDARY:
-                stackUIImage = "sprites/cardPreview/TorchTextureGold.png";
+                stackUIImage = "sprites/cardPreview/"+nameofCard+"Gold.png";
                 break;
         }
         return stackUIImage;
