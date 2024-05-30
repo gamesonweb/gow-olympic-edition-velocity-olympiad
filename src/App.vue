@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <canvas id="renderCanvas"></canvas>
-    <div class="overlay" v-if="showOverlay">
+    <div v-if="showOverlay" class="overlay">
       <div class="overlay-content">
         <p class="explanation-text">{{ explanationText }}</p>
         <button @click="startGame">Commencer</button>
@@ -11,9 +11,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { SceneManager } from "./scenes/SceneManager";
-import { FirstLevelScene } from "./scenes/FirstLevelScene";
+import {defineComponent} from 'vue';
+import {SceneManager} from "./scenes/SceneManager";
+import {LevelSelectorScene} from './scenes/LevelSelectorScene';
+
 
 export default defineComponent({
   name: 'App',
@@ -30,17 +31,22 @@ Préparez-vous à vivre une aventure palpitante, où chaque choix que vous ferez
   mounted() {
     const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
     const sceneManager = new SceneManager(canvas);
-    const firstLevelScene = new FirstLevelScene(sceneManager.engine, sceneManager.playerState);
-    firstLevelScene.init().then(() => {
+
+
+    const levelSelectorScene = new LevelSelectorScene(sceneManager.engine, sceneManager.playerState);
+
+
+    levelSelectorScene.init().then(() => {
       sceneManager.renderScene();
     });
+
+
     // Ensure canvas resizes with the window
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
 
-      console.log("Resized canvas to " + canvas.width + "x" + canvas.height);
-      console.log("Window is " + window.innerWidth + "x" + window.innerHeight);
+
     };
 
     // Initial resize
@@ -101,6 +107,7 @@ body, html {
   height: 100%;
   display: block;
 }
+
 .overlay button {
   background-color: #42b983;
   color: white;

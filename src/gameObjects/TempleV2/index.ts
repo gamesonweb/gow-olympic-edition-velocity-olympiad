@@ -13,7 +13,6 @@ import "@babylonjs/loaders/glTF";
 import {SceneComponent} from "../../scenes/SceneComponent";
 import {OlympiadScene} from "../../scenes/OlympiadScene";
 import {Player} from "../../character/players";
-import {Nullable} from "@babylonjs/core/types";
 import {Level1Scene} from "../../scenes/Level1Scene";
 
 export class TempleV2 extends SceneComponent {

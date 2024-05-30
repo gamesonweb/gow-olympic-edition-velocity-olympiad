@@ -2,11 +2,10 @@
  * OlympiadScene is equivalent to OurScene in the first version of the project.
  */
 
-import {Engine, HavokPlugin, PhysicsViewer, Scene, SceneOptions, Vector3} from '@babylonjs/core';
+import {Engine, HavokPlugin, Scene, SceneOptions, Vector3} from '@babylonjs/core';
 import {SceneComponent} from "./SceneComponent";
 import HavokPhysics from "@babylonjs/havok";
 import {Player} from "../character/players";
-import {Inspector} from '@babylonjs/inspector';
 import {EnemyManager} from "./EnemyManager.ts";
 
 
@@ -105,7 +104,6 @@ export class OlympiadScene extends Scene {
 
     private _enableDebug(): void {
         if (import.meta.env.DEV) {
-            console.log("DEV MODE: Scene inspector enabled");
             // Inspector.Show(this, {embedMode: true});
             // this.debugLayer.show();
             // var viewer = new PhysicsViewer(this);

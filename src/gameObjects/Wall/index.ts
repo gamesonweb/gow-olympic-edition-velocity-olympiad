@@ -21,9 +21,15 @@ export class Wall extends SceneComponent implements GameObject {
     private readonly scene: Scene;
     private readonly position: Vector3;
     private aggregate!: PhysicsAggregate;
+    private readonly width: number;
+    private readonly height: number;
+    private readonly rotation: Vector3;
 
-    constructor(scene: Scene, position: Vector3) {
+    constructor(scene: Scene, position: Vector3, width: number, height: number, rotation: Vector3) {
         super();
+        this.width = width;
+        this.height = height;
+        this.rotation = rotation;
         this.position = position;
         this.scene = scene;
         this.scene.collisionsEnabled = true;
@@ -34,15 +40,16 @@ export class Wall extends SceneComponent implements GameObject {
 
         const size = 7;
 
-        this.mesh = MeshBuilder.CreateBox("wall", {width: size, height: size, depth: 1}, this.scene);
+        this.mesh = MeshBuilder.CreateBox("wall", {width: this.width, height: this.height, depth: 1}, this.scene);
 
+        this.mesh.rotation = this.rotation;
         // detecter les collisions et savoir si une boule fireball touche le mur
         this.mesh.checkCollisions = true;
 
         // Ajouter un material au mur qui es un image qui s'ajuste a la taille du mur
 
         const wallMaterial = new StandardMaterial("", this.scene);
-        wallMaterial.diffuseTexture = new Texture("src/assets/textures/wall.jpeg", this.scene);
+        wallMaterial.diffuseTexture = new Texture("sprites/gameObject/wall.png", this.scene);
 
 
         this.mesh.material = wallMaterial;
@@ -91,7 +98,6 @@ export class Wall extends SceneComponent implements GameObject {
     }
 
     public takeDamage(damage: number): void {
-        console.log('Wall take damage: ', damage);
         this.actualhealth -= damage;
         if (this.actualhealth <= 0) {
             let olympiadScene: OlympiadScene = <OlympiadScene>this.scene;
@@ -103,9 +109,7 @@ export class Wall extends SceneComponent implements GameObject {
 
     public onCollisionCallback(gameObject: GameObject): void {
         if (gameObject instanceof FlammeCardProjectile) {
-            console.log('Fireball hit the wall');
             this.takeDamage(this.actualhealth);
-            console.log("wall health: ", this.actualhealth);
         }
     }
 

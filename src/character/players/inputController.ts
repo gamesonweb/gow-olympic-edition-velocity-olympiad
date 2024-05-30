@@ -1,4 +1,4 @@
-import {ActionManager, ExecuteCodeAction, Scalar, Scene} from '@babylonjs/core';
+import {ActionManager, ExecuteCodeAction, PointerEventTypes, Scalar, Scene} from '@babylonjs/core';
 import {Hud} from './ui';
 
 export class PlayerInput {
@@ -16,13 +16,15 @@ export class PlayerInput {
     // spell casting
     public spell1: boolean = false;
     public spell2: boolean = false;
-    // Spell key press flags
-    private spell1Pressed: boolean = false;
-    private spell2Pressed: boolean = false;
+    public swapCard: boolean = false;
     public mobileLeft: boolean = false;
     public mobileRight: boolean = false;
     public mobileUp: boolean = false;
     public mobileDown: boolean = false;
+    // Spell key press flags
+    private spell1Pressed: boolean = false;
+    private spell2Pressed: boolean = false;
+    private swapCardPressed: boolean = false;
     private active: boolean = true;
     private readonly _scene: Scene;
     //Mobile Input trackers
@@ -125,6 +127,7 @@ export class PlayerInput {
             this.horizontalAxis = 0;
         }
 
+
         //dash
         if ((this.inputMap["Shift"] || this._mobileDash) && !this._ui.gamePaused) {
             this.dashing = true;
@@ -146,8 +149,7 @@ export class PlayerInput {
                 this.spell1Pressed = true;
             }
 
-        }
-        else {
+        } else {
             this.spell1 = false;
             this.spell1Pressed = false;
         }
@@ -158,11 +160,35 @@ export class PlayerInput {
                 this.spell2 = true;
                 this.spell2Pressed = true;
             }
-        }
-        else {
+        } else {
             this.spell2 = false;
             this.spell2Pressed = false;
         }
+
+        // Swap Card (molette roulette)
+
+        this._scene.onPointerObservable.add((pointerInfo) => {
+                if (pointerInfo.type === PointerEventTypes.POINTERWHEEL) {
+                    const event = pointerInfo.event as WheelEvent;
+                    if (event.deltaY !== 0) {
+                        this.swapCard = true;
+                    }
+                } else {
+                    this.swapCard = false;
+                }
+            }
+        );
+
+        if (this.inputMap["r"] && !this._ui.gamePaused) {
+            if (!this.swapCardPressed) {
+                this.swapCard = true;
+                this.swapCardPressed = true;
+            }
+        } else {
+            this.swapCard = false;
+            this.swapCardPressed = false;
+        }
+
 
     }
 

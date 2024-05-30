@@ -33,6 +33,7 @@ export class Player extends SceneComponent implements GameObject {
     public readonly playerState: PlayerState;
     public canActOnCollision: boolean = true;
     public canDetectCollision: boolean = true;
+    public _isdashing: boolean = false;
     private isOnGround: boolean = true;
     private _ui: Hud;
     private _aggregate!: PhysicsAggregate;
@@ -42,19 +43,19 @@ export class Player extends SceneComponent implements GameObject {
     private _materials: Material[] = [];
     private _input: PlayerInput;
     private _speed: number = 15;
-    private _jumpForce: number = 6;
+    private _jumpForce: number = 4.5;
     private _targetCamaraRotationY: number | null = null;
     private _slerpAmount: number = 0;
     private _cameraAttached: boolean = true;
-    private _dashRate: number = 5; // dash speed equals speed * dashRate
+    private _dashRate: number = 1000000; // dash speed equals speed * dashRate
     private _dashAvailable: boolean = false;
-    public  _isdashing: boolean = false;
     private _initialPosition: Vector3;
-    private _normalGravity: Vector3 = new Vector3(0, -15, 0);
+    private _normalGravity: Vector3 = new Vector3(0, -12, 0);
     private _slowdownRate: number = 0.5;
     private _gravityScaleOnFalling: number = 1.5;
     private _isFallingGravitySet: boolean = false;
     private _speedCap: number = 30;
+    private _oldSpeedCap: number = 30;
     private hp: number = 100;
 
     // that detects collision on the player
@@ -119,10 +120,30 @@ export class Player extends SceneComponent implements GameObject {
     _dash(): void {
         let direction = this._getCameraDirection();
         this._isdashing = true;
+        this._oldSpeedCap = this._speedCap;
+        this._speedCap = 30000;
+        setTimeout(() => {
+            this._speedCap = this._oldSpeedCap;
+        }, 150);
         this._aggregate.body.applyImpulse(direction.scale(this._speed * this._dashRate), this.position);
+
         setTimeout(() => {
             this._isdashing = false;
-        }, 5000);
+        }, 250);
+    }
+
+    _superJump(): void {
+        this._aggregate.body.setLinearVelocity(new Vector3(this._aggregate.body.getLinearVelocity().x, 0, this._aggregate.body.getLinearVelocity().z));
+        this._aggregate.body.applyImpulse(Vector3.Up().scale(15), this.position);
+        this.isOnGround = false;
+    }
+
+    _increaseSpeedCap(speed: number): void {
+        this._speedCap = this._speedCap + speed;
+    }
+
+    _returnToNormalSpeedCap(): void {
+        this._speedCap = 30;
     }
 
     public updateState() {
@@ -147,10 +168,8 @@ export class Player extends SceneComponent implements GameObject {
                     let distance = Vector3.Distance(this.mesh.position, gameObject.position);
                     if (distance <= 10) {
                         if (this._isdashing) {
-                            console.log("Distant Enemy destroying")
+
                             gameObject.onCollisionCallback(this);
-                        } else {
-                            console.log("Distant Enemy can only be destroyed by dashing into it")
                         }
                     }
                 }
@@ -159,16 +178,15 @@ export class Player extends SceneComponent implements GameObject {
     }
 
     public onCollisionCallback(gameObject: GameObject): void {
+
         if (gameObject instanceof CardSocle) {
-            console.log("Card collision detected", gameObject);
             this.addCardToCart(gameObject.card);
         }
         if (gameObject instanceof Wall) {
-            console.log("Wall collision detected", gameObject);
+            return
         }
 
         if (gameObject instanceof FireballDistanceEnemy) {
-            console.log("FireballDistanceEnemy collision detected", gameObject);
             this.takeDamage(gameObject.damage);
         }
     }
@@ -176,6 +194,14 @@ export class Player extends SceneComponent implements GameObject {
     private _getActiveCard(): ICard | null {
         if (!this.cardList || this.cardList.length == 0) return null;
         return this.cardList[this.cardList.length - 1];
+    }
+
+
+    private _swapToNextCard(): void {
+        if (!this.cardList || this.cardList.length == 0) return;
+        let card = this.cardList.pop();
+        this.cardList.unshift(card as ICard);
+        this._ui.updateCardsToStackPanel(this.cardList || []);
     }
 
     private _createLight(): void {
@@ -291,7 +317,6 @@ export class Player extends SceneComponent implements GameObject {
 
     private _castSpell(n: number): void {
 
-        console.log("Casting spell: ", n)
 
         let keepCard = true;
         let card: ICard = this._getActiveCard() as ICard;
@@ -350,7 +375,7 @@ export class Player extends SceneComponent implements GameObject {
         //rayHelper.show(this._scene, new Color3(1, 0, 0)); // Affiche le rayon en rouge
 
         let pickedPointVector = Vector3.Zero();
-        // console.log("pick: ", pick)
+
         if (pick && pick.hit) { //grounded
             pickedPointVector = <Vector3>pick.pickedPoint;
         }
@@ -377,6 +402,14 @@ export class Player extends SceneComponent implements GameObject {
         // bloquer la rotation
         this.mesh.rotation = Vector3.Zero();
         this._aggregate.body.setAngularVelocity(Vector3.Zero());
+
+        if (this._input.swapCard) {
+            this._swapToNextCard();
+            this._input.swapCard = false;
+            console.log("Swapping cards");
+        }
+
+
         if (this._input.jumpKeyDown) {
             this._jump();
         }

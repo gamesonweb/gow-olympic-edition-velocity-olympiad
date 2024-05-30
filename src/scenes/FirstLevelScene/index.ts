@@ -112,7 +112,7 @@ export class FirstLevelScene extends OlympiadScene {
         // wall destructible
         let wallposition = new Vector3(0, objetgroundYref, 50);
 
-        let wall = new Wall(this, wallposition);
+        let wall = new Wall(this, wallposition, 7, 7, new Vector3(0, 0, 0));
         this.addComponent(wall);
         this.addGameObject(wall);
     }

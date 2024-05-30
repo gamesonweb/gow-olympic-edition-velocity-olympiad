@@ -1,8 +1,10 @@
 import {AdvancedDynamicTexture, Button, Control, Grid, Image, Rectangle, StackPanel, TextBlock} from "@babylonjs/gui";
-import {Effect, ParticleSystem, PostProcess, Scene, Sound} from "@babylonjs/core";
+import {Effect, PostProcess, Scene, Sound} from "@babylonjs/core";
 import {ICard} from "../../gameObjects/Card/ICard";
 import {RareteCard} from "../../gameObjects/Card/RareteCard";
 import {OlympiadScene} from "../../scenes/OlympiadScene.ts";
+import {LevelSelectorScene} from "../../scenes/LevelSelectorScene";
+import {PlayerState} from "./index.ts";
 
 export class Hud {
     //Game Timer
@@ -33,27 +35,23 @@ export class Hud {
     // keyboard
     public isAzerty: boolean | null = null;
     private _scene: Scene;
-    private _prevTime: number = 0;
     private _clockTime: TextBlock | null = null; //GAME TIME
     private _startTime!: number;
     private _stopTimer!: boolean;
-    private _sString = "00";
-    private _mString = 11;
-    private _lanternCnt!: TextBlock;
+
     //Animated UI sprites
     private _sparklerLife!: Image;
-    private _spark!: Image;
-    private _handle!: NodeJS.Timeout;
-    private _sparkhandle!: NodeJS.Timeout;
+
+
     private _playerUI!: AdvancedDynamicTexture;
     private _pauseMenu!: Rectangle;
     private _controls!: Rectangle;
     private _sfx!: Sound;
     private _pause!: Sound;
-    private _sparkWarningSfx!: Sound;
     //ICard Menu
     private _cardMenuStackPanel!: StackPanel;
     private _activeCardStackPanel!: StackPanel;
+    private _levelSelector: any;
 
     constructor(scene: Scene) {
         this._scene = scene;
@@ -69,21 +67,6 @@ export class Hud {
             this.isAzerty = navigator.language === "fr-FR";
         }
 
-        const lanternCnt = new TextBlock();
-        lanternCnt.name = "Piece count";
-        lanternCnt.textVerticalAlignment = TextBlock.VERTICAL_ALIGNMENT_CENTER;
-        lanternCnt.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
-        lanternCnt.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
-        lanternCnt.fontSize = "22px";
-        lanternCnt.color = "white";
-        lanternCnt.text = "Pièces: 1 / 22";
-        lanternCnt.top = "32px";
-        lanternCnt.left = "-64px";
-        lanternCnt.width = "25%";
-        lanternCnt.fontFamily = "Viga";
-        lanternCnt.resizeToFit = true;
-        playerUI.addControl(lanternCnt);
-        this._lanternCnt = lanternCnt;
 
         const stackPanel = new StackPanel();
         stackPanel.height = "100%";
@@ -122,20 +105,6 @@ export class Hud {
         playerUI.addControl(sparklerLife);
         this._sparklerLife = sparklerLife;
 
-        const spark = new Image("spark", "./sprites/spark.png");
-        spark.width = "40px";
-        spark.height = "40px";
-        spark.cellId = 0;
-        spark.cellHeight = 20;
-        spark.cellWidth = 20;
-        spark.sourceWidth = 20;
-        spark.sourceHeight = 20;
-        spark.horizontalAlignment = 0;
-        spark.verticalAlignment = 0;
-        spark.left = "21px";
-        spark.top = "20px";
-        playerUI.addControl(spark);
-        this._spark = spark;
 
         const pauseBtn = Button.CreateImageOnlyButton("pauseBtn", "./sprites/pauseBtn.png");
         pauseBtn.width = "48px";
@@ -155,7 +124,6 @@ export class Hud {
 
             //when game is paused, make sure that the next start time is the time it was when paused
             this.gamePaused = true;
-            this._prevTime = this.time;
 
             //--SOUNDS--
             // this._scene.getSoundByName("gameSong")!.pause();
@@ -190,13 +158,7 @@ export class Hud {
         hint.isVisible = false;
         this._playerUI.addControl(hint);
         this.hint = hint;
-        //hint to the first lantern, will disappear once you light it
-        const lanternHint = new Image("lantern1", "sprites/arrowBtn.png");
-        lanternHint.rotation = Math.PI / 2;
-        lanternHint.stretch = Image.STRETCH_UNIFORM;
-        lanternHint.height = 0.8;
-        lanternHint.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
-        hint.addControl(lanternHint);
+
         const moveHint = new TextBlock("move", "Move Right");
         moveHint.color = "white";
         moveHint.fontSize = "12px";
@@ -208,9 +170,10 @@ export class Hud {
 
         this._createPauseMenu();
         this._createControlsMenu();
+        this._createLevelSelectorMenu();
         this._loadSounds(this._scene);
 
-        this._lockPointer();
+        this._disablePointerLockOnPause();
         this.startTimer();
         this._scene.onBeforeRenderObservable.add(() => {
             this.updateHud();
@@ -378,7 +341,8 @@ export class Hud {
         if (index > 0) {
             return;
         }
-        let stackUIImage = this._getStackUIImageFromRarete(card.rarete);
+        let nameofCard = card.name;
+        let stackUIImage = this._getStackUIImageFromRarete(card.rarete, nameofCard);
         let cardImage = new Image("card", stackUIImage);
         let width = "100px";
         let height = "150px";
@@ -399,7 +363,7 @@ export class Hud {
 
     public activeCard(card: ICard): void {
         this._activeCardStackPanel.clearControls();
-        let cardMeshName = card.meshname.split(".")[0];
+        let cardMeshName = card.name;
         let cardActiveText = new TextBlock("cardActiveText", `${cardMeshName}`);
         cardActiveText.color = "black";
         cardActiveText.fontSize = "18px";
@@ -407,7 +371,18 @@ export class Hud {
         cardActiveText.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
         cardActiveText.height = "20px";
         this._activeCardStackPanel.addControl(cardActiveText);
-        let stackUIImage = this._getStackUIImageFromRarete(card.rarete);
+
+        // show car durabilite
+        let cardDurabiliteText = new TextBlock("cardDurabiliteText", `Durabilite: ${card.durabilite}`);
+        cardDurabiliteText.color = "black";
+        cardDurabiliteText.fontSize = "18px";
+        cardDurabiliteText.paddingLeft = "5px"; // Espacement à gauche du nombre de cartes
+        cardDurabiliteText.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+        cardDurabiliteText.height = "20px";
+        this._activeCardStackPanel.addControl(cardDurabiliteText);
+
+
+        let stackUIImage = this._getStackUIImageFromRarete(card.rarete, cardMeshName);
         let cardImage = new Image("card", stackUIImage);
         cardImage.width = "200px";
         cardImage.height = "300px";
@@ -418,17 +393,24 @@ export class Hud {
 
     public updateHud(): void {
         if (!this._stopTimer && this._startTime != null) {
-            let curTime = Math.floor((new Date().getTime() - this._startTime) / 1000) + this._prevTime; // divide by 1000 to get seconds
+            let curTime = new Date().getTime() - this._startTime;
 
-            this.time = curTime; //keeps track of the total time elapsed in seconds
-            // this._clockTime!.text = this._formatTime(curTime);
-            this._clockTime!.text = ("0" + this._formatTime(curTime)).slice(-8);
+            // Convertir le temps écoulé en secondes et millisecondes
+            let seconds = Math.floor(curTime / 1000);
+            let milliseconds = curTime % 1000;
+
+            milliseconds = Math.floor(milliseconds / 10); // Arrondir à deux chiffres
+
+            // Mettre à jour le temps écoulé
+            this.time = curTime;
+
+            // Mettre à jour l'affichage
+            // Formater les millisecondes avec trois chiffres
+            let formattedMilliseconds = ("00" + milliseconds).slice(-2);
+            this._clockTime!.text = `${seconds}.${formattedMilliseconds}`;
         }
     }
 
-    public updateLanternCount(numLanterns: number): void {
-        this._lanternCnt.text = "Lanterns: " + numLanterns + " / 22";
-    }
 
     //---- Game Timer ----
     public startTimer(): void {
@@ -440,75 +422,12 @@ export class Hud {
         this._stopTimer = true;
     }
 
-    //start and restart sparkler, handles setting the texture and animation frame
-    public startSparklerTimer(sparkler: ParticleSystem): void {
-        //reset the sparkler timers & animation frames
-        this.stopSpark = false;
-        this._sparklerLife.cellId = 0;
-        this._spark.cellId = 0;
-        if (this._handle) {
-            clearInterval(this._handle);
-        }
-        if (this._sparkhandle) {
-            clearInterval(this._sparkhandle);
-        }
-        //--SOUNDS--
-        this._sparkWarningSfx.stop(); // if you restart the sparkler while this was playing (it technically would never reach cellId==10, so you need to stop the sound)
-
-        //reset the sparkler (particle system and light)
-        if (sparkler != null) {
-            sparkler.start();
-            this._scene.getLightByName("sparklight")!.intensity = 35;
-        }
-
-        //sparkler animation, every 2 seconds update for 10 bars of sparklife
-        this._handle = setInterval(() => {
-            if (!this.gamePaused) {
-                if (this._sparklerLife.cellId < 10) {
-                    this._sparklerLife.cellId++;
-                }
-                if (this._sparklerLife.cellId == 9) {
-                    this._sparkWarningSfx.play();
-                }
-                if (this._sparklerLife.cellId == 10) {
-                    this.stopSpark = true;
-                    clearInterval(this._handle);
-                    //sfx
-                    this._sparkWarningSfx.stop();
-                }
-            } else { // if the game is paused, also pause the warning SFX
-                this._sparkWarningSfx.pause();
-            }
-        }, 2000);
-
-        this._sparkhandle = setInterval(() => {
-            if (!this.gamePaused) {
-                if (this._sparklerLife.cellId < 10 && this._spark.cellId < 5) {
-                    this._spark.cellId++;
-                } else if (this._sparklerLife.cellId < 10 && this._spark.cellId >= 5) {
-                    this._spark.cellId = 0;
-                } else {
-                    this._spark.cellId = 0;
-                    clearInterval(this._sparkhandle);
-                }
-            }
-        }, 185);
-    }
-
-    //stop the sparkler, resets the texture
-    public stopSparklerTimer(sparkler: ParticleSystem): void {
-        this.stopSpark = true;
-
-        if (sparkler != null) {
-            sparkler.stop();
-            this._scene.getLightByName("sparklight")!.intensity = 0;
-        }
-    }
 
     public GameOverOverlay(): void {
 
-        // make cursor unlock
-        document.exitPointerLock();
+        this.gamePaused = true;
+        this._disablePointerLockOnPause();
+        this.pauseBtn.isVisible = false;
 
         // Create a rectangle to overlay the entire screen
         const gameOverOverlay = new Rectangle("gameOverOverlay");
@@ -527,19 +446,11 @@ export class Hud {
         gameOverText.fontSize = "72px";
         gameOverText.fontFamily = "Viga";
         gameOverText.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+        // monter de 20px par rapport au centre
+        gameOverText.top = "-50px";
         gameOverText.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
         gameOverOverlay.addControl(gameOverText);
 
-        // Add a countdown timer
-        const countdownText = new TextBlock("countdownText");
-        countdownText.text = "";
-        countdownText.color = "rgb(46,199,192)";
-        countdownText.fontSize = "48px";
-        countdownText.fontFamily = "Viga";
-        countdownText.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
-        countdownText.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
-        countdownText.top = "80px"; // Position it below the "Game Over" text
-        gameOverOverlay.addControl(countdownText);
 
         // Add a button to restart the game
         const restartButton = Button.CreateSimpleButton("restart", "Restart Now");
@@ -556,7 +467,7 @@ export class Hud {
 
         // Event listener for restart button
         restartButton.onPointerUpObservable.add(() => {
-            this.startCountdown(countdownText);
+            this.startCountdown();
         });
 
         // Automatically start countdown
@@ -564,10 +475,11 @@ export class Hud {
     }
 
     updateHP(hp: number) {
-        console.log("updateHP", hp)
         if (!hp) return
         this._sparklerLife.cellId = 10 - ((hp == 0) ? 0 : parseInt(`${hp / 10}`))
     }
+
+    //---- Sparkler Timers ----
 
     private _createICardMenu(): void {
         this._cardMenuStackPanel = new StackPanel("cardMenuStackPanel");
@@ -591,72 +503,67 @@ export class Hud {
         this._playerUI.addControl(this._activeCardStackPanel);
     }
 
-    //---- Sparkler Timers ----
+    private _getStackUIImageFromRarete(rareteCard: RareteCard, nameofCard: string): string {
 
-    private _getStackUIImageFromRarete(rareteCard: RareteCard): string {
-        console.log(rareteCard)
         let stackUIImage = "sprites/controls.jpeg"
         switch (rareteCard) {
             case RareteCard.COMMON:
-                stackUIImage = "sprites/cardPreview/TorchTextureGray.png";
+                stackUIImage = "sprites/cardPreview/" + nameofCard + "Gray.png";
                 break;
             case RareteCard.RARE:
-                stackUIImage = "sprites/cardPreview/TorchTextureBlue.png"
+                stackUIImage = "sprites/cardPreview/" + nameofCard + "Blue.png"
                 break;
             case RareteCard.EPIC:
-                stackUIImage = "sprites/cardPreview/TorchTexturePurple.png";
+                stackUIImage = "sprites/cardPreview/" + nameofCard + "Purple.png";
                 break;
             case RareteCard.LEGENDARY:
-                stackUIImage = "sprites/cardPreview/TorchTextureGold.png";
+                stackUIImage = "sprites/cardPreview/" + nameofCard + "Gold.png";
                 break;
         }
         return stackUIImage;
     }
 
     private _lockPointer(): void {
-        // When the element is clicked, request pointer lock
         const canvas: HTMLCanvasElement = <HTMLCanvasElement>this._scene.getEngine().getRenderingCanvas();
-        canvas.onclick = function () {
-            let requestPointerLock = canvas.requestPointerLock ||
+        canvas.onclick = () => {
+            const requestPointerLock = canvas.requestPointerLock ||
                 canvas.mozRequestPointerLock ||
                 canvas.webkitRequestPointerLock;
             if (requestPointerLock) {
-                console.log("requestPointerLock exists")
-                canvas.requestPointerLock = requestPointerLock;
-                // Ask the browser to lock the pointer
-                canvas.requestPointerLock();
-            } else {
-                console.log("Pointer lock not supported");
+                requestPointerLock.call(canvas);
+
+
+                // Créer et ajouter le cercle au centre de l'écran
+                const circle = new Image("circle", "sprites/circle.png");
+                circle.width = "40px";
+                circle.height = "40px";
+                circle.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+                circle.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+                this._playerUI.addControl(circle);
             }
         };
     }
 
-    private _disablePointerLockOnPause(): void {
+
+    private _unlockPointer(): void {
         const canvas: HTMLCanvasElement = <HTMLCanvasElement>this._scene.getEngine().getRenderingCanvas();
-        if (this.gamePaused) {
-            canvas.requestPointerLock = () => {
-            };
-            this.stopTimer();
-        } else {
-            if (document.pointerLockElement !== canvas) {
-                this._lockPointer();
-            }
-        }
+        document.exitPointerLock();
+        canvas.style.cursor = 'default';
+        canvas.style.position = 'static';
+        canvas.style.left = 'auto';
+        canvas.style.top = 'auto';
+        canvas.style.transform = 'none';
+
+
     }
 
-    //format the time so that it is relative to 11:00 -- game time
-    private _formatTime(time: number): string {
-        let minsPassed = Math.floor(time / 60); //seconds in a min
-        let secPassed = time % 240; // goes back to 0 after 4mins/240sec
-        //gameclock works like: 4 mins = 1 hr
-        // 4sec = 1/15 = 1min game time
-        if (secPassed % 4 == 0) {
-            // this._mString = Math.floor(minsPassed / 4) + 11;
-            this._mString = Math.floor(minsPassed / 4);
-            this._sString = (secPassed / 4 < 10 ? "0" : "") + secPassed / 4;
+    private _disablePointerLockOnPause(): void {
+        if (this.gamePaused) {
+            this._unlockPointer();
+            this.stopTimer();
+        } else {
+            this._lockPointer();
         }
-        let day = (this._mString == 11 ? " PM" : " AM");
-        return (this._mString + ":" + this._sString + day);
     }
 
     //---- Pause Menu Popup ----
@@ -739,6 +646,32 @@ export class Hud {
             this._sfx.play();
         });
 
+
+        // level selection
+        const levelBtn = Button.CreateSimpleButton("level", "LEVELS");
+        levelBtn.width = 0.18;
+        levelBtn.height = "44px";
+        levelBtn.color = "white";
+        levelBtn.fontFamily = "Viga";
+        levelBtn.paddingBottom = "14px";
+        levelBtn.cornerRadius = 14;
+        levelBtn.fontSize = "12px";
+        resumeBtn.textBlock!.resizeToFit = true;
+        levelBtn.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+        levelBtn.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+        stackPanel.addControl(levelBtn);
+
+        //when the button is down, make menu invisable and remove control of the menu
+        levelBtn.onPointerDownObservable.add(() => {
+            //open controls screen
+            this._levelSelector.isVisible = true;
+            this._pauseMenu.isVisible = false;
+
+            //play transition sound
+            this._sfx.play();
+        });
+
+
         const quitBtn = Button.CreateSimpleButton("quit", "QUIT");
         quitBtn.width = 0.18;
         quitBtn.height = "44px";
@@ -779,6 +712,9 @@ export class Hud {
             }
         })
     }
+
+
+    //---- Level selector Menu Popup ----
 
     //---- Controls Menu Popup ----
     private _createControlsMenu(): void {
@@ -824,29 +760,83 @@ export class Hud {
         });
     }
 
-// Function to start the countdown
-    private startCountdown(countdownText: TextBlock): void {
-        let countdown = 3;
-        countdownText.text = `Restarting in ${countdown}...`;
+    private _createLevelSelectorMenu(): void {
+        const levelSelector = new Rectangle();
+        levelSelector.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        levelSelector.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+        levelSelector.height = 0.8;
+        levelSelector.width = 0.5;
+        levelSelector.thickness = 0;
+        levelSelector.color = "white";
+        levelSelector.isVisible = false;
+        this._playerUI.addControl(levelSelector);
+        this._levelSelector = levelSelector;
 
-        const intervalId = setInterval(() => {
-            countdown--;
-            if (countdown > 0) {
-                countdownText.text = `Restarting in ${countdown}...`;
-            } else {
-                clearInterval(intervalId);
-                countdownText.text = "Restarting now...";
-                this.restartGame();
-            }
-        }, 1000);
+
+        const title = new TextBlock("title", "LEVELS");
+        title.resizeToFit = true;
+        title.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+        title.fontFamily = "Viga";
+        title.fontSize = "32px";
+        title.top = "14px";
+        levelSelector.addControl(title);
+
+        const backBtn = Button.CreateImageOnlyButton("back", "./sprites/lanternbutton.jpeg");
+        backBtn.width = "40px";
+        backBtn.height = "40px";
+        backBtn.top = "14px";
+        backBtn.thickness = 0;
+        backBtn.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
+        backBtn.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+        levelSelector.addControl(backBtn);
+
+        //when the button is down, make menu invisable and remove control of the menu
+        backBtn.onPointerDownObservable.add(() => {
+            this._pauseMenu.isVisible = true;
+            this._levelSelector.isVisible = false;
+            //play transition sound
+            this._sfx.play();
+        });
+
+        //level buttons
+        const level1Btn = Button.CreateSimpleButton("level1", "LEVEL 1");
+        level1Btn.width = 0.18;
+        level1Btn.height = "44px";
+        level1Btn.color = "white";
+        level1Btn.fontFamily = "Viga";
+        level1Btn.paddingBottom = "14px";
+        level1Btn.cornerRadius = 14;
+        level1Btn.fontSize = "12px";
+        level1Btn.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+        level1Btn.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+        levelSelector.addControl(level1Btn);
+
+        //when the button is down, make a new LevelSelectorScene and dispose actual scene
+        level1Btn.onPointerDownObservable.add(() => {
+            let actualScene = <OlympiadScene>this._scene;
+            let playerState = new PlayerState()
+            let nextScene = new LevelSelectorScene(actualScene.getEngine(), playerState);
+            nextScene.init().then(() => {
+                    actualScene.dispose();
+                }
+            );
+        });
+
+
+    }
+
+// Function to start the countdown
+    private startCountdown(): void {
+        this.restartGame();
+
     }
 
 // Function to restart the game
     private restartGame(): void {
-        this.gamePaused = true;
-        this._disablePointerLockOnPause();
+
         let olympiaScene = <OlympiadScene>this._scene;
         olympiaScene.restart();
+        this.gamePaused = false;
     }
 
     //load all sounds needed for game ui interactions
@@ -862,12 +852,6 @@ export class Hud {
         this.quitSfx = new Sound("quit", "./sounds/Retro Event UI 13.wav", scene, function () {
         });
 
-        this._sparkWarningSfx = new Sound("sparkWarning", "./sounds/Retro Water Drop 01.wav", scene, function () {
-        }, {
-            loop: true,
-            volume: 0.5,
-            playbackRate: 0.6
-        });
     }
 
     private _prepareMobileScreen(): void {

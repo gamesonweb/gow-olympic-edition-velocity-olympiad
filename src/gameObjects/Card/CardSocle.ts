@@ -28,6 +28,7 @@ export class CardSocle extends SceneComponent implements GameObject {
         SceneLoader.ImportMesh("", "./models/", this.card.meshname, this.scene, (meshes) => {
             this.mesh = meshes[0] as Mesh;
             this._meshes.push(this.mesh);
+            this.mesh.renderingGroupId = 3;
 
 
             // Set up rendering loop to continually rotate the mesh to face the camera
@@ -36,7 +37,7 @@ export class CardSocle extends SceneComponent implements GameObject {
             });
             this.mesh.position = this.position;
 
-            console.log("Card socle loaded at position: ", this.position.toString());
+
         });
     }
 
@@ -73,7 +74,6 @@ export class CardSocle extends SceneComponent implements GameObject {
 
         // Check if the camera is within 1 unit of the mesh
 
-        // console.log("CHECKIN_COLLISION: ", this.mesh!.position.subtract(this.scene.activeCamera!.position).length() < 5)
         if (!this.mesh || !this.scene.activeCamera) return false;
 
         // compare x and z coordinates first
