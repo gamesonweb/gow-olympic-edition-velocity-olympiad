@@ -29,12 +29,12 @@ export class JumpCard implements ICard {
                 break;
             case RareteCard.EPIC:
                 this.meshname = "BootCardPurple.glb";
-                this.damage = 50;
+                this.damage = 30;
                 this.durabilite = 3;
                 break;
             case RareteCard.LEGENDARY:
                 this.meshname = "BootCardGold.glb";
-                this.damage = 100;
+                this.damage = 40;
                 this.durabilite = 5;
                 break;
         }

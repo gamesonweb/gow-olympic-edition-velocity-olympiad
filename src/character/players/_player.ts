@@ -46,7 +46,7 @@ export class Player extends SceneComponent implements GameObject {
     private _targetCamaraRotationY: number | null = null;
     private _slerpAmount: number = 0;
     private _cameraAttached: boolean = true;
-    private _dashRate: number = 5; // dash speed equals speed * dashRate
+    private _dashRate: number = 1000000; // dash speed equals speed * dashRate
     private _dashAvailable: boolean = false;
     public  _isdashing: boolean = false;
     private _initialPosition: Vector3;
@@ -55,6 +55,7 @@ export class Player extends SceneComponent implements GameObject {
     private _gravityScaleOnFalling: number = 1.5;
     private _isFallingGravitySet: boolean = false;
     private _speedCap: number = 30;
+    private _oldSpeedCap: number = 30;
     private hp: number = 100;
 
     // that detects collision on the player
@@ -119,10 +120,16 @@ export class Player extends SceneComponent implements GameObject {
     _dash(): void {
         let direction = this._getCameraDirection();
         this._isdashing = true;
+        this._oldSpeedCap = this._speedCap;
+        this._speedCap = 30000;
+        setTimeout(() => {
+            this._speedCap = this._oldSpeedCap;
+        }, 150);
         this._aggregate.body.applyImpulse(direction.scale(this._speed * this._dashRate), this.position);
+
         setTimeout(() => {
             this._isdashing = false;
-        }, 5000);
+        }, 250);
     }
 
     _superJump(): void {
