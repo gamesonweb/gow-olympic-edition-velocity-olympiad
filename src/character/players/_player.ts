@@ -172,8 +172,6 @@ export class Player extends SceneComponent implements GameObject {
 
     public onCollisionCallback(gameObject: GameObject): void {
 
-
-
         if (gameObject instanceof CardSocle) {
             this.addCardToCart(gameObject.card);
         }

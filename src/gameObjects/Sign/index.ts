@@ -92,7 +92,7 @@ export class Sign implements SceneComponent {
         this.signMesh.position = this.position;
 
         const material = new StandardMaterial("", this.scene);
-        material.diffuseTexture = new Texture("src/assets/textures/sign.jpeg", this.scene);
+        material.diffuseTexture = new Texture("sprites/gameObject/sign.png", this.scene);
         this.signMesh.material = material;
 
 
