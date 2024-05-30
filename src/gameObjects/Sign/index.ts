@@ -60,24 +60,28 @@ export class Sign implements SceneComponent {
         rect.linkOffsetY = -50;
         const signMesh = this.createSignMesh();
 
-        // Associer les événements de survol de la souris pour afficher et masquer le panneau
-        signMesh.actionManager = new ActionManager(this.scene);
-        signMesh.actionManager.registerAction(
-            new ExecuteCodeAction(
-                ActionManager.OnPointerOverTrigger,
-                () => {
-                    rect.isVisible = true;
-                }
-            )
-        );
-        signMesh.actionManager.registerAction(
-            new ExecuteCodeAction(
-                ActionManager.OnPointerOutTrigger,
-                () => {
-                    rect.isVisible = false;
-                }
-            )
-        );
+
+        // before rendering the scene show the sign if the camera is close enough
+        this.scene.registerBeforeRender(() => {
+            if (this.scene.activeCamera) {
+            let camera = this.scene.activeCamera;
+            let distanceToshow = 10;
+            let distanceFromCamera = Vector3.Distance(camera.position, this.position);
+            console.log(distanceFromCamera)
+            if (distanceFromCamera < distanceToshow) {
+                rect.isVisible = true;
+            }
+            else {
+                rect.isVisible = false;
+            }
+        }
+        });
+
+
+
+
+
+
 
 
     }

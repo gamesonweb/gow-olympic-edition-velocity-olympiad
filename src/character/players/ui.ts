@@ -466,70 +466,7 @@ export class Hud {
         this._stopTimer = true;
     }
 
-    //start and restart sparkler, handles setting the texture and animation frame
-    public startSparklerTimer(sparkler: ParticleSystem): void {
-        //reset the sparkler timers & animation frames
-        this.stopSpark = false;
-        this._sparklerLife.cellId = 0;
-        this._spark.cellId = 0;
-        if (this._handle) {
-            clearInterval(this._handle);
-        }
-        if (this._sparkhandle) {
-            clearInterval(this._sparkhandle);
-        }
-        //--SOUNDS--
-        this._sparkWarningSfx.stop(); // if you restart the sparkler while this was playing (it technically would never reach cellId==10, so you need to stop the sound)
 
-        //reset the sparkler (particle system and light)
-        if (sparkler != null) {
-            sparkler.start();
-            this._scene.getLightByName("sparklight")!.intensity = 35;
-        }
-
-        //sparkler animation, every 2 seconds update for 10 bars of sparklife
-        this._handle = setInterval(() => {
-            if (!this.gamePaused) {
-                if (this._sparklerLife.cellId < 10) {
-                    this._sparklerLife.cellId++;
-                }
-                if (this._sparklerLife.cellId == 9) {
-                    this._sparkWarningSfx.play();
-                }
-                if (this._sparklerLife.cellId == 10) {
-                    this.stopSpark = true;
-                    clearInterval(this._handle);
-                    //sfx
-                    this._sparkWarningSfx.stop();
-                }
-            } else { // if the game is paused, also pause the warning SFX
-                this._sparkWarningSfx.pause();
-            }
-        }, 2000);
-
-        this._sparkhandle = setInterval(() => {
-            if (!this.gamePaused) {
-                if (this._sparklerLife.cellId < 10 && this._spark.cellId < 5) {
-                    this._spark.cellId++;
-                } else if (this._sparklerLife.cellId < 10 && this._spark.cellId >= 5) {
-                    this._spark.cellId = 0;
-                } else {
-                    this._spark.cellId = 0;
-                    clearInterval(this._sparkhandle);
-                }
-            }
-        }, 185);
-    }
-
-    //stop the sparkler, resets the texture
-    public stopSparklerTimer(sparkler: ParticleSystem): void {
-        this.stopSpark = true;
-
-        if (sparkler != null) {
-            sparkler.stop();
-            this._scene.getLightByName("sparklight")!.intensity = 0;
-        }
-    }
 
     public GameOverOverlay(): void {
 
@@ -633,30 +570,26 @@ export class Hud {
     }
 
     private _lockPointer(): void {
-        const canvas: HTMLCanvasElement = <HTMLCanvasElement>this._scene.getEngine().getRenderingCanvas();
-        canvas.onclick = () => {
-            const requestPointerLock = canvas.requestPointerLock ||
-                canvas.mozRequestPointerLock ||
-                canvas.webkitRequestPointerLock;
-            if (requestPointerLock) {
-                requestPointerLock.call(canvas);
-                // Centrer le curseur après le verrouillage
-                canvas.style.cursor = 'none';
-                canvas.style.position = 'absolute';
-                canvas.style.left = '50%';
-                canvas.style.top = '50%';
-                canvas.style.transform = 'translate(-50%, -50%)';
-            }
-        };
+    const canvas: HTMLCanvasElement = <HTMLCanvasElement>this._scene.getEngine().getRenderingCanvas();
+    canvas.onclick = () => {
+        const requestPointerLock = canvas.requestPointerLock ||
+            canvas.mozRequestPointerLock ||
+            canvas.webkitRequestPointerLock;
+        if (requestPointerLock) {
+            requestPointerLock.call(canvas);
 
 
-    //     add a circle to the center of the screen create not an image but a circle
-        const circle = new Image("circle", "sprites/circle.png");
-        circle.width = "40px";
-        circle.height = "40px";
-        this._playerUI.addControl(circle);
+            // Créer et ajouter le cercle au centre de l'écran
+            const circle = new Image("circle", "sprites/circle.png");
+            circle.width = "40px";
+            circle.height = "40px";
+            circle.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+            circle.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+            this._playerUI.addControl(circle);
+        }
+    };
+}
 
-    }
 
     private _unlockPointer(): void {
         const canvas: HTMLCanvasElement = <HTMLCanvasElement>this._scene.getEngine().getRenderingCanvas();
@@ -666,8 +599,6 @@ export class Hud {
         canvas.style.left = 'auto';
         canvas.style.top = 'auto';
         canvas.style.transform = 'none';
-
-
 
 
 
