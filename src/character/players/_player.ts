@@ -126,8 +126,17 @@ export class Player extends SceneComponent implements GameObject {
     }
 
     _superJump(): void {
+        this._aggregate.body.setLinearVelocity(new Vector3(this._aggregate.body.getLinearVelocity().x, 0, this._aggregate.body.getLinearVelocity().z));
         this._aggregate.body.applyImpulse(Vector3.Up().scale(15), this.position);
         this.isOnGround = false;
+    }
+
+    _increaseSpeedCap(speed:number): void {
+        this._speedCap = this._speedCap + speed;
+    }
+
+    _returnToNormalSpeedCap(): void {
+        this._speedCap = 30;
     }
 
     public updateState() {

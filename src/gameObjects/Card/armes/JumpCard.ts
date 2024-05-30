@@ -18,17 +18,17 @@ export class JumpCard implements ICard {
         this.rarete = rarete;
         switch (rarete) {
             case RareteCard.COMMON:
-                this.meshname = "TorchCardGray.glb";
+                this.meshname = "BootCardGray.glb";
                 this.damage = 10;
                 this.durabilite = 1;
                 break;
             case RareteCard.RARE:
-                this.meshname = "TorchCardBlue.glb"
+                this.meshname = "BootCardBlue.glb"
                 this.damage = 20;
                 this.durabilite = 2;
                 break;
             case RareteCard.EPIC:
-                this.meshname = "TorchCardPurple.glb";
+                this.meshname = "BootCardPurple.glb";
                 this.damage = 50;
                 this.durabilite = 3;
                 break;
@@ -41,14 +41,19 @@ export class JumpCard implements ICard {
     }
 
     public firstSpell(_scene: Scene, position: Vector3): void {
-        //Make the player do a super jump;
         let olympiadScene: OlympiadScene = <OlympiadScene>_scene;
         let _player: Player = olympiadScene.player;
-        _player._superJump();
+        _player._increaseSpeedCap(this.damage);
+        setTimeout(() => {
+            _player._returnToNormalSpeedCap();
+        }, 10000);
     }
 
     public secondSpell(_scene: Scene, position: Vector3): void {
-        //TODO
+        let olympiadScene: OlympiadScene = <OlympiadScene>_scene;
+        let _player: Player = olympiadScene.player;
+        _player._superJump();
+        this.durabilite--;
     }
 
     setup() {

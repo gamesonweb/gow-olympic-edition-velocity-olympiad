@@ -33,10 +33,9 @@ Préparez-vous à vivre une aventure palpitante, où chaque choix que vous ferez
     const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
     const sceneManager = new SceneManager(canvas);
 
-    // const firstLevelScene = new FirstLevelScene(sceneManager.engine, sceneManager.playerState);
+    //const firstLevelScene = new FirstLevelScene(sceneManager.engine, sceneManager.playerState);
     //const levelSelectorScene = new LevelSelectorScene(sceneManager.engine, sceneManager.playerState);
     const level1Scene = new Level1Scene(sceneManager.engine, sceneManager.playerState);
-
 
 
     level1Scene.init().then(() => {
