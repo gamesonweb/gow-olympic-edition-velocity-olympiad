@@ -92,7 +92,7 @@ export class FireballDistanceEnemy extends SceneComponent implements GameObject 
         particleSystem.maxAngularSpeed = Math.PI;
         particleSystem.minEmitPower = 1;
         particleSystem.maxEmitPower = 3;
-        particleSystem.updateSpeed = 0.005;
+        particleSystem.updateSpeed = 0.001;
         particleSystem.start();
 
         var endVector = this._mesh.calcMovePOV(0, diffY, 100).addInPlace(this._mesh.position);
@@ -104,7 +104,7 @@ export class FireballDistanceEnemy extends SceneComponent implements GameObject 
             // Calcule le déplacement en fonction de la vitesse du projectile
             let newPosition = path.getPointAt(i).subtract(this._mesh.position).normalize()
             this._mesh.position.addInPlace(newPosition);
-            i += 0.003;
+            i += 0.01;
             if (i >= 1) {
                 this._isExpired = true;
             }

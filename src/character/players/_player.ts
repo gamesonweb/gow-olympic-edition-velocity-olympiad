@@ -121,7 +121,7 @@ export class Player extends SceneComponent implements GameObject {
         let direction = this._getCameraDirection();
         this._isdashing = true;
         this._oldSpeedCap = this._speedCap;
-        this._speedCap = 30000;
+        this._speedCap = 300;
         setTimeout(() => {
             this._speedCap = this._oldSpeedCap;
         }, 150);
@@ -134,7 +134,7 @@ export class Player extends SceneComponent implements GameObject {
 
     _superJump(): void {
         this._aggregate.body.setLinearVelocity(new Vector3(this._aggregate.body.getLinearVelocity().x, 0, this._aggregate.body.getLinearVelocity().z));
-        this._aggregate.body.applyImpulse(Vector3.Up().scale(15), this.position);
+        this._aggregate.body.applyImpulse(Vector3.Up().scale(25), this.position);
         this.isOnGround = false;
     }
 
@@ -457,6 +457,7 @@ export class Player extends SceneComponent implements GameObject {
             }
         }
         // this._input.resetInputMap();
+        console.log(" x :", this.position._x," y :", this.position._y," z :", this.position._z);
     }
 
     private _updateCameraInfos(): void {
