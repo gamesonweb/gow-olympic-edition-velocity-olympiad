@@ -58,8 +58,6 @@ Préparez-vous à vivre une aventure palpitante, où chaque choix que vous ferez
 </script>
 
 <style scoped>
-/*
-
 #app {
   position: relative;
   width: 100%;
