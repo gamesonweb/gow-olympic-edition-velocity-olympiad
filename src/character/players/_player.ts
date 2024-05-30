@@ -188,8 +188,10 @@ export class Player extends SceneComponent implements GameObject {
         this._camera.inputs.removeByType("FreeCameraKeyboardMoveInput");
         if (this._ui.isMobile) {
             this._camera.touchAngularSensibility = 10000;
+            this._camera.touchMoveSensibility = 200; // Adjust for touch movement
         }
         //this._camera.parent = this._aggregate.transformNode;
+
 
     }
 
