@@ -195,6 +195,14 @@ export class Player extends SceneComponent implements GameObject {
         return this.cardList[this.cardList.length - 1];
     }
 
+
+    private _swapToNextCard(): void {
+        if (!this.cardList || this.cardList.length == 0) return;
+        let card = this.cardList.pop();
+        this.cardList.unshift(card as ICard);
+        this._ui.updateCardsToStackPanel(this.cardList || []);
+    }
+
     private _createLight(): void {
         this._light = new HemisphericLight("light", new Vector3(0, 100, 0), this._scene);
     }
@@ -394,6 +402,14 @@ export class Player extends SceneComponent implements GameObject {
         // bloquer la rotation
         this.mesh.rotation = Vector3.Zero();
         this._aggregate.body.setAngularVelocity(Vector3.Zero());
+
+        if (this._input.swapCard) {
+            this._swapToNextCard();
+            this._input.swapCard = false;
+            console.log("Swapping cards");
+        }
+
+
         if (this._input.jumpKeyDown) {
             this._jump();
         }
