@@ -43,7 +43,6 @@ export class Player extends SceneComponent implements GameObject {
     private _input: PlayerInput;
     private _speed: number = 15;
     private _jumpForce: number = 6;
-    private _castCooldown: number = 2;
     private _targetCamaraRotationY: number | null = null;
     private _slerpAmount: number = 0;
     private _cameraAttached: boolean = true;

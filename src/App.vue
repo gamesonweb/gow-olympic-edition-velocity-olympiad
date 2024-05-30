@@ -1,5 +1,5 @@
 <template>
-  <canvas></canvas>
+  <canvas id="renderCanvas"></canvas>
 </template>
 
 <script lang="ts">
@@ -22,12 +22,28 @@ export default defineComponent({
     _scene2.init().then(() => {
       sceneManager.renderScene();
     });
+
+    // Ensure canvas resizes with the window
+    const resizeCanvas = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      console.log("Resized canvas to " + canvas.width + "x" + canvas.height);
+      console.log("Window is " + window.innerWidth + "x" + window.innerHeight);
+    };
+
+    // Initial resize
+    resizeCanvas();
+
+    // Resize on window resize
+    window.addEventListener('resize', resizeCanvas);
   }
 
 });
 </script>
 
 <style scoped>
+/*
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -36,7 +52,7 @@ export default defineComponent({
   color: #2c3e50;
   margin-top: 60px;
 }
-
+*/
 h3 {
   margin: 40px 0 0;
 }
@@ -55,8 +71,16 @@ a {
   color: #42b983;
 }
 
-canvas {
+body, html {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
   width: 100%;
   height: 100%;
+}
+#renderCanvas {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 </style>

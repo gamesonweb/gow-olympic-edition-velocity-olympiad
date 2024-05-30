@@ -23,6 +23,7 @@ export class Level1Scene extends OlympiadScene {
     // noinspection JSUnusedGlobalSymbols
     private _meshes: Mesh[] = [];
     private _materials: Material[] = [];
+    private _light?: HemisphericLight;
 
     constructor(engine: Engine, playerState: PlayerState) {
 
@@ -61,6 +62,7 @@ export class Level1Scene extends OlympiadScene {
     public destroy(): void {
         this._meshes.forEach((mesh) => mesh.dispose());
         this._materials.forEach((material) => material.dispose());
+        this._light?.dispose();
         super.destroy();
     }
 
@@ -96,7 +98,6 @@ export class Level1Scene extends OlympiadScene {
 
         //Adding a light
 
-        const light = new HemisphericLight("light", new Vector3(0, 10, 0), this);
-
+        this._light = new HemisphericLight("light", new Vector3(0, 10, 0), this);
     }
 }
