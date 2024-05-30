@@ -28,6 +28,7 @@ export class CardSocle extends SceneComponent implements GameObject {
         SceneLoader.ImportMesh("", "./models/", this.card.meshname, this.scene, (meshes) => {
             this.mesh = meshes[0] as Mesh;
             this._meshes.push(this.mesh);
+            this.mesh.renderingGroupId = 3;
 
 
             // Set up rendering loop to continually rotate the mesh to face the camera

@@ -42,6 +42,8 @@ export class LevelSelectorScene extends OlympiadScene {
         this.player.init(new Vector3(0, 50, -80));
         this.enemyManager.init();
         await this._buildlevelStatic();
+        this.addComponent(this.player);
+        this.addGameObject(this.player);
     }
 
     public destroy(): void {
