@@ -1,5 +1,6 @@
 import {
     Mesh,
+    MeshBuilder,
     Nullable,
     PhysicsBody,
     PhysicsMotionType,
@@ -11,22 +12,29 @@ import {
 import "@babylonjs/loaders/glTF";
 import {SceneComponent} from "../../scenes/SceneComponent";
 
-export class TempleTorch extends SceneComponent {
+export class TempleTorch extends SceneComponent implements GameObject {
     private scene: Scene;
     private position: Vector3;
     private rotation: Vector3;
     private scale: Vector3;
-    private mesh: Nullable<Mesh>;
-    private body: Nullable<PhysicsBody>;
+    private mesh: Mesh[];
+    private body: PhysicsBody[];
+    public fireball: Nullable<Mesh>;
+    canActOnCollision: boolean; // If true, the object will call onCollisionCallback() when it collides with another object
+    canDetectCollision: boolean; // If true, the object will call detectCollision() to check for collisions with other objects
 
     constructor(scene: Scene, position: Vector3, rotation: Vector3, scale = new Vector3(1, 1, 1)) {
         super();
         this.scene = scene;
         this.scale = scale;
         this.position = position;
-        this.mesh = null;
-        this.body = null;
+        this.mesh = [];
+        this.body = [];
+        this.fireball = null;
         this.rotation = rotation;
+        this.canActOnCollision = true;
+        this.canDetectCollision = true;
+
         this.init();
     }
 
@@ -43,11 +51,48 @@ export class TempleTorch extends SceneComponent {
                 const mesh = child as Mesh;
                 const body = new PhysicsBody(mesh, PhysicsMotionType.STATIC, false, this.scene);
                 body.shape = new PhysicsShapeMesh(mesh, this.scene)
+                if (mesh.name === "Fire") {
+                    mesh.isVisible = false;
+                }
+                this.mesh.push(mesh);
+                this.body.push(body);
             }
         });
+
+        this.fireball = MeshBuilder.CreateCylinder("Fireball_Detection", {diameter: 7, height: 10}, this.scene);
+        this.fireball.position = this.position.add(new Vector3(0, 1.5, 0));
+        this.fireball.checkCollisions = true;
+        this.fireball.isVisible = false;
+        let fireballBody = new PhysicsBody(this.fireball, PhysicsMotionType.STATIC, false, this.scene);
+        fireballBody.shape = new PhysicsShapeMesh(this.fireball, this.scene);
+        this.body.push(fireballBody);
+        this.mesh.push(this.fireball);
+
     }
 
     destroy() {
-        //TODO 
+        this.mesh.forEach((mesh) => {
+            mesh?.dispose();
+        });
+        this.body.forEach((body) => {
+            body?.dispose();
+        });
+    }
+
+    onCollisionCallback(gameObject: GameObject) {
+        console.log("Temple Torch hit by fireball");
+        this.mesh.forEach((mesh) => {
+            if (mesh.name === "Fire") {
+                mesh.isVisible = true;
+            }
+        });
+    };
+
+    detectCollision(gameObjects: GameObject[]) {
+        return;
+    }
+
+    updateState(): void{
+        return;
     }
 }

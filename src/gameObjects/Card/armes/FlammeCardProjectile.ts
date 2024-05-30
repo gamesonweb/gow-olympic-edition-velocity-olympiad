@@ -14,6 +14,7 @@ import {
 import {SceneComponent} from "../../../scenes/SceneComponent.ts";
 import {Wall} from "../../Wall";
 import {DistanceEnemy} from "../../../character/enemy/distance.ts";
+import { TempleTorch } from "../../TempleTorch/index.ts";
 
 export class FlammeCardProjectile extends SceneComponent implements GameObject {
     canActOnCollision: boolean = true;
@@ -100,6 +101,7 @@ export class FlammeCardProjectile extends SceneComponent implements GameObject {
             return;
         }
         for (let gameObject of gameObjects) {
+
             if (gameObject.canActOnCollision && gameObject instanceof Wall) {
                 if (!this._mesh) break;
                 if (this._mesh.intersectsMesh(gameObject.mesh)) {
@@ -108,6 +110,7 @@ export class FlammeCardProjectile extends SceneComponent implements GameObject {
                     this.destroy();
                 }
             }
+            
 
             if (gameObject instanceof DistanceEnemy) {
                 if (!this._mesh) break;
@@ -118,8 +121,18 @@ export class FlammeCardProjectile extends SceneComponent implements GameObject {
                     this.destroy();
                 }
             }
-        }
 
+            if (gameObject instanceof TempleTorch) {
+                if (!this._mesh) break;
+                if (gameObject.fireball) {
+                    if (this._mesh.intersectsMesh(gameObject.fireball, false)) {
+                        gameObject.onCollisionCallback(this); // Tell the wall they collided with a fireball
+                        gameObjects.splice(gameObjects.indexOf(this), 1);
+                        this.destroy();
+                    }
+                }
+            }
+        }
     }
 
     public updateState() {

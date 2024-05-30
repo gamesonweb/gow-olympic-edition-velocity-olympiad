@@ -22,6 +22,7 @@ import {JumpCard} from "../../gameObjects/Card/armes/JumpCard";
 import {RareteCard} from "../../gameObjects/Card/RareteCard";
 import {CardSocle} from "../../gameObjects/Card/CardSocle";
 import { Wall } from "../../gameObjects/Wall";
+import { TempleTorch} from "../../gameObjects/TempleTorch";
 
 export class Level1Scene extends OlympiadScene {
     protected readonly enemyManager: Level1EnemyManager;
@@ -122,14 +123,15 @@ export class Level1Scene extends OlympiadScene {
             {card: new FlammeCard(RareteCard.RARE), position: new Vector3(188, 15.5, -716)},
             {card: new JumpCard(RareteCard.RARE), position: new Vector3(425, 19.5, -535)},
             {card: new JumpCard(RareteCard.EPIC), position: new Vector3(635, 53, -532)},
-            {card: new FlammeCard(RareteCard.EPIC), position: new Vector3(719, 53, -521)}
+            {card: new FlammeCard(RareteCard.EPIC), position: new Vector3(719, 53, -521)},
+            {card: new FlammeCard(RareteCard.EPIC), position: new Vector3(1100, 58, -920)}
         ]
 
         let destructableWalls = [
             {wall : new Wall(this,new Vector3(-30, 10.5, -206), 120, 40, new Vector3(0, -Math.PI/5, 0))},
             {wall : new Wall(this,new Vector3(35, 12.5, -350), 160, 40, new Vector3(0, -Math.PI/5, 0))},
             {wall : new Wall(this,new Vector3(261, 15.5, -553), 150, 40, new Vector3(0, Math.PI/4, 0))},
-            {wall : new Wall(this,new Vector3(972, 56, -697), 150, 40, new Vector3(0, Math.PI, 0))},
+            {wall : new Wall(this,new Vector3(972, 56, -697), 150, 40, new Vector3(0, Math.PI*5/6, 0))},
         ]
 
         let ennemyPositions = [
@@ -138,6 +140,9 @@ export class Level1Scene extends OlympiadScene {
             new Vector3(816, 53.8, -522),
             new Vector3(873, 53.8, -553),
         ]
+
+        let templeFin : TempleTorch = new TempleTorch(this, new Vector3(1100, 58, -1000), new Vector3(0, Math.PI*3/2, 0), new Vector3(1, 1, 1));
+        this.addComponent(templeFin);
 
         ennemyPositions.forEach(position => {
             this.enemyManager.addDistanceEnemy(position);
