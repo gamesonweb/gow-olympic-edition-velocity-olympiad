@@ -85,7 +85,7 @@ export class LevelSelectorScene extends OlympiadScene {
         //Adding the end temple
         // const nextScene = new Level1Scene(this.engine, this.player!.playerState);
         // this.engine.scenes.push(nextScene);
-        const temple = new TempleV2(this, new Vector3(125, 37, 157), new Vector3(0, -110 * (Math.PI / 180.0), 0), new Vector3(1, 1, 1), this.engine);
+        new TempleV2(this, new Vector3(125, 37, 157), new Vector3(0, -110 * (Math.PI / 180.0), 0), new Vector3(1, 1, 1), this.engine);
 
     }
 }

@@ -2,7 +2,7 @@ import {ICard} from "../ICard.ts";
 import {RareteCard} from "../RareteCard.ts";
 import {Scene, Vector3} from "@babylonjs/core";
 
-import {Player} from "../../../character/players/index.ts";
+import {Player} from "../../../character/players";
 import {OlympiadScene} from "../../../scenes/OlympiadScene.ts";
 
 export class JumpCard implements ICard {
@@ -13,6 +13,7 @@ export class JumpCard implements ICard {
     description: string = 'Une carte de Saut';
     meshname: string;
     rarete: RareteCard;
+
 
     constructor(rarete: RareteCard) {
         this.rarete = rarete;
@@ -41,6 +42,8 @@ export class JumpCard implements ICard {
     }
 
     public firstSpell(_scene: Scene, position: Vector3): void {
+        position;
+
         let olympiadScene: OlympiadScene = <OlympiadScene>_scene;
         let _player: Player = olympiadScene.player;
         _player._increaseSpeedCap(this.damage);
@@ -50,6 +53,7 @@ export class JumpCard implements ICard {
     }
 
     public secondSpell(_scene: Scene, position: Vector3): void {
+        position;
         let olympiadScene: OlympiadScene = <OlympiadScene>_scene;
         let _player: Player = olympiadScene.player;
         _player._superJump();

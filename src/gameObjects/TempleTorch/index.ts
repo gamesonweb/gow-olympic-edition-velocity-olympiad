@@ -48,6 +48,6 @@ export class TempleTorch extends SceneComponent {
     }
 
     destroy() {
-        //TODO 
+
     }
 }

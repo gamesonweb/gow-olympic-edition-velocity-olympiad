@@ -25,10 +25,9 @@ export class DistanceEnemy implements Character, GameObject {
     public attackAvailable: boolean;
     canActOnCollision: boolean = true;
     canDetectCollision: boolean = false;
+    stopAttack: boolean;
     private meshEye: any[];
     private dead: boolean;
-    stopAttack: boolean;
-
 
     constructor(scene: Scene, position: Vector3) {
         this.position = position;
@@ -113,7 +112,6 @@ export class DistanceEnemy implements Character, GameObject {
     }
 
     attack(): void {
-
 
 
         // Attack the player

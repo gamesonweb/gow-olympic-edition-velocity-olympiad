@@ -21,7 +21,7 @@ import {FlammeCard} from "../../gameObjects/Card/armes/FlammeCard";
 import {JumpCard} from "../../gameObjects/Card/armes/JumpCard";
 import {RareteCard} from "../../gameObjects/Card/RareteCard";
 import {CardSocle} from "../../gameObjects/Card/CardSocle";
-import { Wall } from "../../gameObjects/Wall";
+import {Wall} from "../../gameObjects/Wall";
 
 export class Level1Scene extends OlympiadScene {
     protected readonly enemyManager: Level1EnemyManager;
@@ -38,7 +38,7 @@ export class Level1Scene extends OlympiadScene {
         this.addComponent(this.enemyManager); // Ainsi, le manager sera détruit avec la scène
 
         this.player = new Player(playerState, this);
-        
+
     }
 
     public async init(): Promise<void> {
@@ -103,25 +103,23 @@ export class Level1Scene extends OlympiadScene {
         skybox.infiniteDistance = true;
 
 
-
-
     }
 
-    private _createDynamic(){
+    private _createDynamic() {
         //Adding a light
 
         this._light = new HemisphericLight("light", new Vector3(0, 10, 0), this);
 
         //Adding Destructable Walls and Cards
 
-        let Cards =[
+        let Cards = [
             {card: new FlammeCard(RareteCard.COMMON), position: new Vector3(-42, 10.5, -155)},
             {card: new JumpCard(RareteCard.LEGENDARY), position: new Vector3(-50, 10.5, -155)}
         ]
 
         let destructableWalls = [
-            {wall : new Wall(this,new Vector3(-7, 10.5, -226), 40, 30, new Vector3(0, -Math.PI/5, 0))},
-            {wall : new Wall(this,new Vector3(43, 12.5, -404), 40, 30, new Vector3(0, -Math.PI/5, 0))}
+            {wall: new Wall(this, new Vector3(-7, 10.5, -226), 40, 30, new Vector3(0, -Math.PI / 5, 0))},
+            {wall: new Wall(this, new Vector3(43, 12.5, -404), 40, 30, new Vector3(0, -Math.PI / 5, 0))}
         ]
 
         destructableWalls.forEach(wall => {

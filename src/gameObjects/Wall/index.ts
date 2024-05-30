@@ -42,14 +42,14 @@ export class Wall extends SceneComponent implements GameObject {
 
         this.mesh = MeshBuilder.CreateBox("wall", {width: this.width, height: this.height, depth: 1}, this.scene);
 
-        this.mesh.rotation = this.rotation; 
+        this.mesh.rotation = this.rotation;
         // detecter les collisions et savoir si une boule fireball touche le mur
         this.mesh.checkCollisions = true;
 
         // Ajouter un material au mur qui es un image qui s'ajuste a la taille du mur
 
         const wallMaterial = new StandardMaterial("", this.scene);
-         wallMaterial.diffuseTexture = new Texture("sprites/gameObject/wall.png", this.scene);
+        wallMaterial.diffuseTexture = new Texture("sprites/gameObject/wall.png", this.scene);
 
 
         this.mesh.material = wallMaterial;

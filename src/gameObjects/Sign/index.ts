@@ -1,13 +1,4 @@
-import {
-    ActionManager,
-    ExecuteCodeAction,
-    Mesh,
-    MeshBuilder,
-    Scene,
-    StandardMaterial,
-    Texture,
-    Vector3,
-} from "@babylonjs/core";
+import {Mesh, MeshBuilder, Scene, StandardMaterial, Texture, Vector3,} from "@babylonjs/core";
 
 import * as GUI from "@babylonjs/gui";
 import {SceneComponent} from "../../scenes/SceneComponent.ts";
@@ -63,7 +54,7 @@ export class Sign implements SceneComponent {
         rect.isVisible = false; // Définir le panneau comme invisible initialement
 
         rect.linkOffsetY = -50;
-        const signMesh = this.createSignMesh();
+        this.createSignMesh();
 
         // Before rendering the scene, show the sign if the camera is close enough
         this.scene.registerBeforeRender(() => {

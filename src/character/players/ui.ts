@@ -1,5 +1,5 @@
 import {AdvancedDynamicTexture, Button, Control, Grid, Image, Rectangle, StackPanel, TextBlock} from "@babylonjs/gui";
-import {Effect, ParticleSystem, PostProcess, Scene, Sound} from "@babylonjs/core";
+import {Effect, PostProcess, Scene, Sound} from "@babylonjs/core";
 import {ICard} from "../../gameObjects/Card/ICard";
 import {RareteCard} from "../../gameObjects/Card/RareteCard";
 import {OlympiadScene} from "../../scenes/OlympiadScene.ts";
@@ -35,14 +35,12 @@ export class Hud {
     // keyboard
     public isAzerty: boolean | null = null;
     private _scene: Scene;
-    private _prevTime: number = 0;
     private _clockTime: TextBlock | null = null; //GAME TIME
     private _startTime!: number;
     private _stopTimer!: boolean;
 
     //Animated UI sprites
     private _sparklerLife!: Image;
-    private _spark!: Image;
 
 
     private _playerUI!: AdvancedDynamicTexture;
@@ -50,7 +48,6 @@ export class Hud {
     private _controls!: Rectangle;
     private _sfx!: Sound;
     private _pause!: Sound;
-    private _sparkWarningSfx!: Sound;
     //ICard Menu
     private _cardMenuStackPanel!: StackPanel;
     private _activeCardStackPanel!: StackPanel;
@@ -69,7 +66,6 @@ export class Hud {
             // unless check from language
             this.isAzerty = navigator.language === "fr-FR";
         }
-
 
 
         const stackPanel = new StackPanel();
@@ -109,20 +105,6 @@ export class Hud {
         playerUI.addControl(sparklerLife);
         this._sparklerLife = sparklerLife;
 
-        const spark = new Image("spark", "./sprites/spark.png");
-        spark.width = "40px";
-        spark.height = "40px";
-        spark.cellId = 0;
-        spark.cellHeight = 20;
-        spark.cellWidth = 20;
-        spark.sourceWidth = 20;
-        spark.sourceHeight = 20;
-        spark.horizontalAlignment = 0;
-        spark.verticalAlignment = 0;
-        spark.left = "21px";
-        spark.top = "20px";
-        playerUI.addControl(spark);
-        this._spark = spark;
 
         const pauseBtn = Button.CreateImageOnlyButton("pauseBtn", "./sprites/pauseBtn.png");
         pauseBtn.width = "48px";
@@ -142,7 +124,6 @@ export class Hud {
 
             //when game is paused, make sure that the next start time is the time it was when paused
             this.gamePaused = true;
-            this._prevTime = this.time;
 
             //--SOUNDS--
             // this._scene.getSoundByName("gameSong")!.pause();
@@ -401,8 +382,6 @@ export class Hud {
         this._activeCardStackPanel.addControl(cardDurabiliteText);
 
 
-
-
         let stackUIImage = this._getStackUIImageFromRarete(card.rarete, cardMeshName);
         let cardImage = new Image("card", stackUIImage);
         cardImage.width = "200px";
@@ -433,7 +412,6 @@ export class Hud {
     }
 
 
-
     //---- Game Timer ----
     public startTimer(): void {
         this._startTime = new Date().getTime();
@@ -443,7 +421,6 @@ export class Hud {
     public stopTimer(): void {
         this._stopTimer = true;
     }
-
 
 
     public GameOverOverlay(): void {
@@ -547,25 +524,25 @@ export class Hud {
     }
 
     private _lockPointer(): void {
-    const canvas: HTMLCanvasElement = <HTMLCanvasElement>this._scene.getEngine().getRenderingCanvas();
-    canvas.onclick = () => {
-        const requestPointerLock = canvas.requestPointerLock ||
-            canvas.mozRequestPointerLock ||
-            canvas.webkitRequestPointerLock;
-        if (requestPointerLock) {
-            requestPointerLock.call(canvas);
+        const canvas: HTMLCanvasElement = <HTMLCanvasElement>this._scene.getEngine().getRenderingCanvas();
+        canvas.onclick = () => {
+            const requestPointerLock = canvas.requestPointerLock ||
+                canvas.mozRequestPointerLock ||
+                canvas.webkitRequestPointerLock;
+            if (requestPointerLock) {
+                requestPointerLock.call(canvas);
 
 
-            // Créer et ajouter le cercle au centre de l'écran
-            const circle = new Image("circle", "sprites/circle.png");
-            circle.width = "40px";
-            circle.height = "40px";
-            circle.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
-            circle.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
-            this._playerUI.addControl(circle);
-        }
-    };
-}
+                // Créer et ajouter le cercle au centre de l'écran
+                const circle = new Image("circle", "sprites/circle.png");
+                circle.width = "40px";
+                circle.height = "40px";
+                circle.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+                circle.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+                this._playerUI.addControl(circle);
+            }
+        };
+    }
 
 
     private _unlockPointer(): void {
@@ -576,7 +553,6 @@ export class Hud {
         canvas.style.left = 'auto';
         canvas.style.top = 'auto';
         canvas.style.transform = 'none';
-
 
 
     }
@@ -876,12 +852,6 @@ export class Hud {
         this.quitSfx = new Sound("quit", "./sounds/Retro Event UI 13.wav", scene, function () {
         });
 
-        this._sparkWarningSfx = new Sound("sparkWarning", "./sounds/Retro Water Drop 01.wav", scene, function () {
-        }, {
-            loop: true,
-            volume: 0.5,
-            playbackRate: 0.6
-        });
     }
 
     private _prepareMobileScreen(): void {
