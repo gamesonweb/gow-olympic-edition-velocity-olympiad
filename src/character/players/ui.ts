@@ -39,14 +39,12 @@ export class Hud {
     private _clockTime: TextBlock | null = null; //GAME TIME
     private _startTime!: number;
     private _stopTimer!: boolean;
-    private _sString = "00";
-    private _mString = 11;
-    private _lanternCnt!: TextBlock;
+
     //Animated UI sprites
     private _sparklerLife!: Image;
     private _spark!: Image;
-    private _handle!: NodeJS.Timeout;
-    private _sparkhandle!: NodeJS.Timeout;
+
+
     private _playerUI!: AdvancedDynamicTexture;
     private _pauseMenu!: Rectangle;
     private _controls!: Rectangle;
@@ -72,21 +70,7 @@ export class Hud {
             this.isAzerty = navigator.language === "fr-FR";
         }
 
-        const lanternCnt = new TextBlock();
-        lanternCnt.name = "Piece count";
-        lanternCnt.textVerticalAlignment = TextBlock.VERTICAL_ALIGNMENT_CENTER;
-        lanternCnt.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
-        lanternCnt.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
-        lanternCnt.fontSize = "22px";
-        lanternCnt.color = "white";
-        lanternCnt.text = "Pièces: 1 / 22";
-        lanternCnt.top = "32px";
-        lanternCnt.left = "-64px";
-        lanternCnt.width = "25%";
-        lanternCnt.fontFamily = "Viga";
-        lanternCnt.resizeToFit = true;
-        playerUI.addControl(lanternCnt);
-        this._lanternCnt = lanternCnt;
+
 
         const stackPanel = new StackPanel();
         stackPanel.height = "100%";
@@ -193,13 +177,7 @@ export class Hud {
         hint.isVisible = false;
         this._playerUI.addControl(hint);
         this.hint = hint;
-        //hint to the first lantern, will disappear once you light it
-        const lanternHint = new Image("lantern1", "sprites/arrowBtn.png");
-        lanternHint.rotation = Math.PI / 2;
-        lanternHint.stretch = Image.STRETCH_UNIFORM;
-        lanternHint.height = 0.8;
-        lanternHint.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
-        hint.addControl(lanternHint);
+
         const moveHint = new TextBlock("move", "Move Right");
         moveHint.color = "white";
         moveHint.fontSize = "12px";
@@ -442,19 +420,19 @@ export class Hud {
             let seconds = Math.floor(curTime / 1000);
             let milliseconds = curTime % 1000;
 
+            milliseconds = Math.floor(milliseconds / 10); // Arrondir à deux chiffres
+
             // Mettre à jour le temps écoulé
             this.time = curTime;
 
             // Mettre à jour l'affichage
             // Formater les millisecondes avec trois chiffres
-            let formattedMilliseconds = ("00" + milliseconds).slice(-3);
+            let formattedMilliseconds = ("00" + milliseconds).slice(-2);
             this._clockTime!.text = `${seconds}.${formattedMilliseconds}`;
         }
     }
 
-    public updateLanternCount(numLanterns: number): void {
-        this._lanternCnt.text = "Lanterns: " + numLanterns + " / 22";
-    }
+
 
     //---- Game Timer ----
     public startTimer(): void {
@@ -553,7 +531,6 @@ export class Hud {
         let stackUIImage = "sprites/controls.jpeg"
         switch (rareteCard) {
             case RareteCard.COMMON:
-                console.log("sprites/cardPreview/" + nameofCard + "Gray.png")
                 stackUIImage = "sprites/cardPreview/" + nameofCard + "Gray.png";
                 break;
             case RareteCard.RARE:
