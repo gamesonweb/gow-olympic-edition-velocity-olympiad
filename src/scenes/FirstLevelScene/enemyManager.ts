@@ -31,12 +31,12 @@ export class FirstLevelEnemyManager extends EnemyManager {
 
     public stopAllAttacks() {
         super.stopAllAttacks();
-        this._distanceEnemy.attackAvailable = false;
+        this._distanceEnemy.stopAttack = true;
     }
 
     public resumeAllAttacks() {
         super.resumeAllAttacks();
-        this._distanceEnemy.attackAvailable = true;
+        this._distanceEnemy.stopAttack = false;
     }
 
 }

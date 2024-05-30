@@ -3,6 +3,8 @@ import {Effect, ParticleSystem, PostProcess, Scene, Sound} from "@babylonjs/core
 import {ICard} from "../../gameObjects/Card/ICard";
 import {RareteCard} from "../../gameObjects/Card/RareteCard";
 import {OlympiadScene} from "../../scenes/OlympiadScene.ts";
+import {LevelSelectorScene} from "../../scenes/LevelSelectorScene";
+import {PlayerState} from "./index.ts";
 
 export class Hud {
     //Game Timer
@@ -54,6 +56,7 @@ export class Hud {
     //ICard Menu
     private _cardMenuStackPanel!: StackPanel;
     private _activeCardStackPanel!: StackPanel;
+    private _levelSelector: any;
 
     constructor(scene: Scene) {
         this._scene = scene;
@@ -208,6 +211,7 @@ export class Hud {
 
         this._createPauseMenu();
         this._createControlsMenu();
+        this._createLevelSelectorMenu();
         this._loadSounds(this._scene);
 
         this._lockPointer();
@@ -416,15 +420,24 @@ export class Hud {
         this._activeCardStackPanel.addControl(cardImage);
     }
 
-    public updateHud(): void {
-        if (!this._stopTimer && this._startTime != null) {
-            let curTime = Math.floor((new Date().getTime() - this._startTime) / 1000) + this._prevTime; // divide by 1000 to get seconds
+public updateHud(): void {
+    if (!this._stopTimer && this._startTime != null) {
+        let curTime = new Date().getTime() - this._startTime;
 
-            this.time = curTime; //keeps track of the total time elapsed in seconds
-            // this._clockTime!.text = this._formatTime(curTime);
-            this._clockTime!.text = ("0" + this._formatTime(curTime)).slice(-8);
-        }
+        // Convertir le temps écoulé en secondes et millisecondes
+        let seconds = Math.floor(curTime / 1000);
+        let milliseconds = curTime % 1000;
+
+        // Mettre à jour le temps écoulé
+        this.time = curTime;
+
+        // Mettre à jour l'affichage
+        // Formater les millisecondes avec trois chiffres
+        let formattedMilliseconds = ("00" + milliseconds).slice(-3);
+        this._clockTime!.text = `${seconds}.${formattedMilliseconds}`;
     }
+}
+
 
     public updateLanternCount(numLanterns: number): void {
         this._lanternCnt.text = "Lanterns: " + numLanterns + " / 22";
@@ -530,16 +543,7 @@ export class Hud {
         gameOverText.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
         gameOverOverlay.addControl(gameOverText);
 
-        // Add a countdown timer
-        const countdownText = new TextBlock("countdownText");
-        countdownText.text = "";
-        countdownText.color = "rgb(46,199,192)";
-        countdownText.fontSize = "48px";
-        countdownText.fontFamily = "Viga";
-        countdownText.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
-        countdownText.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
-        countdownText.top = "80px"; // Position it below the "Game Over" text
-        gameOverOverlay.addControl(countdownText);
+
 
         // Add a button to restart the game
         const restartButton = Button.CreateSimpleButton("restart", "Restart Now");
@@ -556,7 +560,7 @@ export class Hud {
 
         // Event listener for restart button
         restartButton.onPointerUpObservable.add(() => {
-            this.startCountdown(countdownText);
+            this.startCountdown();
         });
 
         // Automatically start countdown
@@ -564,7 +568,6 @@ export class Hud {
     }
 
     updateHP(hp: number) {
-        console.log("updateHP", hp)
         if (!hp) return
         this._sparklerLife.cellId = 10 - ((hp == 0) ? 0 : parseInt(`${hp / 10}`))
     }
@@ -739,6 +742,36 @@ export class Hud {
             this._sfx.play();
         });
 
+
+        // level selection
+        const levelBtn = Button.CreateSimpleButton("level", "LEVELS");
+        levelBtn.width = 0.18;
+        levelBtn.height = "44px";
+        levelBtn.color = "white";
+        levelBtn.fontFamily = "Viga";
+        levelBtn.paddingBottom = "14px";
+        levelBtn.cornerRadius = 14;
+        levelBtn.fontSize = "12px";
+        resumeBtn.textBlock!.resizeToFit = true;
+        levelBtn.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+        levelBtn.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+        stackPanel.addControl(levelBtn);
+
+        //when the button is down, make menu invisable and remove control of the menu
+        levelBtn.onPointerDownObservable.add(() => {
+            //open controls screen
+            this._levelSelector.isVisible = true;
+            this._pauseMenu.isVisible = false;
+
+            //play transition sound
+            this._sfx.play();
+        });
+
+
+
+
+
+
         const quitBtn = Button.CreateSimpleButton("quit", "QUIT");
         quitBtn.width = 0.18;
         quitBtn.height = "44px";
@@ -824,21 +857,78 @@ export class Hud {
         });
     }
 
-// Function to start the countdown
-    private startCountdown(countdownText: TextBlock): void {
-        let countdown = 3;
-        countdownText.text = `Restarting in ${countdown}...`;
 
-        const intervalId = setInterval(() => {
-            countdown--;
-            if (countdown > 0) {
-                countdownText.text = `Restarting in ${countdown}...`;
-            } else {
-                clearInterval(intervalId);
-                countdownText.text = "Restarting now...";
-                this.restartGame();
+     //---- Level selector Menu Popup ----
+
+    private _createLevelSelectorMenu(): void {
+        const levelSelector = new Rectangle();
+        levelSelector.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        levelSelector.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+        levelSelector.height = 0.8;
+        levelSelector.width = 0.5;
+        levelSelector.thickness = 0;
+        levelSelector.color = "white";
+        levelSelector.isVisible = false;
+        this._playerUI.addControl(levelSelector);
+        this._levelSelector = levelSelector;
+
+
+        const title = new TextBlock("title", "LEVELS");
+        title.resizeToFit = true;
+        title.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+        title.fontFamily = "Viga";
+        title.fontSize = "32px";
+        title.top = "14px";
+        levelSelector.addControl(title);
+
+        const backBtn = Button.CreateImageOnlyButton("back", "./sprites/lanternbutton.jpeg");
+        backBtn.width = "40px";
+        backBtn.height = "40px";
+        backBtn.top = "14px";
+        backBtn.thickness = 0;
+        backBtn.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
+        backBtn.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+        levelSelector.addControl(backBtn);
+
+        //when the button is down, make menu invisable and remove control of the menu
+        backBtn.onPointerDownObservable.add(() => {
+            this._pauseMenu.isVisible = true;
+            this._levelSelector.isVisible = false;
+            //play transition sound
+            this._sfx.play();
+        });
+
+        //level buttons
+        const level1Btn = Button.CreateSimpleButton("level1", "LEVEL 1");
+        level1Btn.width = 0.18;
+        level1Btn.height = "44px";
+        level1Btn.color = "white";
+        level1Btn.fontFamily = "Viga";
+        level1Btn.paddingBottom = "14px";
+        level1Btn.cornerRadius = 14;
+        level1Btn.fontSize = "12px";
+        level1Btn.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+        level1Btn.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+        levelSelector.addControl(level1Btn);
+
+        //when the button is down, make a new LevelSelectorScene and dispose actual scene
+        level1Btn.onPointerDownObservable.add(() => {
+            let actualScene = <OlympiadScene>this._scene;
+            let playerState = new PlayerState()
+            let nextScene = new LevelSelectorScene(actualScene.getEngine(), playerState);
+            nextScene.init().then(() => {
+                actualScene.dispose();
             }
-        }, 1000);
+            );
+        });
+
+
+    }
+
+// Function to start the countdown
+    private startCountdown(): void {
+                this.restartGame();
+
     }
 
 // Function to restart the game
@@ -847,6 +937,9 @@ export class Hud {
         this._disablePointerLockOnPause();
         let olympiaScene = <OlympiadScene>this._scene;
         olympiaScene.restart();
+
+        // look cursor
+        this._lockPointer();
     }
 
     //load all sounds needed for game ui interactions
