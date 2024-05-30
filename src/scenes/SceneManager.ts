@@ -23,7 +23,7 @@ export class SceneManager {
 
     public renderScene() {
         if (!this.engine.scenes[0]) throw new Error("No active scene set.");
-        console.log(this.engine.scenes);
+
         this.engine.runRenderLoop(() => {
             // Render the scene if not stopped
             this.engine.scenes[0].render();

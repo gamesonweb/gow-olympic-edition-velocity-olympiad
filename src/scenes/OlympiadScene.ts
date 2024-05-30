@@ -105,7 +105,6 @@ export class OlympiadScene extends Scene {
 
     private _enableDebug(): void {
         if (import.meta.env.DEV) {
-            console.log("DEV MODE: Scene inspector enabled");
             // Inspector.Show(this, {embedMode: true});
             // this.debugLayer.show();
             // var viewer = new PhysicsViewer(this);

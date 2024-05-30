@@ -38,8 +38,7 @@ export class Level1Scene extends OlympiadScene {
         this.addComponent(this.enemyManager); // Ainsi, le manager sera détruit avec la scène
 
         this.player = new Player(playerState, this);
-        this.addComponent(this.player);
-        this.addGameObject(this.player);
+        
     }
 
     public async init(): Promise<void> {
@@ -47,6 +46,7 @@ export class Level1Scene extends OlympiadScene {
         this.player.init(new Vector3(0, 50, 0));
         this.enemyManager.init();
         await this._buildlevelStatic();
+        this._createDynamic();
         this.addComponent(this.player);
         this.addGameObject(this.player);
     }
@@ -102,6 +102,12 @@ export class Level1Scene extends OlympiadScene {
         skybox.material = skyboxMaterial;
         skybox.infiniteDistance = true;
 
+
+
+
+    }
+
+    private _createDynamic(){
         //Adding a light
 
         this._light = new HemisphericLight("light", new Vector3(0, 10, 0), this);
@@ -122,7 +128,7 @@ export class Level1Scene extends OlympiadScene {
             this.addComponent(wall.wall);
             this.addGameObject(wall.wall);
         });
-        
+
         Cards.forEach(cardAndPosition => {
             let cardSocle = new CardSocle(this, cardAndPosition.card, cardAndPosition.position);
             this.addComponent(cardSocle);

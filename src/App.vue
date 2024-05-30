@@ -33,15 +33,13 @@ Préparez-vous à vivre une aventure palpitante, où chaque choix que vous ferez
     const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
     const sceneManager = new SceneManager(canvas);
 
-    const firstLevelScene = new FirstLevelScene(sceneManager.engine, sceneManager.playerState);
+    // const firstLevelScene = new FirstLevelScene(sceneManager.engine, sceneManager.playerState);
     //const levelSelectorScene = new LevelSelectorScene(sceneManager.engine, sceneManager.playerState);
-    //const level1Scene = new Level1Scene(sceneManager.engine, sceneManager.playerState);
+    const level1Scene = new Level1Scene(sceneManager.engine, sceneManager.playerState);
 
-    //console.log(firstLevelScene);
-    //console.log(level1Scene);
-    //console.log(levelSelectorScene);
 
-    firstLevelScene.init().then(() => {
+
+    level1Scene.init().then(() => {
       sceneManager.renderScene();
     });
 
@@ -50,8 +48,7 @@ Préparez-vous à vivre une aventure palpitante, où chaque choix que vous ferez
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
 
-      console.log("Resized canvas to " + canvas.width + "x" + canvas.height);
-      console.log("Window is " + window.innerWidth + "x" + window.innerHeight);
+
     };
 
     // Initial resize

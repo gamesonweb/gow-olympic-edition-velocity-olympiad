@@ -98,7 +98,6 @@ export class Wall extends SceneComponent implements GameObject {
     }
 
     public takeDamage(damage: number): void {
-        console.log('Wall take damage: ', damage);
         this.actualhealth -= damage;
         if (this.actualhealth <= 0) {
             let olympiadScene: OlympiadScene = <OlympiadScene>this.scene;
@@ -110,9 +109,7 @@ export class Wall extends SceneComponent implements GameObject {
 
     public onCollisionCallback(gameObject: GameObject): void {
         if (gameObject instanceof FlammeCardProjectile) {
-            console.log('Fireball hit the wall');
             this.takeDamage(this.actualhealth);
-            console.log("wall health: ", this.actualhealth);
         }
     }
 

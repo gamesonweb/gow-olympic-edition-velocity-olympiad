@@ -597,7 +597,7 @@ public updateHud(): void {
     //---- Sparkler Timers ----
 
     private _getStackUIImageFromRarete(rareteCard: RareteCard): string {
-        console.log(rareteCard)
+
         let stackUIImage = "sprites/controls.jpeg"
         switch (rareteCard) {
             case RareteCard.COMMON:
@@ -624,12 +624,9 @@ public updateHud(): void {
                 canvas.mozRequestPointerLock ||
                 canvas.webkitRequestPointerLock;
             if (requestPointerLock) {
-                console.log("requestPointerLock exists")
                 canvas.requestPointerLock = requestPointerLock;
                 // Ask the browser to lock the pointer
                 canvas.requestPointerLock();
-            } else {
-                console.log("Pointer lock not supported");
             }
         };
     }
@@ -1019,5 +1016,5 @@ public updateHud(): void {
 
             this._scene.getEngine().enterFullscreen(true);
         })
-    }
+    }N
 }

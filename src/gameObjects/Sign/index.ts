@@ -80,7 +80,6 @@ export class Sign implements SceneComponent {
         );
 
 
-        console.log("Sign loaded at position: ", this.position.toString());
     }
 
     destroy() {

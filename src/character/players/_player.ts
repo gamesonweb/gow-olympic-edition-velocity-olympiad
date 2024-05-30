@@ -152,10 +152,8 @@ export class Player extends SceneComponent implements GameObject {
                     let distance = Vector3.Distance(this.mesh.position, gameObject.position);
                     if (distance <= 10) {
                         if (this._isdashing) {
-                            console.log("Distant Enemy destroying")
+
                             gameObject.onCollisionCallback(this);
-                        } else {
-                            console.log("Distant Enemy can only be destroyed by dashing into it")
                         }
                     }
                 }
@@ -164,16 +162,16 @@ export class Player extends SceneComponent implements GameObject {
     }
 
     public onCollisionCallback(gameObject: GameObject): void {
+
+
+
         if (gameObject instanceof CardSocle) {
-            console.log("Card collision detected", gameObject);
             this.addCardToCart(gameObject.card);
         }
-        if (gameObject instanceof Wall) {
-            console.log("Wall collision detected", gameObject);
+        if (gameObject instanceof Wall) {return
         }
 
         if (gameObject instanceof FireballDistanceEnemy) {
-            console.log("FireballDistanceEnemy collision detected", gameObject);
             this.takeDamage(gameObject.damage);
         }
     }
@@ -296,7 +294,7 @@ export class Player extends SceneComponent implements GameObject {
 
     private _castSpell(n: number): void {
 
-        console.log("Casting spell: ", n)
+
 
         let keepCard = true;
         let card: ICard = this._getActiveCard() as ICard;
@@ -355,7 +353,7 @@ export class Player extends SceneComponent implements GameObject {
         //rayHelper.show(this._scene, new Color3(1, 0, 0)); // Affiche le rayon en rouge
 
         let pickedPointVector = Vector3.Zero();
-        // console.log("pick: ", pick)
+
         if (pick && pick.hit) { //grounded
             pickedPointVector = <Vector3>pick.pickedPoint;
         }
@@ -445,7 +443,6 @@ export class Player extends SceneComponent implements GameObject {
             }
         }
         // this._input.resetInputMap();
-        console.log("Player position: ", this.position)
     }
 
     private _updateCameraInfos(): void {
