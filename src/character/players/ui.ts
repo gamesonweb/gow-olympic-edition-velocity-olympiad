@@ -27,6 +27,7 @@ export class Hud {
     public rightBtn!: Button;
     public upBtn!: Button;
     public downBtn!: Button;
+    // public spaceBtn!: Button;
     //Sounds
     public quitSfx!: Sound;
     // keyboard
@@ -318,6 +319,24 @@ export class Hud {
             grid.addControl(upBtn, 0, 1);
             grid.addControl(downBtn, 1, 1);
 
+            // Add a new container for the space button to ensure it's not overlapping
+            // const spaceContainer = new Rectangle();
+            // spaceContainer.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+            // spaceContainer.verticalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+            // spaceContainer.height = 0.2;
+            // spaceContainer.width = 0.2;
+            // spaceContainer.left = "-2%";
+            // spaceContainer.top = "-2%";
+            // spaceContainer.thickness = 0;
+            // playerUI.addControl(spaceContainer);
+
+            // const spaceBtn = Button.CreateImageOnlyButton("space", "./sprites/rectSpaceBtn.png");
+            // spaceBtn.thickness = 0;
+            // spaceBtn.alpha = 0.8;
+            // spaceBtn.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+            // this.spaceBtn = spaceBtn;
+            //
+            // spaceContainer.addControl(spaceBtn); // Adding the space button to the new container
         }
 
         this._createICardMenu();
