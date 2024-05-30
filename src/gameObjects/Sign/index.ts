@@ -43,16 +43,21 @@ export class Sign implements SceneComponent {
         const rect = new GUI.Rectangle();
         rect.width = 0.2;
         rect.height = "40px";
+        rect.top = "50px";
         rect.cornerRadius = 20;
-        rect.color = "Orange";
-        rect.thickness = 4;
-        rect.background = "green";
+        rect.color = "rgba(245, 245, 245, 0.8)"; // Couleur légèrement translucide pour simuler le marbre
+        rect.thickness = 2;
+        rect.background = "rgba(124,124,124,0.8)"; // Fond noir pour le contraste
         advancedTexture.addControl(rect);
 
         const label = new GUI.TextBlock();
         label.text = this.text;
-        label.color = "white";
+        label.color = "black"; // Texte en noir pour le contraste
         label.fontSize = 24;
+        label.fontStyle = "italic"; // Style italique pour une touche classique
+        label.fontFamily = "Georgia, serif"; // Utiliser une police classique qui évoque l'écriture grecque antique
+        label.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER; // Centrer le texte horizontalement
+        label.textVerticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_CENTER; // Centrer le texte verticalement
         rect.addControl(label);
 
         rect.isVisible = false; // Définir le panneau comme invisible initialement
@@ -60,27 +65,22 @@ export class Sign implements SceneComponent {
         rect.linkOffsetY = -50;
         const signMesh = this.createSignMesh();
 
-        // Associer les événements de survol de la souris pour afficher et masquer le panneau
-        signMesh.actionManager = new ActionManager(this.scene);
-        signMesh.actionManager.registerAction(
-            new ExecuteCodeAction(
-                ActionManager.OnPointerOverTrigger,
-                () => {
+        // Before rendering the scene, show the sign if the camera is close enough
+        this.scene.registerBeforeRender(() => {
+            if (this.scene.activeCamera) {
+                let camera = this.scene.activeCamera;
+                let distanceToShow = 10;
+                let distanceFromCamera = Vector3.Distance(camera.position, this.position);
+
+                if (distanceFromCamera < distanceToShow) {
                     rect.isVisible = true;
-                }
-            )
-        );
-        signMesh.actionManager.registerAction(
-            new ExecuteCodeAction(
-                ActionManager.OnPointerOutTrigger,
-                () => {
+                } else {
                     rect.isVisible = false;
                 }
-            )
-        );
-
-
+            }
+        });
     }
+
 
     destroy() {
         this.advancedTexture.dispose();
