@@ -17,14 +17,14 @@ export class PlayerInput {
     public spell1: boolean = false;
     public spell2: boolean = false;
     public swapCard: boolean = false;
-    // Spell key press flags
-    private spell1Pressed: boolean = false;
-    private spell2Pressed: boolean = false;
-    private swapCardPressed: boolean = false;
     public mobileLeft: boolean = false;
     public mobileRight: boolean = false;
     public mobileUp: boolean = false;
     public mobileDown: boolean = false;
+    // Spell key press flags
+    private spell1Pressed: boolean = false;
+    private spell2Pressed: boolean = false;
+    private swapCardPressed: boolean = false;
     private active: boolean = true;
     private readonly _scene: Scene;
     //Mobile Input trackers
@@ -128,8 +128,6 @@ export class PlayerInput {
         }
 
 
-
-
         //dash
         if ((this.inputMap["Shift"] || this._mobileDash) && !this._ui.gamePaused) {
             this.dashing = true;
@@ -151,8 +149,7 @@ export class PlayerInput {
                 this.spell1Pressed = true;
             }
 
-        }
-        else {
+        } else {
             this.spell1 = false;
             this.spell1Pressed = false;
         }
@@ -163,8 +160,7 @@ export class PlayerInput {
                 this.spell2 = true;
                 this.spell2Pressed = true;
             }
-        }
-        else {
+        } else {
             this.spell2 = false;
             this.spell2Pressed = false;
         }
@@ -172,9 +168,9 @@ export class PlayerInput {
         // Swap Card (molette roulette)
 
         this._scene.onPointerObservable.add((pointerInfo) => {
-            if (pointerInfo.type === PointerEventTypes.POINTERWHEEL) {
-                const event = pointerInfo.event as WheelEvent;
-                if (event.deltaY !== 0) {
+                if (pointerInfo.type === PointerEventTypes.POINTERWHEEL) {
+                    const event = pointerInfo.event as WheelEvent;
+                    if (event.deltaY !== 0) {
                         this.swapCard = true;
                     }
                 } else {
@@ -183,17 +179,15 @@ export class PlayerInput {
             }
         );
 
-        if (this.inputMap["r"]&& !this._ui.gamePaused) {
+        if (this.inputMap["r"] && !this._ui.gamePaused) {
             if (!this.swapCardPressed) {
                 this.swapCard = true;
                 this.swapCardPressed = true;
             }
-        }
-        else {
+        } else {
             this.swapCard = false;
             this.swapCardPressed = false;
         }
-
 
 
     }

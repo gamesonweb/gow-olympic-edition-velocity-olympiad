@@ -33,6 +33,7 @@ export class Player extends SceneComponent implements GameObject {
     public readonly playerState: PlayerState;
     public canActOnCollision: boolean = true;
     public canDetectCollision: boolean = true;
+    public _isdashing: boolean = false;
     private isOnGround: boolean = true;
     private _ui: Hud;
     private _aggregate!: PhysicsAggregate;
@@ -48,7 +49,6 @@ export class Player extends SceneComponent implements GameObject {
     private _cameraAttached: boolean = true;
     private _dashRate: number = 1000000; // dash speed equals speed * dashRate
     private _dashAvailable: boolean = false;
-    public  _isdashing: boolean = false;
     private _initialPosition: Vector3;
     private _normalGravity: Vector3 = new Vector3(0, -12, 0);
     private _slowdownRate: number = 0.5;
@@ -138,7 +138,7 @@ export class Player extends SceneComponent implements GameObject {
         this.isOnGround = false;
     }
 
-    _increaseSpeedCap(speed:number): void {
+    _increaseSpeedCap(speed: number): void {
         this._speedCap = this._speedCap + speed;
     }
 
@@ -182,7 +182,8 @@ export class Player extends SceneComponent implements GameObject {
         if (gameObject instanceof CardSocle) {
             this.addCardToCart(gameObject.card);
         }
-        if (gameObject instanceof Wall) {return
+        if (gameObject instanceof Wall) {
+            return
         }
 
         if (gameObject instanceof FireballDistanceEnemy) {
@@ -315,7 +316,6 @@ export class Player extends SceneComponent implements GameObject {
 
 
     private _castSpell(n: number): void {
-
 
 
         let keepCard = true;
