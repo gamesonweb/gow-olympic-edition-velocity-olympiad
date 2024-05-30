@@ -214,7 +214,7 @@ export class Hud {
         this._createLevelSelectorMenu();
         this._loadSounds(this._scene);
 
-        this._lockPointer();
+        this._disablePointerLockOnPause();
         this.startTimer();
         this._scene.onBeforeRenderObservable.add(() => {
             this.updateHud();
@@ -421,24 +421,23 @@ export class Hud {
         this._activeCardStackPanel.addControl(cardImage);
     }
 
-public updateHud(): void {
-    if (!this._stopTimer && this._startTime != null) {
-        let curTime = new Date().getTime() - this._startTime;
+    public updateHud(): void {
+        if (!this._stopTimer && this._startTime != null) {
+            let curTime = new Date().getTime() - this._startTime;
 
-        // Convertir le temps écoulé en secondes et millisecondes
-        let seconds = Math.floor(curTime / 1000);
-        let milliseconds = curTime % 1000;
+            // Convertir le temps écoulé en secondes et millisecondes
+            let seconds = Math.floor(curTime / 1000);
+            let milliseconds = curTime % 1000;
 
-        // Mettre à jour le temps écoulé
-        this.time = curTime;
+            // Mettre à jour le temps écoulé
+            this.time = curTime;
 
-        // Mettre à jour l'affichage
-        // Formater les millisecondes avec trois chiffres
-        let formattedMilliseconds = ("00" + milliseconds).slice(-3);
-        this._clockTime!.text = `${seconds}.${formattedMilliseconds}`;
+            // Mettre à jour l'affichage
+            // Formater les millisecondes avec trois chiffres
+            let formattedMilliseconds = ("00" + milliseconds).slice(-3);
+            this._clockTime!.text = `${seconds}.${formattedMilliseconds}`;
+        }
     }
-}
-
 
     public updateLanternCount(numLanterns: number): void {
         this._lanternCnt.text = "Lanterns: " + numLanterns + " / 22";
@@ -521,8 +520,9 @@ public updateHud(): void {
 
     public GameOverOverlay(): void {
 
-        // make cursor unlock
-        document.exitPointerLock();
+        this.gamePaused = true;
+        this._disablePointerLockOnPause();
+        this.pauseBtn.isVisible = false;
 
         // Create a rectangle to overlay the entire screen
         const gameOverOverlay = new Rectangle("gameOverOverlay");
@@ -541,9 +541,10 @@ public updateHud(): void {
         gameOverText.fontSize = "72px";
         gameOverText.fontFamily = "Viga";
         gameOverText.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+        // monter de 20px par rapport au centre
+        gameOverText.top = "-50px";
         gameOverText.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
         gameOverOverlay.addControl(gameOverText);
-
 
 
         // Add a button to restart the game
@@ -573,6 +574,8 @@ public updateHud(): void {
         this._sparklerLife.cellId = 10 - ((hp == 0) ? 0 : parseInt(`${hp / 10}`))
     }
 
+    //---- Sparkler Timers ----
+
     private _createICardMenu(): void {
         this._cardMenuStackPanel = new StackPanel("cardMenuStackPanel");
         this._cardMenuStackPanel.width = "180px"; // La largeur du stack panel
@@ -595,70 +598,75 @@ public updateHud(): void {
         this._playerUI.addControl(this._activeCardStackPanel);
     }
 
-    //---- Sparkler Timers ----
-
-    private _getStackUIImageFromRarete(rareteCard: RareteCard,nameofCard: string): string {
+    private _getStackUIImageFromRarete(rareteCard: RareteCard, nameofCard: string): string {
 
         let stackUIImage = "sprites/controls.jpeg"
         switch (rareteCard) {
             case RareteCard.COMMON:
-                console.log("sprites/cardPreview/"+nameofCard+"Gray.png")
-                stackUIImage = "sprites/cardPreview/"+nameofCard+"Gray.png";
+                console.log("sprites/cardPreview/" + nameofCard + "Gray.png")
+                stackUIImage = "sprites/cardPreview/" + nameofCard + "Gray.png";
                 break;
             case RareteCard.RARE:
-                stackUIImage = "sprites/cardPreview/"+nameofCard+"Blue.png"
+                stackUIImage = "sprites/cardPreview/" + nameofCard + "Blue.png"
                 break;
             case RareteCard.EPIC:
-                stackUIImage = "sprites/cardPreview/"+nameofCard+"Purple.png";
+                stackUIImage = "sprites/cardPreview/" + nameofCard + "Purple.png";
                 break;
             case RareteCard.LEGENDARY:
-                stackUIImage = "sprites/cardPreview/"+nameofCard+"Gold.png";
+                stackUIImage = "sprites/cardPreview/" + nameofCard + "Gold.png";
                 break;
         }
         return stackUIImage;
     }
 
     private _lockPointer(): void {
-        // When the element is clicked, request pointer lock
         const canvas: HTMLCanvasElement = <HTMLCanvasElement>this._scene.getEngine().getRenderingCanvas();
-        canvas.onclick = function () {
-            let requestPointerLock = canvas.requestPointerLock ||
+        canvas.onclick = () => {
+            const requestPointerLock = canvas.requestPointerLock ||
                 canvas.mozRequestPointerLock ||
                 canvas.webkitRequestPointerLock;
             if (requestPointerLock) {
-                canvas.requestPointerLock = requestPointerLock;
-                // Ask the browser to lock the pointer
-                canvas.requestPointerLock();
+                requestPointerLock.call(canvas);
+                // Centrer le curseur après le verrouillage
+                canvas.style.cursor = 'none';
+                canvas.style.position = 'absolute';
+                canvas.style.left = '50%';
+                canvas.style.top = '50%';
+                canvas.style.transform = 'translate(-50%, -50%)';
             }
         };
+
+
+    //     add a circle to the center of the screen create not an image but a circle
+        const circle = new Image("circle", "sprites/circle.png");
+        circle.width = "40px";
+        circle.height = "40px";
+        this._playerUI.addControl(circle);
+
+    }
+
+    private _unlockPointer(): void {
+        const canvas: HTMLCanvasElement = <HTMLCanvasElement>this._scene.getEngine().getRenderingCanvas();
+        document.exitPointerLock();
+        canvas.style.cursor = 'default';
+        canvas.style.position = 'static';
+        canvas.style.left = 'auto';
+        canvas.style.top = 'auto';
+        canvas.style.transform = 'none';
+
+
+
+
+
     }
 
     private _disablePointerLockOnPause(): void {
-        const canvas: HTMLCanvasElement = <HTMLCanvasElement>this._scene.getEngine().getRenderingCanvas();
         if (this.gamePaused) {
-            canvas.requestPointerLock = () => {
-            };
+            this._unlockPointer();
             this.stopTimer();
         } else {
-            if (document.pointerLockElement !== canvas) {
-                this._lockPointer();
-            }
+            this._lockPointer();
         }
-    }
-
-    //format the time so that it is relative to 11:00 -- game time
-    private _formatTime(time: number): string {
-        let minsPassed = Math.floor(time / 60); //seconds in a min
-        let secPassed = time % 240; // goes back to 0 after 4mins/240sec
-        //gameclock works like: 4 mins = 1 hr
-        // 4sec = 1/15 = 1min game time
-        if (secPassed % 4 == 0) {
-            // this._mString = Math.floor(minsPassed / 4) + 11;
-            this._mString = Math.floor(minsPassed / 4);
-            this._sString = (secPassed / 4 < 10 ? "0" : "") + secPassed / 4;
-        }
-        let day = (this._mString == 11 ? " PM" : " AM");
-        return (this._mString + ":" + this._sString + day);
     }
 
     //---- Pause Menu Popup ----
@@ -767,10 +775,6 @@ public updateHud(): void {
         });
 
 
-
-
-
-
         const quitBtn = Button.CreateSimpleButton("quit", "QUIT");
         quitBtn.width = 0.18;
         quitBtn.height = "44px";
@@ -811,6 +815,9 @@ public updateHud(): void {
             }
         })
     }
+
+
+    //---- Level selector Menu Popup ----
 
     //---- Controls Menu Popup ----
     private _createControlsMenu(): void {
@@ -855,9 +862,6 @@ public updateHud(): void {
             this._sfx.play();
         });
     }
-
-
-     //---- Level selector Menu Popup ----
 
     private _createLevelSelectorMenu(): void {
         const levelSelector = new Rectangle();
@@ -916,8 +920,8 @@ public updateHud(): void {
             let playerState = new PlayerState()
             let nextScene = new LevelSelectorScene(actualScene.getEngine(), playerState);
             nextScene.init().then(() => {
-                actualScene.dispose();
-            }
+                    actualScene.dispose();
+                }
             );
         });
 
@@ -926,19 +930,16 @@ public updateHud(): void {
 
 // Function to start the countdown
     private startCountdown(): void {
-                this.restartGame();
+        this.restartGame();
 
     }
 
 // Function to restart the game
     private restartGame(): void {
-        this.gamePaused = true;
-        this._disablePointerLockOnPause();
+
         let olympiaScene = <OlympiadScene>this._scene;
         olympiaScene.restart();
-
-        // look cursor
-        this._lockPointer();
+        this.gamePaused = false;
     }
 
     //load all sounds needed for game ui interactions
@@ -1018,5 +1019,5 @@ public updateHud(): void {
 
             this._scene.getEngine().enterFullscreen(true);
         })
-    }N
+    }
 }
