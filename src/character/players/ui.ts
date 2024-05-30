@@ -412,6 +412,19 @@ export class Hud {
         cardActiveText.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
         cardActiveText.height = "20px";
         this._activeCardStackPanel.addControl(cardActiveText);
+
+        // show car durabilite
+        let cardDurabiliteText = new TextBlock("cardDurabiliteText", `Durabilite: ${card.durabilite}`);
+        cardDurabiliteText.color = "black";
+        cardDurabiliteText.fontSize = "18px";
+        cardDurabiliteText.paddingLeft = "5px"; // Espacement à gauche du nombre de cartes
+        cardDurabiliteText.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+        cardDurabiliteText.height = "20px";
+        this._activeCardStackPanel.addControl(cardDurabiliteText);
+
+
+
+
         let stackUIImage = this._getStackUIImageFromRarete(card.rarete, cardMeshName);
         let cardImage = new Image("card", stackUIImage);
         cardImage.width = "200px";
