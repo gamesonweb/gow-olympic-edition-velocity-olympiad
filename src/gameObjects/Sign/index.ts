@@ -60,8 +60,6 @@ export class Sign implements SceneComponent {
 
         // Before rendering the scene, show the sign if the camera is close enough
         this.scene.registerBeforeRender(() => {
-            if (this.scene.player.ui)
-
 
 
             if (this.scene.activeCamera) {

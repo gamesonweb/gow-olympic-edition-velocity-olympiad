@@ -40,14 +40,6 @@ export class LevelSelectorScene extends OlympiadScene {
         this.player = new Player(playerState, this);
     }
 
-    public onPauseState() {
-        return
-    }
-
-    public onResumeState() {
-        return
-    }
-
     public async init(): Promise<void> {
         await super.init();
         this.player.init(new Vector3(0, 50, -80));
