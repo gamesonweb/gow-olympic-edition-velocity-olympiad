@@ -1,15 +1,17 @@
 import {RareteCard} from "./RareteCard.ts";
-import {CardList} from "./CardList.ts";
-import {FirstPersonPlayer} from "../../../BabylonCodes/Character/players/firstPersonPlayer.ts";
-
+import {Scene, Vector3} from "@babylonjs/core";
 
 export interface ICard {
-    firstSpell(FirstPersonPlayer : FirstPersonPlayer): void;
-    secondSpell(): void;
     name: string;
     description: string;
     meshname: any;
     rarete: RareteCard;
+    damage: number;
+    durabilite: number;
+
+    firstSpell(scene: Scene, position: Vector3): void;
+
+    secondSpell(scene: Scene, position: Vector3): void;
 
     setup(): void;
 }

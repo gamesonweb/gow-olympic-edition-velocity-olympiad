@@ -1,33 +1,25 @@
-import {
-    Engine,
-    Mesh,
-    Nullable,
-    Quaternion,
-    Scene,
-    SceneLoader,
-    Vector3
-} from "@babylonjs/core";
+import {Engine, Mesh, Nullable, Quaternion, Scene, SceneLoader, Vector3} from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import {ICard} from "./ICard.ts";
 import {SceneComponent} from "../../scenes/SceneComponent";
+import {Player} from "../../character/players";
 
-export class CardSocle extends SceneComponent {
+export class CardSocle extends SceneComponent implements GameObject {
     position: Vector3;
     scene: Scene;
     engine: Engine;
-    card: ICard;
-    private mesh: Nullable<Mesh>;
+    public card: ICard;
+    public canDetectCollision: boolean = true;
+    public canActOnCollision: boolean = false;
+    private mesh!: Nullable<Mesh>;
     private _meshes: Mesh[] = [];
-    private readonly callbackOnCollision: (...args) => void;
 
-
-    constructor(scene: Scene, card: ICard, position: Vector3, callbackOnCollision: (...args) => void) {
+    constructor(scene: Scene, card: ICard, position: Vector3) {
         super();
         this.scene = scene;
         this.engine = this.scene.getEngine();
         this.card = card;
         this.position = position;
-        this.callbackOnCollision = callbackOnCollision;
         this.init();
     }
 
@@ -44,8 +36,14 @@ export class CardSocle extends SceneComponent {
             });
             this.mesh.position = this.position;
 
-            console.log("Card socle loaded at position: ", this.position.toString());
+
         });
+    }
+
+    public updateState(): void {
+        if (this.mesh) {
+            this.mesh.position = this.position;
+        }
     }
 
     rotateMeshTowardsCamera() {
@@ -68,16 +66,6 @@ export class CardSocle extends SceneComponent {
 
             // Apply rotation to mesh
             this.mesh.rotationQuaternion = rotationQuaternion;
-            // Check for collision with camera
-            if (this.checkCollisionWithCamera()) {
-                // Log collision
-                console.log("Collision occurred!");
-
-                // Remove the mesh from the scene
-                this.mesh.dispose();
-                this.mesh = null; // Mark mesh as disposed
-                this.callbackOnCollision(this.card); // Call the callback function
-            }
         }
     }
 
@@ -85,9 +73,20 @@ export class CardSocle extends SceneComponent {
 
         // Check if the camera is within 1 unit of the mesh
 
-        // console.log("CHECKIN_COLLISION: ", this.mesh!.position.subtract(this.scene.activeCamera!.position).length() < 5)
+        if (!this.mesh || !this.scene.activeCamera) return false;
 
-        return this.mesh!.position.subtract(this.scene.activeCamera!.position).length() < 4;
+        // compare x and z coordinates first
+        const cameraPos = this.scene.activeCamera.position.clone();
+        const meshPos = this.mesh.position.clone();
+
+        let xDiff = Math.abs(cameraPos.x - meshPos.x);
+        let zDiff = Math.abs(cameraPos.z - meshPos.z);
+        let yDiff = Math.abs(cameraPos.y - meshPos.y);
+
+
+        if (xDiff > 2 || zDiff > 2) return false;
+        if (yDiff > 4) return false;
+        return true;
 
 
     }
@@ -98,5 +97,21 @@ export class CardSocle extends SceneComponent {
         });
     }
 
+    public detectCollision(gameObjects: GameObject[]) {
+        for (let gameObject of gameObjects) {
+            if (gameObject.canActOnCollision && gameObject instanceof Player) {
+                if (this.checkCollisionWithCamera()) {
+                    gameObject.onCollisionCallback(this); // Tell the player they collided with a card
+                    gameObjects.splice(gameObjects.indexOf(this), 1); // Remove the card from the gameObjects array
+                    this.destroy(); // Destroy the card
+
+                }
+            }
+        }
+    }
+
+    public onCollisionCallback(gameObject: GameObject) {
+        throw new Error("CardSocle should not have an onCollisionCallback() method: " + gameObject.toString());
+    }
 
 }

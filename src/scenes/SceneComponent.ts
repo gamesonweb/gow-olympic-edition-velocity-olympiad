@@ -1,4 +1,6 @@
 export abstract class SceneComponent {
-    protected constructor() {}
+    protected constructor() {
+    }
+
     abstract destroy(): void;
 }
