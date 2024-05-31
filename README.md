@@ -26,7 +26,7 @@ Plongez dans une aventure épique où chaque décision compte et où la flamme s
 
 ## Jouer le jeu
 
-Pour tester le jeu, allez sur xxx.
+Pour tester le jeu, allez sur .
 
 [//]: # (Pour tester le jeu, allez sur [Velocity Olympiad]&#40;https://velocityolympiad.netlify.app/&#41;.)
 
