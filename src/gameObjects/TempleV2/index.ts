@@ -51,7 +51,6 @@ export class TempleV2 extends SceneComponent {
 
             for (let child of childrens) {
                 const mesh = child as Mesh;
-                mesh.renderingGroupId = 2;
                 const body = new PhysicsBody(mesh, PhysicsMotionType.STATIC, false, this.scene);
                 body.shape = new PhysicsShapeMesh(mesh, this.scene)
                 this.mesh.push(mesh);
@@ -61,7 +60,6 @@ export class TempleV2 extends SceneComponent {
 
         this.teleportPad = MeshBuilder.CreateCylinder("teleportPad", {diameter: 7, height: 10}, this.scene)
         this.teleportPad.position = this.position.add(new Vector3(0, 1.5, 0));
-        this.teleportPad.renderingGroupId = 2;
         this.teleportPad.checkCollisions = true;
         this.teleportPad.isVisible = false;
         this.mesh.push(this.teleportPad);

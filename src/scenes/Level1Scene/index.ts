@@ -34,11 +34,14 @@ export class Level1Scene extends OlympiadScene {
     constructor(engine: Engine, playerState: PlayerState) {
 
         super(engine);
+        playerState;
 
         this.enemyManager = new Level1EnemyManager(this);
         this.addComponent(this.enemyManager); // Ainsi, le manager sera détruit avec la scène
 
-        this.player = new Player(playerState, this);
+        let newPlayerState = new PlayerState();
+
+        this.player = new Player(newPlayerState, this);
 
     }
 
@@ -138,7 +141,7 @@ export class Level1Scene extends OlympiadScene {
             new Vector3(80, 15, -522),
             new Vector3(816, 53.8, -522),
             new Vector3(873, 53.8, -553),
-            new Vector3(929, 58, -640)
+            new Vector3(929, 56, -640)
         ]
 
         let templeFin : TempleTorch = new TempleTorch(this, new Vector3(1100, 58, -1000), new Vector3(0, Math.PI*3/2, 0), new Vector3(1, 1, 1));

@@ -86,7 +86,6 @@ export class Sign implements SceneComponent {
     private createSignMesh(): Mesh {
         this.signMesh = MeshBuilder.CreatePlane("sign", {width: 1, height: 1}, this.scene);
         this.signMesh.position = this.position;
-        this.signMesh.renderingGroupId = 2;
 
         const material = new StandardMaterial("", this.scene);
         material.diffuseTexture = new Texture("sprites/gameObject/sign.png", this.scene);
