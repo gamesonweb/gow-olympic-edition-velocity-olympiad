@@ -25,10 +25,7 @@ Plongez dans une aventure épique où chaque décision compte et où la flamme s
 *Pour lire l'histoire complète, consultez le fichier [FullProjectLore.md](FullPVelocityOlympiadLore.md).*
 
 ## Jouer le jeu
-
-Pour tester le jeu, allez sur .
-
-[//]: # (Pour tester le jeu, allez sur [Velocity Olympiad]&#40;https://velocityolympiad.netlify.app/&#41;.)
+Pour tester le jeu, rendez-vous sur [Velocity Olympiad](https://samsoucoupe.github.io/Velocity-Olympiad/).
 
 - Le jeu est jouable:
     - [x] En français et en anglais (clavier AZERTY et QWERTY)
