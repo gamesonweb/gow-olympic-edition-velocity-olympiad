@@ -117,13 +117,14 @@ export class Level1Scene extends OlympiadScene {
 
         let Cards =[
             {card: new JumpCard(RareteCard.RARE), position: new Vector3(-11, 8.5, -33)},
+            {card: new FlammeCard(RareteCard.RARE), position: new Vector3(-11, 8.5, -33)},
             {card: new FlammeCard(RareteCard.COMMON), position: new Vector3(-42, 10.5, -155)},
             {card: new FlammeCard(RareteCard.COMMON), position: new Vector3(20, 13.5, -305)},
             {card: new FlammeCard(RareteCard.RARE), position: new Vector3(45, 13.5, -387)},
             {card: new FlammeCard(RareteCard.RARE), position: new Vector3(188, 15.5, -716)},
             {card: new JumpCard(RareteCard.RARE), position: new Vector3(425, 19.5, -535)},
             {card: new JumpCard(RareteCard.EPIC), position: new Vector3(635, 53, -532)},
-            {card: new FlammeCard(RareteCard.EPIC), position: new Vector3(719, 53, -521)},
+            {card: new FlammeCard(RareteCard.LEGENDARY), position: new Vector3(719, 53, -521)},
             {card: new FlammeCard(RareteCard.EPIC), position: new Vector3(1100, 58, -920)}
         ]
 
@@ -139,10 +140,12 @@ export class Level1Scene extends OlympiadScene {
             new Vector3(80, 15, -522),
             new Vector3(816, 53.8, -522),
             new Vector3(873, 53.8, -553),
+            new Vector3(929, 58, -640)
         ]
 
         let templeFin : TempleTorch = new TempleTorch(this, new Vector3(1100, 58, -1000), new Vector3(0, Math.PI*3/2, 0), new Vector3(1, 1, 1));
         this.addComponent(templeFin);
+        this.addGameObject(templeFin);
 
         ennemyPositions.forEach(position => {
             this.enemyManager.addDistanceEnemy(position);

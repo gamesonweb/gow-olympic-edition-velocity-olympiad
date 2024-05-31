@@ -13,9 +13,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { SceneManager } from "./scenes/SceneManager";
-import { FirstLevelScene } from "./scenes/FirstLevelScene";
 import { LevelSelectorScene } from './scenes/LevelSelectorScene';
-import { Level1Scene } from './scenes/Level1Scene';
 
 export default defineComponent({
   name: 'App',
@@ -34,11 +32,11 @@ Préparez-vous à vivre une aventure palpitante, où chaque choix que vous ferez
     const sceneManager = new SceneManager(canvas);
 
     //const firstLevelScene = new FirstLevelScene(sceneManager.engine, sceneManager.playerState);
-    //const levelSelectorScene = new LevelSelectorScene(sceneManager.engine, sceneManager.playerState);
-    const level1Scene = new Level1Scene(sceneManager.engine, sceneManager.playerState);
+    const levelSelectorScene = new LevelSelectorScene(sceneManager.engine, sceneManager.playerState);
+    //const level1Scene = new Level1Scene(sceneManager.engine, sceneManager.playerState);
 
 
-    level1Scene.init().then(() => {
+    levelSelectorScene.init().then(() => {
       sceneManager.renderScene();
     });
 
