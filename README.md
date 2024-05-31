@@ -32,7 +32,7 @@ Pour tester le jeu, rendez-vous sur [Velocity Olympiad](https://samsoucoupe.gith
     - [x] Sur ordinateur (navigateur web: de préférence Chrome ou tout navigateur basé sur Chromium)
     - [x] Sur tablette
     - [x] Sur smartphone (Android et iOS, BlackBerry)
-
+![mobile](public/mobile.jpg)
 - La documentation est disponible sur [Documentation.md](Documentation.md).
 ## Video Gameplay: 
 
