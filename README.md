@@ -1,8 +1,4 @@
 # velocityolympiad
-# Membres du projet
-- [x] Samy
-- [x] MAHJOUB Mohamed
-- [x] DATONGNON Mahussi Jeff Fidèle
 
 ## Membres du projet
 
