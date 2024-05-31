@@ -89,7 +89,7 @@ export class Sign implements SceneComponent {
         material.diffuseTexture = new Texture("sprites/gameObject/sign.png", this.scene);
         this.signMesh.material = material;
 
-        //this.signMesh.isVisible = false;
+        this.signMesh.isVisible = false;
 
 
         return this.signMesh;
