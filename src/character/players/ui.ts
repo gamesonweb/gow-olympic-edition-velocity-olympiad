@@ -49,7 +49,8 @@ export class Hud {
     //ICard Menu
     private _cardMenuStackPanel!: StackPanel;
     private _activeCardStackPanel!: StackPanel;
-    private _levelSelector: any;
+    private _levelSelector: StackPanel;
+    private _winPanel: Rectangle;
 
     constructor(scene: Scene) {
         this._scene = scene;
@@ -168,7 +169,9 @@ export class Hud {
         this._createPauseMenu();
         this._createControlsMenu();
         this._createLevelSelectorMenu();
+        this._createWinPanel();
         this._loadSounds(this._scene);
+        this.startTimer();
 
 
         this._scene.onBeforeRenderObservable.add(() => {
@@ -726,6 +729,54 @@ export class Hud {
         });
     }
 
+    private _createWinPanel(): void {
+        // Créer le panneau de victoire
+        const winPanel = new Rectangle();
+        winPanel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        winPanel.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+        winPanel.height = 1;
+        winPanel.width = 1;
+        winPanel.thickness = 0;
+        winPanel.background = "#000000"; // Fond noir
+        winPanel.color = "white";
+        winPanel.isVisible = false;
+        this._playerUI.addControl(winPanel);
+        this._winPanel = winPanel;
+
+        // Afficher le message "YOU WIN"
+        const title = new TextBlock("title", "YOU WIN");
+        title.resizeToFit = true;
+        title.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+        title.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        title.fontFamily = "Viga";
+        title.fontSize = "48px";
+        title.color = "white";
+        winPanel.addControl(title);
+
+        // Afficher le texte "Next level soon" et l'auteur
+        const nextLevelText = new TextBlock("nextLevelText", "Next level soon\nby Samy Yassine & Jeff ");
+        nextLevelText.resizeToFit = true;
+        nextLevelText.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
+        nextLevelText.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        nextLevelText.fontFamily = "Arial";
+        nextLevelText.fontSize = "24px";
+        nextLevelText.color = "white";
+        winPanel.addControl(nextLevelText);
+
+
+    }
+
+
+    public showWinPanel(): void {
+        this._winPanel.isVisible = true;
+        this._playerUI.addControl(this._winPanel);
+        this._pauseMenu.isVisible = false;
+        // Mettre le jeu en pause
+        this.gamePaused = true;
+
+    }
+
+
     private _createLevelSelectorMenu(): void {
         const levelSelector = new Rectangle();
         levelSelector.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
@@ -834,18 +885,22 @@ export class Hud {
 
 
     private lauchGameSound(): void {
-        this.gameSound.play();
-        this.gameSound.loop = true;
-        this.gameSound.setVolume(0.1);
-        this.pauseSound.stop()
+        if (this.pauseSound.isPlaying) {
+            this.pauseSound.stop();
+        }
+        if (!this.gameSound.isPlaying) {
+            this.gameSound.play();
+        }
 
     }
 
     private lauchPauseSound(): void {
-        this.pauseSound.play();
-        this.pauseSound.loop = true;
-        this.pauseSound.setVolume(0.1);
-        this.gameSound.pause();
+        if (this.gameSound.isPlaying) {
+            this.gameSound.stop();
+        }
+        if (!this.pauseSound.isPlaying) {
+            this.pauseSound.play();
+        }
     }
 
     private _prepareMobileScreen(): void {
