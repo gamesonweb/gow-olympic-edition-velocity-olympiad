@@ -24,7 +24,6 @@ import { RareteCard } from "../../gameObjects/Card/RareteCard";
 import { CardSocle } from "../../gameObjects/Card/CardSocle";
 import { Wall } from "../../gameObjects/Wall/index.ts";
 
-
 export class LevelSelectorScene extends OlympiadScene {
     protected readonly enemyManager: FirstLevelEnemyManager
     // noinspection JSUnusedGlobalSymbols
@@ -58,10 +57,25 @@ export class LevelSelectorScene extends OlympiadScene {
         this.addGameObject(this.player);
     }
 
+    public onPauseState() {
+        return
+    }
+
+    public onResumeState() {
+        return
+    }
+
     public destroy(): void {
         this._meshes.forEach((mesh) => mesh.dispose());
         this._materials.forEach((material) => material.dispose());
         super.destroy();
+    }
+
+    public restart() {
+        let newScene = new LevelSelectorScene(this.getEngine(), this.player.playerState)
+        newScene.init().then(() => {
+            this.destroy()
+        });
     }
 
     private _buildlevelStatic(): void {
@@ -161,9 +175,6 @@ export class LevelSelectorScene extends OlympiadScene {
             this.enemyManager.addDistanceEnemy(position);
         });
 
-
-
-        
 
     }
 }

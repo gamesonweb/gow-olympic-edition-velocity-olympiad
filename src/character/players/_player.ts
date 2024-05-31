@@ -414,7 +414,6 @@ export class Player extends SceneComponent implements GameObject {
         if (this._input.swapCard) {
             this._swapToNextCard();
             this._input.swapCard = false;
-            console.log("Swapping cards");
         }
 
 
@@ -480,9 +479,9 @@ export class Player extends SceneComponent implements GameObject {
                 this._scene.getPhysicsEngine()?.setGravity(this._normalGravity);
             }
         }
+
         this._dashColideYGlitch();
         // this._input.resetInputMap();
-        console.log(" x :", this.position._x," y :", this.position._y," z :", this.position._z);
     }
 
     private _updateCameraInfos(): void {
