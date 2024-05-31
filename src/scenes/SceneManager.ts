@@ -11,9 +11,9 @@ export class SceneManager {
 
     // Manage the scenes and Havok physics engine
 
-    private readonly _canvas: HTMLCanvasElement;
     public engine: Engine;
     public playerState: PlayerState;
+    private readonly _canvas: HTMLCanvasElement;
 
     constructor(canvas: HTMLCanvasElement) {
         this._canvas = canvas;
@@ -23,7 +23,9 @@ export class SceneManager {
 
     public renderScene() {
         if (!this.engine.scenes[0]) throw new Error("No active scene set.");
+
         this.engine.runRenderLoop(() => {
+            // Render the scene if not stopped
             this.engine.scenes[0].render();
         });
     }
