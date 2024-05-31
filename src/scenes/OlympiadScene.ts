@@ -15,6 +15,7 @@ export class OlympiadScene extends Scene {
     protected engine: Engine;
     protected physicsEngine!: HavokPlugin;
     protected enemyManager!: EnemyManager;
+    public modelsLoaded: { [key: string]: boolean } = {};
 
     protected constructor(engine: Engine, options?: SceneOptions) {
         super(engine, options);
@@ -48,11 +49,20 @@ export class OlympiadScene extends Scene {
         // this._createGUI();
         this.collisionsEnabled = true;
         this.onBeforeRenderObservable.add(() => {
+            // all element is modelLoaded == true
+            let sceneReady: boolean = true;
+            for (let key in this.modelsLoaded) {
+                if (!this.modelsLoaded[key]) {
+                    sceneReady = false;
+                    console.log("key: ", key)
+                    break;
+                }
+            }
             this._gameObjects.forEach((gameObject) => {
                 if (gameObject && gameObject.canDetectCollision) {
                     gameObject.detectCollision(this._gameObjects);
                 }
-                gameObject.updateState();
+                if (sceneReady) gameObject.updateState();
             });
         });
     }

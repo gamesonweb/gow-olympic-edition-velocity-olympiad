@@ -71,6 +71,9 @@ export class LevelSelectorScene extends OlympiadScene {
     }
 
     private _buildlevelStatic(): void {
+        let _scene = this as OlympiadScene;
+        _scene.modelsLoaded["SelectLevelScene.glb"] = false;
+
         SceneLoader.ImportMesh("", "models/", "SelectLevelScene.glb", this, (meshes) => {
             const root = meshes[0];
             root.position = new Vector3(0, 0, 0);
@@ -84,6 +87,7 @@ export class LevelSelectorScene extends OlympiadScene {
                 body.shape = new PhysicsShapeMesh(mesh, this)
             }
             // new PhysicsAggregate(root, PhysicsShapeType.BOX, {mass: 0}, this);
+            _scene.modelsLoaded["SelectLevelScene.glb"] = true;
         });
 
         //Adding a Skybox
@@ -150,7 +154,7 @@ export class LevelSelectorScene extends OlympiadScene {
             this.addComponent(sign);
         });
 
-        //Cards 
+        //Cards
 
         let cards = [
             {card: new JumpCard(RareteCard.RARE), position: new Vector3(-95, 29, 188)},

@@ -41,6 +41,8 @@ export class TempleTorch extends SceneComponent implements GameObject {
 
 
     init() {
+        let _scene = this.scene as OlympiadScene;
+        _scene.modelsLoaded["TorchTemple.glb"] = false;
         SceneLoader.ImportMesh("", "models/", "TorchTemple.glb", this.scene, (meshes) => {
             const root = meshes[0];
             root.position = this.position;
@@ -58,6 +60,7 @@ export class TempleTorch extends SceneComponent implements GameObject {
                 this.mesh.push(mesh);
                 this.body.push(body);
             }
+            _scene.modelsLoaded["TorchTemple.glb"] = true;
         });
 
         this.fireball = MeshBuilder.CreateCylinder("Fireball_Detection", {diameter: 7, height: 10}, this.scene);

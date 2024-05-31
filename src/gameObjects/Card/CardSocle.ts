@@ -3,6 +3,7 @@ import "@babylonjs/loaders/glTF";
 import {ICard} from "./ICard.ts";
 import {SceneComponent} from "../../scenes/SceneComponent";
 import {Player} from "../../character/players";
+import {OlympiadScene} from "../../scenes/OlympiadScene.ts";
 
 export class CardSocle extends SceneComponent implements GameObject {
     position: Vector3;
@@ -25,6 +26,8 @@ export class CardSocle extends SceneComponent implements GameObject {
 
     init() {
         // Setup the socle
+        let _scene = this.scene as OlympiadScene;
+        _scene.modelsLoaded[this.card.meshname] = false;
         SceneLoader.ImportMesh("", "./models/", this.card.meshname, this.scene, (meshes) => {
             this.mesh = meshes[0] as Mesh;
             this._meshes.push(this.mesh);
@@ -35,8 +38,7 @@ export class CardSocle extends SceneComponent implements GameObject {
                 this.rotateMeshTowardsCamera();
             });
             this.mesh.position = this.position;
-
-
+            _scene.modelsLoaded[this.card.meshname] = true;
         });
     }
 

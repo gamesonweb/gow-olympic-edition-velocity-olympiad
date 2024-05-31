@@ -42,6 +42,8 @@ export class TempleV2 extends SceneComponent {
 
 
     init() {
+        let _scene = this.scene as OlympiadScene;
+        _scene.modelsLoaded["temple.glb"] = false;
         SceneLoader.ImportMesh("", "models/", "temple.glb", this.scene, (meshes) => {
             const root = meshes[0];
             root.position = this.position;
@@ -56,6 +58,7 @@ export class TempleV2 extends SceneComponent {
                 this.mesh.push(mesh);
                 this.body.push(body);
             }
+            _scene.modelsLoaded["temple.glb"] = true;
         });
 
         this.teleportPad = MeshBuilder.CreateCylinder("teleportPad", {diameter: 7, height: 10}, this.scene)
