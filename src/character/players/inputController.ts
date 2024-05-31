@@ -178,7 +178,7 @@ export class PlayerInput {
                 }
             }
         );
-
+        if (!this.swapCard){
         if (this.inputMap["r"] && !this._ui.gamePaused) {
             if (!this.swapCardPressed) {
                 this.swapCard = true;
@@ -187,7 +187,7 @@ export class PlayerInput {
         } else {
             this.swapCard = false;
             this.swapCardPressed = false;
-        }
+        }}
 
 
     }
