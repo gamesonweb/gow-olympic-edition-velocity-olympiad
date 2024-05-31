@@ -70,11 +70,11 @@ export class LevelSelectorScene extends OlympiadScene {
         });
     }
 
-    private _buildlevelStatic(): void {
+    private async _buildlevelStatic(): Promise<void> {
         let _scene = this as OlympiadScene;
         _scene.modelsLoaded["SelectLevelScene.glb"] = false;
 
-        SceneLoader.ImportMesh("", "models/", "SelectLevelScene.glb", this, (meshes) => {
+        await SceneLoader.ImportMesh("", "models/", "SelectLevelScene.glb", this, (meshes) => {
             const root = meshes[0];
             root.position = new Vector3(0, 0, 0);
             root.rotation = new Vector3(0, 0, 0);
