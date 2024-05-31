@@ -861,20 +861,21 @@ export class Hud {
             autoplay: false,
             volume: 0.1
         });
-        if(Engine.audioEngine){
-        Engine.audioEngine.useCustomUnlockedButton = true;
+        if (Engine.audioEngine) {
+            Engine.audioEngine.useCustomUnlockedButton = true;
 
-        // Unlock audio on first user interaction.
-        window.addEventListener(
-            "click",
-            () => {
-                if(Engine.audioEngine){
-                if (!Engine.audioEngine.unlocked) {
-                    Engine.audioEngine.unlock();
-                }}
-            },
-            {once: true},
-        );
+            // Unlock audio on first user interaction.
+            window.addEventListener(
+                "click",
+                () => {
+                    if (Engine.audioEngine) {
+                        if (!Engine.audioEngine.unlocked) {
+                            Engine.audioEngine.unlock();
+                        }
+                    }
+                },
+                {once: true},
+            );
         }
 
 
