@@ -37,7 +37,9 @@ Pour tester le jeu, allez sur xxx.
     - [x] Sur smartphone (Android et iOS, BlackBerry)
 
 - La documentation est disponible sur [Documentation.md](Documentation.md).
-- [Video Gameplay](https://youtu.be/RD3DMe-Qnc0)
+## Video Gameplay: 
+
+[![Video Gameplay](https://img.youtube.com/vi/RD3DMe-Qnc0/0.jpg)](https://www.youtube.com/watch?v=RD3DMe-Qnc0)
 
 
 
