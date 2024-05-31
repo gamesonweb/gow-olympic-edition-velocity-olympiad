@@ -37,6 +37,7 @@ Préparez-vous à vivre une aventure palpitante, où chaque choix que vous ferez
 
 
     levelSelectorScene.init().then(() => {
+    levelSelectorScene.init().then(() => {
       sceneManager.renderScene();
     });
 

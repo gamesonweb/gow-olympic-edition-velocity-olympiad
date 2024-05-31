@@ -13,6 +13,14 @@ export class Level1EnemyManager extends EnemyManager {
         this.scene = scene;
     }
 
+    init() {
+        // Create enemies
+    }
+
+    public destroy() {
+        // Destroy enemies and cleanup
+    }
+
     addDistanceEnemy(enemydistanceposition: Vector3) {
         // Add a distance enemy to the scene
         this._distanceEnemy = new DistanceEnemy(this.scene, enemydistanceposition);
@@ -21,20 +29,13 @@ export class Level1EnemyManager extends EnemyManager {
         olympiadScene.addGameObject(this._distanceEnemy);
     }
 
-    init() {
-        // Create enemies
-        this.scene;
-    }
-
-    public destroy() {
-        // Destroy enemies and cleanup
-    }
-
     public stopAllAttacks() {
         super.stopAllAttacks();
+        this._distanceEnemy.stopAttack = true;
     }
 
     public resumeAllAttacks() {
         super.resumeAllAttacks();
+        this._distanceEnemy.stopAttack = false;
     }
 }

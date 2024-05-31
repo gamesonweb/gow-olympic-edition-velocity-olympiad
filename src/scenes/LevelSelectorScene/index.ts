@@ -18,6 +18,7 @@ import {FirstLevelEnemyManager} from "./enemyManager";
 import {Player, PlayerState} from "../../character/players";
 import {TempleV2} from "../../gameObjects/TempleV2";
 import {EnemyManager} from "../EnemyManager.ts";
+import { Sign } from "../../gameObjects/Sign/index.ts";
 
 export class LevelSelectorScene extends OlympiadScene {
     protected readonly enemyManager: EnemyManager;
@@ -33,8 +34,6 @@ export class LevelSelectorScene extends OlympiadScene {
         this.addComponent(this.enemyManager); // Ainsi, le manager sera détruit avec la scène
 
         this.player = new Player(playerState, this);
-        this.addComponent(this.player);
-        this.addGameObject(this.player);
     }
 
     public async init(): Promise<void> {
@@ -82,10 +81,23 @@ export class LevelSelectorScene extends OlympiadScene {
         skybox.material = skyboxMaterial;
         skybox.infiniteDistance = true;
 
-        //Adding the end temple
-        // const nextScene = new Level1Scene(this.engine, this.player!.playerState);
-        // this.engine.scenes.push(nextScene);
-        new TempleV2(this, new Vector3(125, 37, 157), new Vector3(0, -110 * (Math.PI / 180.0), 0), new Vector3(1, 1, 1), this.engine);
+        const temple = new TempleV2(this, new Vector3(125, 37, 157), new Vector3(0, -110 * (Math.PI / 180.0), 0), new Vector3(1, 1, 1), this.engine);
+        this.addComponent(temple);
+
+        //Signs 
+
+        let signs = [
+            {text : "Appuiez sur ZQSD pour vous deplacez", position : new Vector3(0, 8.5, -78)},
+        ]
+
+        signs.forEach(element => {
+            let sign = new Sign(element.text, element.position, this);
+            this.addComponent(sign);
+        });
+
+
+
+        
 
     }
 }

@@ -20,7 +20,7 @@ export class JumpCard implements ICard {
         switch (rarete) {
             case RareteCard.COMMON:
                 this.meshname = "BootCardGray.glb";
-                this.damage = 10;
+                this.damage = 15;
                 this.durabilite = 1;
                 break;
             case RareteCard.RARE:
@@ -30,18 +30,19 @@ export class JumpCard implements ICard {
                 break;
             case RareteCard.EPIC:
                 this.meshname = "BootCardPurple.glb";
-                this.damage = 30;
+                this.damage = 25;
                 this.durabilite = 3;
                 break;
             case RareteCard.LEGENDARY:
                 this.meshname = "BootCardGold.glb";
-                this.damage = 40;
+                this.damage = 30;
                 this.durabilite = 5;
                 break;
         }
     }
 
     public firstSpell(_scene: Scene, position: Vector3): void {
+        position;
         position;
 
         let olympiadScene: OlympiadScene = <OlympiadScene>_scene;
@@ -53,6 +54,7 @@ export class JumpCard implements ICard {
     }
 
     public secondSpell(_scene: Scene, position: Vector3): void {
+        position;
         position;
         let olympiadScene: OlympiadScene = <OlympiadScene>_scene;
         let _player: Player = olympiadScene.player;
