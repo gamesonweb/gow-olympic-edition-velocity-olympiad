@@ -124,6 +124,7 @@ export class Player extends SceneComponent implements GameObject {
 
     _dash(): void {
         let direction = this._getCameraDirection();
+        this.ui.launchDashSFX();
         this._isdashing = true;
         if (this._speedCap < 299) {
             this._oldSpeedCap = this._speedCap;
@@ -142,6 +143,7 @@ export class Player extends SceneComponent implements GameObject {
     _superJump(): void {
         this._aggregate.body.setLinearVelocity(new Vector3(this._aggregate.body.getLinearVelocity().x, 0, this._aggregate.body.getLinearVelocity().z));
         this._aggregate.body.applyImpulse(Vector3.Up().scale(25), this.position);
+        this.ui.launchJumpSFX();
         this.isOnGround = false;
     }
 
@@ -320,6 +322,7 @@ export class Player extends SceneComponent implements GameObject {
 
     private _jump(): void {
         if (!this.isOnGround) return;
+        this.ui.launchJumpSFX();
         // Intensify the gravity to make the jump more realistic
         this._aggregate.body.applyImpulse(Vector3.Up().scale(this._jumpForce), this.position);
         this.isOnGround = false;
@@ -333,6 +336,9 @@ export class Player extends SceneComponent implements GameObject {
         if (!card) return;
         if (n == 1) {
             card.firstSpell(this._scene, this.position.clone());
+            if (card.name == "Flamme") {
+                this.ui.launchFireballSFX();
+            }
             keepCard = false;
 
 

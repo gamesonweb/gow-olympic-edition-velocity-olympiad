@@ -35,6 +35,10 @@ export class Hud {
     //Sounds
     private pauseSound!: Sound;
     private gameSound!: Sound;
+    private jumpSFX!: Sound;
+    private DashSFX!: Sound;
+    private FireballSFX!: Sound;
+
     private _scene: Scene;
     private _clockTime: TextBlock | null = null; //GAME TIME
     private _startTime!: number;
@@ -51,6 +55,7 @@ export class Hud {
     private _activeCardStackPanel!: StackPanel;
     private _levelSelector!: Rectangle;
     private _winPanel!: Rectangle;
+    
 
     constructor(scene: Scene) {
         this._scene = scene;
@@ -861,6 +866,22 @@ export class Hud {
             autoplay: false,
             volume: 0.1
         });
+
+        this.jumpSFX = new Sound("jump", "./sounds/Jump.mp3", scene, null, {
+            loop: false,
+            autoplay: false,
+            volume: 0.05
+        });
+        this.DashSFX = new Sound("dash", "./sounds/Dash.mp3", scene, null, {
+            loop: false,
+            autoplay: false,
+            volume: 0.05
+        });
+        this.FireballSFX = new Sound("fireball", "./sounds/FireBall.mp3", scene, null, {
+            loop: false,
+            autoplay: false,
+            volume: 0.05
+        });
         if(Engine.audioEngine){
         Engine.audioEngine.useCustomUnlockedButton = true;
 
@@ -898,6 +919,25 @@ export class Hud {
             this.pauseSound.play();
         }
     }
+
+    public launchJumpSFX(): void {
+        if (!this.jumpSFX.isPlaying) {
+            this.jumpSFX.play();
+        }
+    }
+
+    public launchDashSFX(): void { 
+        if (!this.DashSFX.isPlaying) {
+            this.DashSFX.play();
+        }
+    }
+
+    public launchFireballSFX(): void {
+        if (!this.FireballSFX.isPlaying) {
+            this.FireballSFX.play();
+        }
+    }
+
 
     private _prepareMobileScreen(): void {
 
