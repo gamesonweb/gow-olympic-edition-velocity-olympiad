@@ -32,9 +32,21 @@
     - `detectCollision(gameObjects: GameObject[]): void`
       Tous les GameObjects sont inscrits dans une scène Olympiad (étendant la scène Babylon). Avant chaque rendu de la
       scène, si un GameObject a `canDetectCollision` à true, sa méthode `detectCollision()` est appelée.
+
 - [x] **Gestion du moteur physique** : Nous avons découvert que le moteur physique ne pouvait pas être transféré d'une
   scène à une autre. Pour chaque nouvelle scène, nous avons donc créé un nouveau moteur physique, tout en conservant le
   moteur Babylon existant. De plus, lorsqu'un mesh est déplacé via `applyImpulse` du moteur physique, il n'était pas
   possible de redéfinir sa position, rendant les mouvements peu pratiques pour le joueur. La solution a été de contrôler
   la vélocité maximale (`max vitesse`) des déplacements.
+
+- [x] **Adaptation au mobile** : Nous avons optimisé le jeu pour une expérience fluide sur les appareils mobiles. Cela
+  inclut une gestion spécifique des contrôles tactiles et une interface utilisateur adaptée aux petits écrans.
+
+- [x] **Compatibilité navigateur** : Pour assurer une expérience utilisateur homogène, nous recommandons de jouer sur
+  Chrome ou tout autre navigateur basé sur Chromium. Firefox présente des problèmes de gestion des configurations clavier
+  (AZERTY/QWERTY) qui peuvent affecter le gameplay.
+
+- [x] **Difficultés avec Blender** : L'utilisation de Blender pour la modélisation a présenté des défis techniques en
+  raison de sa complexité, notamment dans la création et la manipulation des matériaux. Cela a nécessité une courbe
+  d'apprentissage supplémentaire pour s'adapter efficacement à l'outil.
 
