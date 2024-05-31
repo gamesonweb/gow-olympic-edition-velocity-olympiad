@@ -32,8 +32,8 @@ export class Sign implements SceneComponent {
         const advancedTexture = this.advancedTexture;
 
         const rect = new GUI.Rectangle();
-        rect.width = 0.2;
-        rect.height = "40px";
+        rect.width = this.text.length * 200 + "px"; // Largeur du panneau en fonction de la longueur du texte
+        rect.height = "100px";
         rect.top = "50px";
         rect.cornerRadius = 20;
         rect.color = "rgba(245, 245, 245, 0.8)"; // Couleur légèrement translucide pour simuler le marbre
@@ -43,15 +43,15 @@ export class Sign implements SceneComponent {
 
         const label = new GUI.TextBlock();
         label.text = this.text;
-        label.color = "black"; // Texte en noir pour le contraste
+        label.color = "black";
         label.fontSize = 24;
-        label.fontStyle = "italic"; // Style italique pour une touche classique
-        label.fontFamily = "Georgia, serif"; // Utiliser une police classique qui évoque l'écriture grecque antique
+        label.fontStyle = "italic";
+        label.fontFamily = "Greconian";
         label.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER; // Centrer le texte horizontalement
         label.textVerticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_CENTER; // Centrer le texte verticalement
-        rect.addControl(label);
+        label.textWrapping = true; // Activer le retour à la ligne automatique
 
-        rect.width = this.text.length * 0.01; // Ajuster la largeur du panneau en fonction de la longueur du texte
+        rect.addControl(label);
 
         rect.isVisible = false; // Définir le panneau comme invisible initialement
 
@@ -60,11 +60,14 @@ export class Sign implements SceneComponent {
 
         // Before rendering the scene, show the sign if the camera is close enough
         this.scene.registerBeforeRender(() => {
+            if (this.scene.player.ui)
+
+
+
             if (this.scene.activeCamera) {
                 let camera = this.scene.activeCamera;
                 let distanceToShow = 10;
                 let distanceFromCamera = Vector3.Distance(camera.position, this.position);
-
                 if (distanceFromCamera < distanceToShow) {
                     rect.isVisible = true;
                 } else {

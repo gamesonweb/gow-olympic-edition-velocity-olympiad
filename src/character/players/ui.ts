@@ -1,5 +1,5 @@
 import {AdvancedDynamicTexture, Button, Control, Grid, Image, Rectangle, StackPanel, TextBlock} from "@babylonjs/gui";
-import {Effect, PostProcess, Scene, Sound} from "@babylonjs/core";
+import {Effect, Engine, PostProcess, Scene, Sound} from "@babylonjs/core";
 import {ICard} from "../../gameObjects/Card/ICard";
 import {RareteCard} from "../../gameObjects/Card/RareteCard";
 import {OlympiadScene} from "../../scenes/OlympiadScene.ts";
@@ -31,7 +31,8 @@ export class Hud {
     public downBtn!: Button;
     // public spaceBtn!: Button;
     //Sounds
-    public quitSfx!: Sound;
+    private pauseSound: Sound;
+    private gameSound: Sound;
     // keyboard
     public isAzerty: boolean | null = null;
     private _scene: Scene;
@@ -41,13 +42,10 @@ export class Hud {
 
     //Animated UI sprites
     private _sparklerLife!: Image;
-
-
     private _playerUI!: AdvancedDynamicTexture;
     private _pauseMenu!: Rectangle;
     private _controls!: Rectangle;
-    private _sfx!: Sound;
-    private _pause!: Sound;
+
     //ICard Menu
     private _cardMenuStackPanel!: StackPanel;
     private _activeCardStackPanel!: StackPanel;
@@ -126,8 +124,7 @@ export class Hud {
             this.gamePaused = true;
 
             //--SOUNDS--
-            // this._scene.getSoundByName("gameSong")!.pause();
-            // this._pause.play(); //play pause music
+            this.lauchPauseSound();
         });
 
         //popup tutorials + hint
@@ -173,8 +170,7 @@ export class Hud {
         this._createLevelSelectorMenu();
         this._loadSounds(this._scene);
 
-        this._disablePointerLockOnPause();
-        this.startTimer();
+
         this._scene.onBeforeRenderObservable.add(() => {
             this.updateHud();
             this._disablePointerLockOnPause();
@@ -282,24 +278,6 @@ export class Hud {
             grid.addControl(upBtn, 0, 1);
             grid.addControl(downBtn, 1, 1);
 
-            // Add a new container for the space button to ensure it's not overlapping
-            // const spaceContainer = new Rectangle();
-            // spaceContainer.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
-            // spaceContainer.verticalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
-            // spaceContainer.height = 0.2;
-            // spaceContainer.width = 0.2;
-            // spaceContainer.left = "-2%";
-            // spaceContainer.top = "-2%";
-            // spaceContainer.thickness = 0;
-            // playerUI.addControl(spaceContainer);
-
-            // const spaceBtn = Button.CreateImageOnlyButton("space", "./sprites/rectSpaceBtn.png");
-            // spaceBtn.thickness = 0;
-            // spaceBtn.alpha = 0.8;
-            // spaceBtn.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
-            // this.spaceBtn = spaceBtn;
-            //
-            // spaceContainer.addControl(spaceBtn); // Adding the space button to the new container
         }
 
         this._createICardMenu();
@@ -613,13 +591,9 @@ export class Hud {
             this._startTime = new Date().getTime();
 
             //--SOUNDS--
-            // this._scene.getSoundByName("gameSong")!.play();
-            // this._pause.stop();
+            // this._scene.getSoundByName("")!.play();
+            this.lauchGameSound();
 
-            // if(this._sparkWarningSfx.isPaused) {
-            //     this._sparkWarningSfx.play();
-            // }
-            // this._sfx.play(); //play transition sound
         });
 
         const controlsBtn = Button.CreateSimpleButton("controls", "CONTROLS");
@@ -642,8 +616,27 @@ export class Hud {
             this._controls.isVisible = true;
             this._pauseMenu.isVisible = false;
 
-            //play transition sound
-            this._sfx.play();
+        });
+
+
+        // restart button
+        const restartBtn = Button.CreateSimpleButton("restart", "RESTART");
+        restartBtn.width = 0.18;
+        restartBtn.height = "44px";
+        restartBtn.color = "white";
+        restartBtn.fontFamily = "Viga";
+        restartBtn.paddingBottom = "14px";
+        restartBtn.cornerRadius = 14;
+        restartBtn.fontSize = "12px";
+        resumeBtn.textBlock!.resizeToFit = true;
+        restartBtn.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+        restartBtn.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+        stackPanel.addControl(restartBtn);
+
+        //when the button is down, make menu invisable and remove control of the menu
+        restartBtn.onPointerDownObservable.add(() => {
+            //open controls screen
+            this.restartGame();
         });
 
 
@@ -672,19 +665,6 @@ export class Hud {
         });
 
 
-        const quitBtn = Button.CreateSimpleButton("quit", "QUIT");
-        quitBtn.width = 0.18;
-        quitBtn.height = "44px";
-        quitBtn.color = "white";
-        quitBtn.fontFamily = "Viga";
-        quitBtn.paddingBottom = "12px";
-        quitBtn.cornerRadius = 14;
-        quitBtn.fontSize = "12px";
-        resumeBtn.textBlock!.resizeToFit = true;
-        quitBtn.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
-        quitBtn.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
-        stackPanel.addControl(quitBtn);
-
         //set up transition effect
         Effect.RegisterShader("fade",
             "precision highp float;" +
@@ -698,19 +678,7 @@ export class Hud {
             "}");
         this.fadeLevel = 1.0;
 
-        quitBtn.onPointerDownObservable.add(() => {
-            const postProcess = new PostProcess("Fade", "fade", ["fadeLevel"], null, 1.0, this._scene.getCameraByName("cam"));
-            postProcess.onApply = (effect) => {
-                effect.setFloat("fadeLevel", this.fadeLevel);
-            };
-            this.transition = true;
 
-            //--SOUNDS--
-            this.quitSfx.play();
-            if (this._pause.isPlaying) {
-                this._pause.stop();
-            }
-        })
     }
 
 
@@ -755,8 +723,6 @@ export class Hud {
             this._pauseMenu.isVisible = true;
             this._controls.isVisible = false;
 
-            //play transition sound
-            this._sfx.play();
         });
     }
 
@@ -794,8 +760,7 @@ export class Hud {
         backBtn.onPointerDownObservable.add(() => {
             this._pauseMenu.isVisible = true;
             this._levelSelector.isVisible = false;
-            //play transition sound
-            this._sfx.play();
+
         });
 
         //level buttons
@@ -833,7 +798,6 @@ export class Hud {
 
 // Function to restart the game
     private restartGame(): void {
-
         let olympiaScene = <OlympiadScene>this._scene;
         olympiaScene.restart();
         this.gamePaused = false;
@@ -841,17 +805,47 @@ export class Hud {
 
     //load all sounds needed for game ui interactions
     private _loadSounds(scene: Scene): void {
-        this._pause = new Sound("pauseSong", "./sounds/Snowland.wav", scene, function () {
-        }, {
-            volume: 0.2
+        this.gameSound = new Sound("game", "./sounds/game.wav", scene, null, {
+            loop: true,
+            autoplay: true,
+            volume: 0.1
+        });
+        this.pauseSound = new Sound("pause", "./sounds/pause.wav", scene, null, {
+            loop: true,
+            autoplay: false,
+            volume: 0.1
         });
 
-        this._sfx = new Sound("selection", "./sounds/vgmenuselect.wav", scene, function () {
-        });
+        Engine.audioEngine.useCustomUnlockedButton = true;
 
-        this.quitSfx = new Sound("quit", "./sounds/Retro Event UI 13.wav", scene, function () {
-        });
+        // Unlock audio on first user interaction.
+        window.addEventListener(
+            "click",
+            () => {
+                if (!Engine.audioEngine.unlocked) {
+                    Engine.audioEngine.unlock();
+                }
+            },
+            {once: true},
+        );
 
+
+    }
+
+
+    private lauchGameSound(): void {
+        this.gameSound.play();
+        this.gameSound.loop = true;
+        this.gameSound.setVolume(0.1);
+        this.pauseSound.stop()
+
+    }
+
+    private lauchPauseSound(): void {
+        this.pauseSound.play();
+        this.pauseSound.loop = true;
+        this.pauseSound.setVolume(0.1);
+        this.gameSound.pause();
     }
 
     private _prepareMobileScreen(): void {
