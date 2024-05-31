@@ -11,6 +11,7 @@ import {
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import {SceneComponent} from "../../scenes/SceneComponent";
+import {OlympiadScene} from "../../scenes/OlympiadScene.ts";
 
 export class TempleTorch extends SceneComponent implements GameObject {
     private scene: Scene;
@@ -84,6 +85,8 @@ export class TempleTorch extends SceneComponent implements GameObject {
         this.mesh.forEach((mesh) => {
             if (mesh.name === "Fire") {
                 mesh.isVisible = true;
+                let actualScene = this.scene as OlympiadScene;
+                actualScene.player.ui.showWinPanel();
             }
         });
     };

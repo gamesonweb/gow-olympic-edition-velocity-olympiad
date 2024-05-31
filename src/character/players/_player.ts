@@ -406,6 +406,10 @@ export class Player extends SceneComponent implements GameObject {
         return this._aggregate.body.getLinearVelocity().y < 0; // If velocity along Y-axis is negative, it's falling
     }
 
+    public get ui(): Hud {
+        return this._ui;
+    }
+
     private _callbackBeforeRenderScene(): void {
         // bloquer la rotation
         this.mesh.rotation = Vector3.Zero();
