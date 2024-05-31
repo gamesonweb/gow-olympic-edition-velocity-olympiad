@@ -34,11 +34,14 @@ export class Level1Scene extends OlympiadScene {
     constructor(engine: Engine, playerState: PlayerState) {
 
         super(engine);
+        playerState;
 
         this.enemyManager = new Level1EnemyManager(this);
         this.addComponent(this.enemyManager); // Ainsi, le manager sera détruit avec la scène
 
-        this.player = new Player(playerState, this);
+        let newPlayerState = new PlayerState();
+
+        this.player = new Player(newPlayerState, this);
 
     }
 
