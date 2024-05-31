@@ -120,7 +120,9 @@ export class Player extends SceneComponent implements GameObject {
     _dash(): void {
         let direction = this._getCameraDirection();
         this._isdashing = true;
-        this._oldSpeedCap = this._speedCap;
+        if (this._speedCap<299) {
+            this._oldSpeedCap = this._speedCap;
+        }
         this._speedCap = 300;
         setTimeout(() => {
             this._speedCap = this._oldSpeedCap;
@@ -307,6 +309,12 @@ export class Player extends SceneComponent implements GameObject {
 
     }
 
+    private _dashColideYGlitch(): void {
+        if (this._aggregate.body.getLinearVelocity().y > 40) {
+            this._aggregate.body.setLinearVelocity(new Vector3(this._aggregate.body.getLinearVelocity().x, 40, this._aggregate.body.getLinearVelocity().z));
+        }
+    }
+
     private _jump(): void {
         if (!this.isOnGround) return;
         // Intensify the gravity to make the jump more realistic
@@ -472,6 +480,7 @@ export class Player extends SceneComponent implements GameObject {
                 this._scene.getPhysicsEngine()?.setGravity(this._normalGravity);
             }
         }
+        this._dashColideYGlitch();
         // this._input.resetInputMap();
         console.log(" x :", this.position._x," y :", this.position._y," z :", this.position._z);
     }
