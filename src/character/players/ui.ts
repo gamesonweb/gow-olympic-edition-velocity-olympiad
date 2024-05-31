@@ -1,5 +1,5 @@
 import {AdvancedDynamicTexture, Button, Control, Grid, Image, Rectangle, StackPanel, TextBlock} from "@babylonjs/gui";
-import {Effect, Engine, PostProcess, Scene, Sound} from "@babylonjs/core";
+import {Effect, Engine, Scene, Sound} from "@babylonjs/core";
 import {ICard} from "../../gameObjects/Card/ICard";
 import {RareteCard} from "../../gameObjects/Card/RareteCard";
 import {OlympiadScene} from "../../scenes/OlympiadScene.ts";
@@ -30,11 +30,11 @@ export class Hud {
     public upBtn!: Button;
     public downBtn!: Button;
     // public spaceBtn!: Button;
-    //Sounds
-    private pauseSound: Sound;
-    private gameSound: Sound;
     // keyboard
     public isAzerty: boolean | null = null;
+    //Sounds
+    private pauseSound!: Sound;
+    private gameSound!: Sound;
     private _scene: Scene;
     private _clockTime: TextBlock | null = null; //GAME TIME
     private _startTime!: number;
@@ -49,8 +49,8 @@ export class Hud {
     //ICard Menu
     private _cardMenuStackPanel!: StackPanel;
     private _activeCardStackPanel!: StackPanel;
-    private _levelSelector: StackPanel;
-    private _winPanel: Rectangle;
+    private _levelSelector!: Rectangle;
+    private _winPanel!: Rectangle;
 
     constructor(scene: Scene) {
         this._scene = scene;
@@ -462,6 +462,15 @@ export class Hud {
 
     //---- Sparkler Timers ----
 
+    public showWinPanel(): void {
+        this._winPanel.isVisible = true;
+        this._playerUI.addControl(this._winPanel);
+        this._pauseMenu.isVisible = false;
+        // Mettre le jeu en pause
+        this.gamePaused = true;
+
+    }
+
     private _createICardMenu(): void {
         this._cardMenuStackPanel = new StackPanel("cardMenuStackPanel");
         this._cardMenuStackPanel.width = "180px"; // La largeur du stack panel
@@ -525,7 +534,6 @@ export class Hud {
         };
     }
 
-
     private _unlockPointer(): void {
         const canvas: HTMLCanvasElement = <HTMLCanvasElement>this._scene.getEngine().getRenderingCanvas();
         document.exitPointerLock();
@@ -546,6 +554,9 @@ export class Hud {
             this._lockPointer();
         }
     }
+
+
+    //---- Level selector Menu Popup ----
 
     //---- Pause Menu Popup ----
     private _createPauseMenu(): void {
@@ -663,8 +674,6 @@ export class Hud {
             this._levelSelector.isVisible = true;
             this._pauseMenu.isVisible = false;
 
-            //play transition sound
-            this._sfx.play();
         });
 
 
@@ -683,9 +692,6 @@ export class Hud {
 
 
     }
-
-
-    //---- Level selector Menu Popup ----
 
     //---- Controls Menu Popup ----
     private _createControlsMenu(): void {
@@ -765,17 +771,6 @@ export class Hud {
 
 
     }
-
-
-    public showWinPanel(): void {
-        this._winPanel.isVisible = true;
-        this._playerUI.addControl(this._winPanel);
-        this._pauseMenu.isVisible = false;
-        // Mettre le jeu en pause
-        this.gamePaused = true;
-
-    }
-
 
     private _createLevelSelectorMenu(): void {
         const levelSelector = new Rectangle();
@@ -866,23 +861,24 @@ export class Hud {
             autoplay: false,
             volume: 0.1
         });
-
+        if(Engine.audioEngine){
         Engine.audioEngine.useCustomUnlockedButton = true;
 
         // Unlock audio on first user interaction.
         window.addEventListener(
             "click",
             () => {
+                if(Engine.audioEngine){
                 if (!Engine.audioEngine.unlocked) {
                     Engine.audioEngine.unlock();
-                }
+                }}
             },
             {once: true},
         );
+        }
 
 
     }
-
 
     private lauchGameSound(): void {
         if (this.pauseSound.isPlaying) {

@@ -14,15 +14,15 @@ import {SceneComponent} from "../../scenes/SceneComponent";
 import {OlympiadScene} from "../../scenes/OlympiadScene.ts";
 
 export class TempleTorch extends SceneComponent implements GameObject {
+    public fireball: Nullable<Mesh>;
+    canActOnCollision: boolean; // If true, the object will call onCollisionCallback() when it collides with another object
+    canDetectCollision: boolean; // If true, the object will call detectCollision() to check for collisions with other objects
     private scene: Scene;
     private position: Vector3;
     private rotation: Vector3;
     private scale: Vector3;
     private mesh: Mesh[];
     private body: PhysicsBody[];
-    public fireball: Nullable<Mesh>;
-    canActOnCollision: boolean; // If true, the object will call onCollisionCallback() when it collides with another object
-    canDetectCollision: boolean; // If true, the object will call detectCollision() to check for collisions with other objects
 
     constructor(scene: Scene, position: Vector3, rotation: Vector3, scale = new Vector3(1, 1, 1)) {
         super();
@@ -81,7 +81,7 @@ export class TempleTorch extends SceneComponent implements GameObject {
     }
 
     onCollisionCallback(gameObject: GameObject) {
-    gameObject;
+        gameObject;
         this.mesh.forEach((mesh) => {
             if (mesh.name === "Fire") {
                 mesh.isVisible = true;
@@ -96,7 +96,7 @@ export class TempleTorch extends SceneComponent implements GameObject {
         return;
     }
 
-    updateState(): void{
+    updateState(): void {
         return;
     }
 }

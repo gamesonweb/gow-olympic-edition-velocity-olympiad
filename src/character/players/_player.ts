@@ -35,7 +35,6 @@ export class Player extends SceneComponent implements GameObject {
     public canDetectCollision: boolean = true;
     public _isdashing: boolean = false;
     private isOnGround: boolean = true;
-    private _ui: Hud;
     private _aggregate!: PhysicsAggregate;
     private _light!: HemisphericLight;
     private _camera!: UniversalCamera;
@@ -58,8 +57,6 @@ export class Player extends SceneComponent implements GameObject {
     private _oldSpeedCap: number = 30;
     private hp: number = 100;
 
-    // that detects collision on the player
-
     constructor(playerState: PlayerState, scene: Scene) {
         super();
         this._scene = scene;
@@ -68,6 +65,14 @@ export class Player extends SceneComponent implements GameObject {
         this._input = new PlayerInput(scene, ui);
         this.playerState = playerState;
         this._initialPosition = Vector3.Zero();
+    }
+
+    // that detects collision on the player
+
+    private _ui: Hud;
+
+    public get ui(): Hud {
+        return this._ui;
     }
 
     get cardList() {
@@ -120,7 +125,7 @@ export class Player extends SceneComponent implements GameObject {
     _dash(): void {
         let direction = this._getCameraDirection();
         this._isdashing = true;
-        if (this._speedCap<299) {
+        if (this._speedCap < 299) {
             this._oldSpeedCap = this._speedCap;
         }
         this._speedCap = 300;
@@ -197,7 +202,6 @@ export class Player extends SceneComponent implements GameObject {
         if (!this.cardList || this.cardList.length == 0) return null;
         return this.cardList[this.cardList.length - 1];
     }
-
 
     private _swapToNextCard(): void {
         if (!this.cardList || this.cardList.length == 0) return;
@@ -288,7 +292,6 @@ export class Player extends SceneComponent implements GameObject {
         }
     }
 
-
     private _turnLeft(): void {
         let direction: Vector3 = this._getCameraDirection().cross(Vector3.Up());
         // this.rotation.y = Math.atan2(direction.x, direction.z);
@@ -322,7 +325,6 @@ export class Player extends SceneComponent implements GameObject {
         this.isOnGround = false;
     }
 
-
     private _castSpell(n: number): void {
 
 
@@ -351,6 +353,8 @@ export class Player extends SceneComponent implements GameObject {
 
     }
 
+    //--GROUND DETECTION--
+
     private _getCameraDirection(): Vector3 {
         let forwardRay = this._camera.getForwardRay();
         let direction = forwardRay.direction.normalize();
@@ -359,7 +363,6 @@ export class Player extends SceneComponent implements GameObject {
         return direction;
     }
 
-    //--GROUND DETECTION--
     //Send raycast to the floor to detect if there are any hits with meshes below the character
     private _floorRaycast(offsets: {
         x: Nullable<number>,
@@ -404,10 +407,6 @@ export class Player extends SceneComponent implements GameObject {
 
     private _isPlayerFalling(): boolean {
         return this._aggregate.body.getLinearVelocity().y < 0; // If velocity along Y-axis is negative, it's falling
-    }
-
-    public get ui(): Hud {
-        return this._ui;
     }
 
     private _callbackBeforeRenderScene(): void {

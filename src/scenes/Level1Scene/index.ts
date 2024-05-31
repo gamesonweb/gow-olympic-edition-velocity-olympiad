@@ -21,8 +21,8 @@ import {FlammeCard} from "../../gameObjects/Card/armes/FlammeCard";
 import {JumpCard} from "../../gameObjects/Card/armes/JumpCard";
 import {RareteCard} from "../../gameObjects/Card/RareteCard";
 import {CardSocle} from "../../gameObjects/Card/CardSocle";
-import { Wall } from "../../gameObjects/Wall";
-import { TempleTorch} from "../../gameObjects/TempleTorch";
+import {Wall} from "../../gameObjects/Wall";
+import {TempleTorch} from "../../gameObjects/TempleTorch";
 
 export class Level1Scene extends OlympiadScene {
     protected readonly enemyManager: Level1EnemyManager;
@@ -116,7 +116,7 @@ export class Level1Scene extends OlympiadScene {
 
         //Adding Destructable Walls and Cards
 
-        let Cards =[
+        let Cards = [
             {card: new JumpCard(RareteCard.RARE), position: new Vector3(-11, 8.5, -33)},
             {card: new FlammeCard(RareteCard.RARE), position: new Vector3(-11, 8.5, -33)},
             {card: new FlammeCard(RareteCard.COMMON), position: new Vector3(-42, 10.5, -155)},
@@ -130,10 +130,10 @@ export class Level1Scene extends OlympiadScene {
         ]
 
         let destructableWalls = [
-            {wall : new Wall(this,new Vector3(-30, 10.5, -206), 120, 40, new Vector3(0, -Math.PI/5, 0))},
-            {wall : new Wall(this,new Vector3(35, 12.5, -350), 160, 40, new Vector3(0, -Math.PI/5, 0))},
-            {wall : new Wall(this,new Vector3(261, 15.5, -553), 150, 40, new Vector3(0, Math.PI/4, 0))},
-            {wall : new Wall(this,new Vector3(972, 56, -697), 150, 40, new Vector3(0, Math.PI*5/6, 0))},
+            {wall: new Wall(this, new Vector3(-30, 10.5, -206), 120, 40, new Vector3(0, -Math.PI / 5, 0))},
+            {wall: new Wall(this, new Vector3(35, 12.5, -350), 160, 40, new Vector3(0, -Math.PI / 5, 0))},
+            {wall: new Wall(this, new Vector3(261, 15.5, -553), 150, 40, new Vector3(0, Math.PI / 4, 0))},
+            {wall: new Wall(this, new Vector3(972, 56, -697), 150, 40, new Vector3(0, Math.PI * 5 / 6, 0))},
         ]
 
         let ennemyPositions = [
@@ -144,7 +144,7 @@ export class Level1Scene extends OlympiadScene {
             new Vector3(929, 56, -640)
         ]
 
-        let templeFin : TempleTorch = new TempleTorch(this, new Vector3(1100, 58, -1000), new Vector3(0, Math.PI*3/2, 0), new Vector3(1, 1, 1));
+        let templeFin: TempleTorch = new TempleTorch(this, new Vector3(1100, 58, -1000), new Vector3(0, Math.PI * 3 / 2, 0), new Vector3(1, 1, 1));
         this.addComponent(templeFin);
         this.addGameObject(templeFin);
 

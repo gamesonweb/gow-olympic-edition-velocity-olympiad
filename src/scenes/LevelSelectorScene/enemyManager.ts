@@ -1,4 +1,4 @@
-import {Scene,Vector3} from "@babylonjs/core";
+import {Scene, Vector3} from "@babylonjs/core";
 import {EnemyManager} from "../EnemyManager.ts";
 import {DistanceEnemy} from "../../character/enemy/distance";
 import {OlympiadScene} from "../OlympiadScene";

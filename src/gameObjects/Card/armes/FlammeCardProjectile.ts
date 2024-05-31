@@ -14,7 +14,7 @@ import {
 import {SceneComponent} from "../../../scenes/SceneComponent.ts";
 import {Wall} from "../../Wall";
 import {DistanceEnemy} from "../../../character/enemy/distance.ts";
-import { TempleTorch } from "../../TempleTorch/index.ts";
+import {TempleTorch} from "../../TempleTorch/index.ts";
 
 export class FlammeCardProjectile extends SceneComponent implements GameObject {
     canActOnCollision: boolean = true;
@@ -110,7 +110,7 @@ export class FlammeCardProjectile extends SceneComponent implements GameObject {
                     this.destroy();
                 }
             }
-            
+
 
             if (gameObject instanceof DistanceEnemy) {
                 if (!this._mesh) break;
