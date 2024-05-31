@@ -54,10 +54,11 @@ export class OlympiadScene extends Scene {
             for (let key in this.modelsLoaded) {
                 if (!this.modelsLoaded[key]) {
                     sceneReady = false;
-                    console.log("key: ", key)
                     break;
                 }
             }
+            console.log("sceneReady", sceneReady);
+            console.log("modelsLoaded", this.modelsLoaded);
             this._gameObjects.forEach((gameObject) => {
                 if (gameObject && gameObject.canDetectCollision) {
                     gameObject.detectCollision(this._gameObjects);
