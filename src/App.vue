@@ -35,8 +35,6 @@ Préparez-vous à vivre une aventure palpitante, où chaque choix que vous ferez
 
     const levelSelectorScene = new LevelSelectorScene(sceneManager.engine, sceneManager.playerState);
 
-
-    levelSelectorScene.init().then(() => {
     levelSelectorScene.init().then(() => {
       sceneManager.renderScene();
     });
