@@ -1,46 +1,26 @@
 import {AdvancedDynamicTexture, Button, Control, Grid, Image, Rectangle, StackPanel, TextBlock} from "@babylonjs/gui";
-import {Effect, ParticleSystem, PostProcess, Scene, Sound} from "@babylonjs/core";
+import {Effect, Engine, Scene, Sound} from "@babylonjs/core";
 import {ICard} from "../../gameObjects/Card/ICard";
 import {RareteCard} from "../../gameObjects/Card/RareteCard";
+import {OlympiadScene} from "../../scenes/OlympiadScene.ts";
+import {LevelSelectorScene} from "../../scenes/LevelSelectorScene";
+import {PlayerState} from "./index.ts";
 
 export class Hud {
-    private _scene: Scene;
-
     //Game Timer
     public time!: number; //keep track to signal end game REAL TIME
-    private _prevTime: number = 0;
-    private _clockTime: TextBlock | null = null; //GAME TIME
-    private _startTime!: number;
-    private _stopTimer!: boolean;
-    private _sString = "00";
-    private _mString = 11;
-    private _lanternCnt!: TextBlock;
-
-    //Animated UI sprites
-    private _sparklerLife!: Image;
-    private _spark!: Image;
-
     //Timer handlers
     public stopSpark!: boolean;
-    private _handle!: NodeJS.Timeout;
-    private _sparkhandle!: NodeJS.Timeout;
-
     //Pause toggle
     public gamePaused!: boolean;
-
     //Quit game
     public quit!: boolean;
     public transition: boolean = false;
-
     //UI Elements
     public pauseBtn!: Button;
     public fadeLevel!: number;
-    private _playerUI!: AdvancedDynamicTexture;
-    private _pauseMenu!: Rectangle;
-    private _controls!: Rectangle;
     public tutorial!: Rectangle;
     public hint!: Rectangle;
-
     //Mobile
     public isMobile!: boolean;
     public jumpBtn!: Button;
@@ -49,19 +29,34 @@ export class Hud {
     public rightBtn!: Button;
     public upBtn!: Button;
     public downBtn!: Button;
-
+    // public spaceBtn!: Button;
+    // keyboard
+    public isAzerty: boolean | null = null;
     //Sounds
-    public quitSfx!: Sound;
-    private _sfx!: Sound;
-    private _pause!: Sound;
-    private _sparkWarningSfx!: Sound;
+    private pauseSound!: Sound;
+    private gameSound!: Sound;
+    private jumpSFX!: Sound;
+    private DashSFX!: Sound;
+    private FireballSFX!: Sound;
+
+    private _scene: Scene;
+    private _clockTime: TextBlock | null = null; //GAME TIME
+    private _startTime!: number;
+    private _stopTimer!: boolean;
+
+    //Animated UI sprites
+    private _sparklerLife!: Image;
+    private _playerUI!: AdvancedDynamicTexture;
+    private _pauseMenu!: Rectangle;
+    private _controls!: Rectangle;
 
     //ICard Menu
     private _cardMenuStackPanel!: StackPanel;
     private _activeCardStackPanel!: StackPanel;
+    private _levelSelector!: Rectangle;
+    private _winPanel!: Rectangle;
+    
 
-    // keyboard
-    public isAzerty: boolean | null = null;
     constructor(scene: Scene) {
         this._scene = scene;
     }
@@ -76,21 +71,6 @@ export class Hud {
             this.isAzerty = navigator.language === "fr-FR";
         }
 
-        const lanternCnt = new TextBlock();
-        lanternCnt.name = "Piece count";
-        lanternCnt.textVerticalAlignment = TextBlock.VERTICAL_ALIGNMENT_CENTER;
-        lanternCnt.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
-        lanternCnt.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
-        lanternCnt.fontSize = "22px";
-        lanternCnt.color = "white";
-        lanternCnt.text = "Pièces: 1 / 22";
-        lanternCnt.top = "32px";
-        lanternCnt.left = "-64px";
-        lanternCnt.width = "25%";
-        lanternCnt.fontFamily = "Viga";
-        lanternCnt.resizeToFit = true;
-        playerUI.addControl(lanternCnt);
-        this._lanternCnt = lanternCnt;
 
         const stackPanel = new StackPanel();
         stackPanel.height = "100%";
@@ -129,20 +109,6 @@ export class Hud {
         playerUI.addControl(sparklerLife);
         this._sparklerLife = sparklerLife;
 
-        const spark = new Image("spark", "./sprites/spark.png");
-        spark.width = "40px";
-        spark.height = "40px";
-        spark.cellId = 0;
-        spark.cellHeight = 20;
-        spark.cellWidth = 20;
-        spark.sourceWidth = 20;
-        spark.sourceHeight = 20;
-        spark.horizontalAlignment = 0;
-        spark.verticalAlignment = 0;
-        spark.left = "21px";
-        spark.top = "20px";
-        playerUI.addControl(spark);
-        this._spark = spark;
 
         const pauseBtn = Button.CreateImageOnlyButton("pauseBtn", "./sprites/pauseBtn.png");
         pauseBtn.width = "48px";
@@ -162,11 +128,9 @@ export class Hud {
 
             //when game is paused, make sure that the next start time is the time it was when paused
             this.gamePaused = true;
-            this._prevTime = this.time;
 
             //--SOUNDS--
-            this._scene.getSoundByName("gameSong")!.pause();
-            this._pause.play(); //play pause music
+            this.lauchPauseSound();
         });
 
         //popup tutorials + hint
@@ -197,13 +161,7 @@ export class Hud {
         hint.isVisible = false;
         this._playerUI.addControl(hint);
         this.hint = hint;
-        //hint to the first lantern, will disappear once you light it
-        const lanternHint = new Image("lantern1", "sprites/arrowBtn.png");
-        lanternHint.rotation = Math.PI / 2;
-        lanternHint.stretch = Image.STRETCH_UNIFORM;
-        lanternHint.height = 0.8;
-        lanternHint.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
-        hint.addControl(lanternHint);
+
         const moveHint = new TextBlock("move", "Move Right");
         moveHint.color = "white";
         moveHint.fontSize = "12px";
@@ -215,10 +173,12 @@ export class Hud {
 
         this._createPauseMenu();
         this._createControlsMenu();
+        this._createLevelSelectorMenu();
+        this._createWinPanel();
         this._loadSounds(this._scene);
-
-        this._lockPointer();
         this.startTimer();
+
+
         this._scene.onBeforeRenderObservable.add(() => {
             this.updateHud();
             this._disablePointerLockOnPause();
@@ -226,6 +186,8 @@ export class Hud {
         //Check if Mobile, add button controls
         if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
             this.isMobile = true; // tells inputController to track mobile inputs
+
+            this._prepareMobileScreen();
 
             //tutorial image
             movementPC.isVisible = false;
@@ -329,6 +291,191 @@ export class Hud {
         this._createICardMenu();
     }
 
+    /**
+     * @deprecated This function will be removed in future versions. Use updateCardsStackPanel instead.
+     */
+    public addCardsToStackPanel(cards: ICard[]): void {
+        return this.updateCardsToStackPanel(cards);
+    }
+
+    public updateCardsToStackPanel(cards: ICard[]): void {
+        this._cardMenuStackPanel.clearControls();
+        let cardCountText = new TextBlock("cardCountText", `${cards.length}`);
+        cardCountText.color = "black";
+        cardCountText.fontSize = "32px";
+        cardCountText.paddingLeft = "5px"; // Espacement à gauche du nombre de cartes
+        cardCountText.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+        cardCountText.height = "40px";
+        this._cardMenuStackPanel.addControl(cardCountText);
+        if (cards.length > 0) {
+            let activeCardPosition = cards.length - 1;
+            let card = cards[activeCardPosition];
+            this.activeCard(card);
+            if (activeCardPosition > 0) {
+                let previousCard = cards[activeCardPosition - 1];
+                this.addCardToStackPanel(previousCard, 0);
+            }
+        } else {
+            this._activeCardStackPanel.clearControls();
+            this._cardMenuStackPanel.clearControls();
+        }
+
+
+    }
+
+    public addCardToStackPanel(card: ICard, index = 0): Control | undefined {
+        if (index > 0) {
+            return;
+        }
+        let nameofCard = card.name;
+        let stackUIImage = this._getStackUIImageFromRarete(card.rarete, nameofCard);
+        let cardImage = new Image("card", stackUIImage);
+        let width = "100px";
+        let height = "150px";
+        let paddingTop = (index == 0) ? "10px" : "0px";
+        let paddingBottom = (index == 0) ? "5px" : "0px";
+        let left = (index == 0) ? "0px" : index * -10 + "px";
+
+        cardImage.width = width; // La largeur de la carte
+        cardImage.height = height; // La hauteur de la carte
+        cardImage.paddingTop = paddingTop; // Espacement entre les cartes
+        cardImage.paddingTop = paddingBottom; // Espacement entre les cartes
+        cardImage.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
+        cardImage.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+        cardImage.left = left;
+        this._cardMenuStackPanel.addControl(cardImage);
+        return cardImage;
+    }
+
+    public activeCard(card: ICard): void {
+        this._activeCardStackPanel.clearControls();
+        let cardMeshName = card.name;
+        let cardActiveText = new TextBlock("cardActiveText", `${cardMeshName}`);
+        cardActiveText.color = "black";
+        cardActiveText.fontSize = "18px";
+        cardActiveText.paddingLeft = "5px"; // Espacement à gauche du nombre de cartes
+        cardActiveText.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+        cardActiveText.height = "20px";
+        this._activeCardStackPanel.addControl(cardActiveText);
+
+        // show car durabilite
+        let cardDurabiliteText = new TextBlock("cardDurabiliteText", `Durabilite: ${card.durabilite}`);
+        cardDurabiliteText.color = "black";
+        cardDurabiliteText.fontSize = "18px";
+        cardDurabiliteText.paddingLeft = "5px"; // Espacement à gauche du nombre de cartes
+        cardDurabiliteText.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+        cardDurabiliteText.height = "20px";
+        this._activeCardStackPanel.addControl(cardDurabiliteText);
+
+
+        let stackUIImage = this._getStackUIImageFromRarete(card.rarete, cardMeshName);
+        let cardImage = new Image("card", stackUIImage);
+        cardImage.width = "200px";
+        cardImage.height = "300px";
+        cardImage.paddingTop = "10px";
+        cardImage.paddingTop = "5px";
+        this._activeCardStackPanel.addControl(cardImage);
+    }
+
+    public updateHud(): void {
+        if (!this._stopTimer && this._startTime != null) {
+            let curTime = new Date().getTime() - this._startTime;
+
+            // Convertir le temps écoulé en secondes et millisecondes
+            let seconds = Math.floor(curTime / 1000);
+            let milliseconds = curTime % 1000;
+
+            milliseconds = Math.floor(milliseconds / 10); // Arrondir à deux chiffres
+
+            // Mettre à jour le temps écoulé
+            this.time = curTime;
+
+            // Mettre à jour l'affichage
+            // Formater les millisecondes avec trois chiffres
+            let formattedMilliseconds = ("00" + milliseconds).slice(-2);
+            this._clockTime!.text = `${seconds}.${formattedMilliseconds}`;
+        }
+    }
+
+
+    //---- Game Timer ----
+    public startTimer(): void {
+        this._startTime = new Date().getTime();
+        this._stopTimer = false;
+    }
+
+    public stopTimer(): void {
+        this._stopTimer = true;
+    }
+
+
+    public GameOverOverlay(): void {
+
+        this.gamePaused = true;
+        this._disablePointerLockOnPause();
+        this.pauseBtn.isVisible = false;
+
+        // Create a rectangle to overlay the entire screen
+        const gameOverOverlay = new Rectangle("gameOverOverlay");
+        gameOverOverlay.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        gameOverOverlay.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+        gameOverOverlay.height = 1;
+        gameOverOverlay.width = 1;
+        gameOverOverlay.color = "black";
+        gameOverOverlay.alpha = 0.7; // Semi-transparent black
+        this._playerUI.addControl(gameOverOverlay);
+
+        // Add text displaying "Game Over"
+        const gameOverText = new TextBlock("gameOverText");
+        gameOverText.text = "Game Over";
+        gameOverText.color = "rgb(46,199,192)";
+        gameOverText.fontSize = "72px";
+        gameOverText.fontFamily = "Viga";
+        gameOverText.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+        // monter de 20px par rapport au centre
+        gameOverText.top = "-50px";
+        gameOverText.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        gameOverOverlay.addControl(gameOverText);
+
+
+        // Add a button to restart the game
+        const restartButton = Button.CreateSimpleButton("restart", "Restart Now");
+        restartButton.width = "250px";
+        restartButton.height = "100px";
+        restartButton.color = "black";
+        restartButton.fontFamily = "Viga";
+        restartButton.fontSize = "48px";
+        restartButton.cornerRadius = 10;
+        restartButton.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
+        restartButton.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        restartButton.paddingBottom = "20px";
+        gameOverOverlay.addControl(restartButton);
+
+        // Event listener for restart button
+        restartButton.onPointerUpObservable.add(() => {
+            this.startCountdown();
+        });
+
+        // Automatically start countdown
+        // this.startCountdown(countdownText);
+    }
+
+    updateHP(hp: number) {
+        if (!hp) return
+        this._sparklerLife.cellId = 10 - ((hp == 0) ? 0 : parseInt(`${hp / 10}`))
+    }
+
+    //---- Sparkler Timers ----
+
+    public showWinPanel(): void {
+        this._winPanel.isVisible = true;
+        this._playerUI.addControl(this._winPanel);
+        this._pauseMenu.isVisible = false;
+        // Mettre le jeu en pause
+        this.gamePaused = true;
+
+    }
+
     private _createICardMenu(): void {
         this._cardMenuStackPanel = new StackPanel("cardMenuStackPanel");
         this._cardMenuStackPanel.width = "180px"; // La largeur du stack panel
@@ -351,233 +498,70 @@ export class Hud {
         this._playerUI.addControl(this._activeCardStackPanel);
     }
 
-    private _getStackUIImageFromRarete(rareteCard: RareteCard): string {
-        console.log(rareteCard)
+    private _getStackUIImageFromRarete(rareteCard: RareteCard, nameofCard: string): string {
+
         let stackUIImage = "sprites/controls.jpeg"
         switch (rareteCard) {
             case RareteCard.COMMON:
-                stackUIImage = "sprites/cardPreview/TorchTextureGray.png";
+                stackUIImage = "sprites/cardPreview/" + nameofCard + "Gray.png";
                 break;
             case RareteCard.RARE:
-                stackUIImage = "sprites/cardPreview/TorchTextureBlue.png"
+                stackUIImage = "sprites/cardPreview/" + nameofCard + "Blue.png"
                 break;
             case RareteCard.EPIC:
-                stackUIImage = "sprites/cardPreview/TorchTexturePurple.png";
+                stackUIImage = "sprites/cardPreview/" + nameofCard + "Purple.png";
                 break;
             case RareteCard.LEGENDARY:
-                stackUIImage = "sprites/cardPreview/TorchTextureGold.png";
+                stackUIImage = "sprites/cardPreview/" + nameofCard + "Gold.png";
                 break;
         }
         return stackUIImage;
     }
 
-    /**
-     * @deprecated This function will be removed in future versions. Use updateCardsStackPanel instead.
-     */
-    public addCardsToStackPanel(cards: ICard[]): void {
-        return this.updateCardsToStackPanel(cards);
-    }
-
-    public updateCardsToStackPanel(cards: ICard[]): void {
-        this._cardMenuStackPanel.clearControls();
-        let cardCountText = new TextBlock("cardCountText", `${cards.length}`);
-        cardCountText.color = "black";
-        cardCountText.fontSize = "32px";
-        cardCountText.paddingLeft = "5px"; // Espacement à gauche du nombre de cartes
-        cardCountText.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
-        cardCountText.height = "40px";
-        this._cardMenuStackPanel.addControl(cardCountText);
-        if (cards.length > 0) {
-            let activeCardPosition = cards.length - 1;
-            let card = cards[activeCardPosition];
-            this.activeCard(card);
-            if (activeCardPosition > 0) {
-                let previousCard = cards[activeCardPosition-1];
-                this.addCardToStackPanel(previousCard, 0);
-            }
-        }else {
-            this._activeCardStackPanel.clearControls();
-            this._cardMenuStackPanel.clearControls();
-        }
-
-
-
-
-    }
-
-    public addCardToStackPanel(card: ICard, index = 0): Control | undefined {
-        if (index > 0) { return; }
-        let stackUIImage = this._getStackUIImageFromRarete(card.rarete);
-        let cardImage = new Image("card", stackUIImage);
-        let width = "100px";
-        let height = "150px";
-        let paddingTop = (index == 0)? "10px" : "0px";
-        let paddingBottom = (index == 0)? "5px" : "0px";
-        let left = (index == 0) ? "0px" : index * -10 + "px";
-
-        cardImage.width = width; // La largeur de la carte
-        cardImage.height = height; // La hauteur de la carte
-        cardImage.paddingTop = paddingTop; // Espacement entre les cartes
-        cardImage.paddingTop = paddingBottom; // Espacement entre les cartes
-        cardImage.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
-        cardImage.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
-        cardImage.left = left;
-        this._cardMenuStackPanel.addControl(cardImage);
-        return cardImage;
-    }
-
-    public activeCard(card: ICard): void {
-        this._activeCardStackPanel.clearControls();
-        let cardMeshName = card.meshname.split(".")[0];
-        let cardActiveText = new TextBlock("cardActiveText", `${cardMeshName}`);
-        cardActiveText.color = "black";
-        cardActiveText.fontSize = "18px";
-        cardActiveText.paddingLeft = "5px"; // Espacement à gauche du nombre de cartes
-        cardActiveText.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
-        cardActiveText.height = "20px";
-        this._activeCardStackPanel.addControl(cardActiveText);
-        let stackUIImage = this._getStackUIImageFromRarete(card.rarete);
-        let cardImage = new Image("card", stackUIImage);
-        cardImage.width = "200px";
-        cardImage.height = "300px";
-        cardImage.paddingTop = "10px";
-        cardImage.paddingTop = "5px";
-        this._activeCardStackPanel.addControl(cardImage);
-    }
-
     private _lockPointer(): void {
-        // When the element is clicked, request pointer lock
-        const canvas: HTMLCanvasElement = <HTMLCanvasElement> this._scene.getEngine().getRenderingCanvas();
-        canvas.onclick = function () {
-            let requestPointerLock = canvas.requestPointerLock ||
+        const canvas: HTMLCanvasElement = <HTMLCanvasElement>this._scene.getEngine().getRenderingCanvas();
+        canvas.onclick = () => {
+            const requestPointerLock = canvas.requestPointerLock ||
                 canvas.mozRequestPointerLock ||
                 canvas.webkitRequestPointerLock;
             if (requestPointerLock) {
-                console.log("requestPointerLock exists")
-                canvas.requestPointerLock = requestPointerLock;
-                // Ask the browser to lock the pointer
-                canvas.requestPointerLock();
-            } else {
-                console.log("Pointer lock not supported");
+                requestPointerLock.call(canvas);
+
+
+                // Créer et ajouter le cercle au centre de l'écran
+                const circle = new Image("circle", "sprites/circle.png");
+                circle.width = "40px";
+                circle.height = "40px";
+                circle.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+                circle.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+                this._playerUI.addControl(circle);
             }
         };
     }
 
+    private _unlockPointer(): void {
+        const canvas: HTMLCanvasElement = <HTMLCanvasElement>this._scene.getEngine().getRenderingCanvas();
+        document.exitPointerLock();
+        canvas.style.cursor = 'default';
+        canvas.style.position = 'static';
+        canvas.style.left = 'auto';
+        canvas.style.top = 'auto';
+        canvas.style.transform = 'none';
+
+
+    }
+
     private _disablePointerLockOnPause(): void {
-        const canvas: HTMLCanvasElement = <HTMLCanvasElement> this._scene.getEngine().getRenderingCanvas();
         if (this.gamePaused) {
-            canvas.requestPointerLock = () => { };
+            this._unlockPointer();
             this.stopTimer();
         } else {
-            if (document.pointerLockElement !== canvas) {
-                this._lockPointer();
-            }
+            this._lockPointer();
         }
     }
 
-    public updateHud(): void {
-        if (!this._stopTimer && this._startTime != null) {
-            let curTime = Math.floor((new Date().getTime() - this._startTime) / 1000) + this._prevTime; // divide by 1000 to get seconds
 
-            this.time = curTime; //keeps track of the total time elapsed in seconds
-            // this._clockTime!.text = this._formatTime(curTime);
-            this._clockTime!.text = ("0" + this._formatTime(curTime)).slice(-8);
-        }
-    }
-
-    public updateLanternCount(numLanterns: number): void {
-        this._lanternCnt.text = "Lanterns: " + numLanterns + " / 22";
-    }
-    //---- Game Timer ----
-    public startTimer(): void {
-        this._startTime = new Date().getTime();
-        this._stopTimer = false;
-    }
-    public stopTimer(): void {
-        this._stopTimer = true;
-    }
-
-    //format the time so that it is relative to 11:00 -- game time
-    private _formatTime(time: number): string {
-        let minsPassed = Math.floor(time / 60); //seconds in a min
-        let secPassed = time % 240; // goes back to 0 after 4mins/240sec
-        //gameclock works like: 4 mins = 1 hr
-        // 4sec = 1/15 = 1min game time
-        if (secPassed % 4 == 0) {
-            // this._mString = Math.floor(minsPassed / 4) + 11;
-            this._mString = Math.floor(minsPassed / 4);
-            this._sString = (secPassed / 4 < 10 ? "0" : "") + secPassed / 4;
-        }
-        let day = (this._mString == 11 ? " PM" : " AM");
-        return (this._mString + ":" + this._sString + day);
-    }
-
-    //---- Sparkler Timers ----
-    //start and restart sparkler, handles setting the texture and animation frame
-    public startSparklerTimer(sparkler: ParticleSystem): void {
-        //reset the sparkler timers & animation frames
-        this.stopSpark = false;
-        this._sparklerLife.cellId = 0;
-        this._spark.cellId = 0;
-        if (this._handle) {
-            clearInterval(this._handle);
-        }
-        if (this._sparkhandle) {
-            clearInterval(this._sparkhandle);
-        }
-        //--SOUNDS--
-        this._sparkWarningSfx.stop(); // if you restart the sparkler while this was playing (it technically would never reach cellId==10, so you need to stop the sound)
-
-        //reset the sparkler (particle system and light)
-        if (sparkler != null) {
-            sparkler.start();
-            this._scene.getLightByName("sparklight")!.intensity = 35;
-        }
-
-        //sparkler animation, every 2 seconds update for 10 bars of sparklife
-        this._handle = setInterval(() => {
-            if (!this.gamePaused) {
-                if (this._sparklerLife.cellId < 10) {
-                    this._sparklerLife.cellId++;
-                }
-                if (this._sparklerLife.cellId == 9) {
-                    this._sparkWarningSfx.play();
-                }
-                if (this._sparklerLife.cellId == 10) {
-                    this.stopSpark = true;
-                    clearInterval(this._handle);
-                    //sfx
-                    this._sparkWarningSfx.stop();
-                }
-            } else { // if the game is paused, also pause the warning SFX
-                this._sparkWarningSfx.pause();
-            }
-        }, 2000);
-
-        this._sparkhandle = setInterval(() => {
-            if (!this.gamePaused) {
-                if (this._sparklerLife.cellId < 10 && this._spark.cellId < 5) {
-                    this._spark.cellId++;
-                } else if (this._sparklerLife.cellId < 10 && this._spark.cellId >= 5) {
-                    this._spark.cellId = 0;
-                }
-                else {
-                    this._spark.cellId = 0;
-                    clearInterval(this._sparkhandle);
-                }
-            }
-        }, 185);
-    }
-
-    //stop the sparkler, resets the texture
-    public stopSparklerTimer(sparkler: ParticleSystem): void {
-        this.stopSpark = true;
-
-        if (sparkler != null) {
-            sparkler.stop();
-            this._scene.getLightByName("sparklight")!.intensity = 0;
-        }
-    }
+    //---- Level selector Menu Popup ----
 
     //---- Pause Menu Popup ----
     private _createPauseMenu(): void {
@@ -626,13 +610,9 @@ export class Hud {
             this._startTime = new Date().getTime();
 
             //--SOUNDS--
-            this._scene.getSoundByName("gameSong")!.play();
-            this._pause.stop();
+            // this._scene.getSoundByName("")!.play();
+            this.lauchGameSound();
 
-            if(this._sparkWarningSfx.isPaused) {
-                this._sparkWarningSfx.play();
-            }
-            this._sfx.play(); //play transition sound
         });
 
         const controlsBtn = Button.CreateSimpleButton("controls", "CONTROLS");
@@ -655,22 +635,52 @@ export class Hud {
             this._controls.isVisible = true;
             this._pauseMenu.isVisible = false;
 
-            //play transition sound
-            this._sfx.play();
         });
 
-        const quitBtn = Button.CreateSimpleButton("quit", "QUIT");
-        quitBtn.width = 0.18;
-        quitBtn.height = "44px";
-        quitBtn.color = "white";
-        quitBtn.fontFamily = "Viga";
-        quitBtn.paddingBottom = "12px";
-        quitBtn.cornerRadius = 14;
-        quitBtn.fontSize = "12px";
+
+        // restart button
+        const restartBtn = Button.CreateSimpleButton("restart", "RESTART");
+        restartBtn.width = 0.18;
+        restartBtn.height = "44px";
+        restartBtn.color = "white";
+        restartBtn.fontFamily = "Viga";
+        restartBtn.paddingBottom = "14px";
+        restartBtn.cornerRadius = 14;
+        restartBtn.fontSize = "12px";
         resumeBtn.textBlock!.resizeToFit = true;
-        quitBtn.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
-        quitBtn.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
-        stackPanel.addControl(quitBtn);
+        restartBtn.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+        restartBtn.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+        stackPanel.addControl(restartBtn);
+
+        //when the button is down, make menu invisable and remove control of the menu
+        restartBtn.onPointerDownObservable.add(() => {
+            //open controls screen
+            this.restartGame();
+        });
+
+
+        // level selection
+        const levelBtn = Button.CreateSimpleButton("level", "LEVELS");
+        levelBtn.width = 0.18;
+        levelBtn.height = "44px";
+        levelBtn.color = "white";
+        levelBtn.fontFamily = "Viga";
+        levelBtn.paddingBottom = "14px";
+        levelBtn.cornerRadius = 14;
+        levelBtn.fontSize = "12px";
+        resumeBtn.textBlock!.resizeToFit = true;
+        levelBtn.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+        levelBtn.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+        stackPanel.addControl(levelBtn);
+
+        //when the button is down, make menu invisable and remove control of the menu
+        levelBtn.onPointerDownObservable.add(() => {
+            //open controls screen
+            this._levelSelector.isVisible = true;
+            this._pauseMenu.isVisible = false;
+
+        });
+
 
         //set up transition effect
         Effect.RegisterShader("fade",
@@ -685,19 +695,7 @@ export class Hud {
             "}");
         this.fadeLevel = 1.0;
 
-        quitBtn.onPointerDownObservable.add(() => {
-            const postProcess = new PostProcess("Fade", "fade", ["fadeLevel"], null, 1.0, this._scene.getCameraByName("cam"));
-            postProcess.onApply = (effect) => {
-                effect.setFloat("fadeLevel", this.fadeLevel);
-            };
-            this.transition = true;
 
-            //--SOUNDS--
-            this.quitSfx.play();
-            if(this._pause.isPlaying){
-                this._pause.stop();
-            }
-        })
     }
 
     //---- Controls Menu Popup ----
@@ -739,30 +737,264 @@ export class Hud {
             this._pauseMenu.isVisible = true;
             this._controls.isVisible = false;
 
-            //play transition sound
-            this._sfx.play();
         });
     }
 
+    private _createWinPanel(): void {
+        // Créer le panneau de victoire
+        const winPanel = new Rectangle();
+        winPanel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        winPanel.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+        winPanel.height = 1;
+        winPanel.width = 1;
+        winPanel.thickness = 0;
+        winPanel.background = "#000000"; // Fond noir
+        winPanel.color = "white";
+        winPanel.isVisible = false;
+        this._playerUI.addControl(winPanel);
+        this._winPanel = winPanel;
+
+        // Afficher le message "YOU WIN"
+        const title = new TextBlock("title", "YOU WIN");
+        title.resizeToFit = true;
+        title.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+        title.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        title.fontFamily = "Viga";
+        title.fontSize = "48px";
+        title.color = "white";
+        winPanel.addControl(title);
+
+        // Afficher le texte "Next level soon" et l'auteur
+        const nextLevelText = new TextBlock("nextLevelText", "Next level soon\nby Samy Yassine & Jeff ");
+        nextLevelText.resizeToFit = true;
+        nextLevelText.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
+        nextLevelText.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        nextLevelText.fontFamily = "Arial";
+        nextLevelText.fontSize = "24px";
+        nextLevelText.color = "white";
+        winPanel.addControl(nextLevelText);
+
+
+    }
+
+    private _createLevelSelectorMenu(): void {
+        const levelSelector = new Rectangle();
+        levelSelector.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        levelSelector.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+        levelSelector.height = 0.8;
+        levelSelector.width = 0.5;
+        levelSelector.thickness = 0;
+        levelSelector.color = "white";
+        levelSelector.isVisible = false;
+        this._playerUI.addControl(levelSelector);
+        this._levelSelector = levelSelector;
+
+
+        const title = new TextBlock("title", "LEVELS");
+        title.resizeToFit = true;
+        title.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+        title.fontFamily = "Viga";
+        title.fontSize = "32px";
+        title.top = "14px";
+        levelSelector.addControl(title);
+
+        const backBtn = Button.CreateImageOnlyButton("back", "./sprites/lanternbutton.jpeg");
+        backBtn.width = "40px";
+        backBtn.height = "40px";
+        backBtn.top = "14px";
+        backBtn.thickness = 0;
+        backBtn.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
+        backBtn.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+        levelSelector.addControl(backBtn);
+
+        //when the button is down, make menu invisable and remove control of the menu
+        backBtn.onPointerDownObservable.add(() => {
+            this._pauseMenu.isVisible = true;
+            this._levelSelector.isVisible = false;
+
+        });
+
+        //level buttons
+        const level1Btn = Button.CreateSimpleButton("level1", "LEVEL 1");
+        level1Btn.width = 0.18;
+        level1Btn.height = "44px";
+        level1Btn.color = "white";
+        level1Btn.fontFamily = "Viga";
+        level1Btn.paddingBottom = "14px";
+        level1Btn.cornerRadius = 14;
+        level1Btn.fontSize = "12px";
+        level1Btn.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+        level1Btn.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+        levelSelector.addControl(level1Btn);
+
+        //when the button is down, make a new LevelSelectorScene and dispose actual scene
+        level1Btn.onPointerDownObservable.add(() => {
+            let actualScene = <OlympiadScene>this._scene;
+            let playerState = new PlayerState()
+            let nextScene = new LevelSelectorScene(actualScene.getEngine(), playerState);
+            nextScene.init().then(() => {
+                    actualScene.dispose();
+                }
+            );
+        });
+
+
+    }
+
+// Function to start the countdown
+    private startCountdown(): void {
+        this.restartGame();
+
+    }
+
+// Function to restart the game
+    private restartGame(): void {
+        let olympiaScene = <OlympiadScene>this._scene;
+        olympiaScene.restart();
+        this.gamePaused = false;
+    }
 
     //load all sounds needed for game ui interactions
     private _loadSounds(scene: Scene): void {
-        this._pause = new Sound("pauseSong", "./sounds/Snowland.wav", scene, function () {
-        }, {
-            volume: 0.2
-        });
-
-        this._sfx = new Sound("selection", "./sounds/vgmenuselect.wav", scene, function () {
-        });
-
-        this.quitSfx = new Sound("quit", "./sounds/Retro Event UI 13.wav", scene, function () {
-        });
-
-        this._sparkWarningSfx = new Sound("sparkWarning", "./sounds/Retro Water Drop 01.wav", scene, function () {
-        }, {
+        this.gameSound = new Sound("game", "./sounds/game.wav", scene, null, {
             loop: true,
-            volume: 0.5,
-            playbackRate: 0.6
+            autoplay: true,
+            volume: 0.1
         });
+        this.pauseSound = new Sound("pause", "./sounds/pause.wav", scene, null, {
+            loop: true,
+            autoplay: false,
+            volume: 0.1
+        });
+
+        this.jumpSFX = new Sound("jump", "./sounds/Jump.mp3", scene, null, {
+            loop: false,
+            autoplay: false,
+            volume: 0.05
+        });
+        this.DashSFX = new Sound("dash", "./sounds/Dash.mp3", scene, null, {
+            loop: false,
+            autoplay: false,
+            volume: 0.05
+        });
+        this.FireballSFX = new Sound("fireball", "./sounds/FireBall.mp3", scene, null, {
+            loop: false,
+            autoplay: false,
+            volume: 0.05
+        });
+        if (Engine.audioEngine) {
+            Engine.audioEngine.useCustomUnlockedButton = true;
+
+            // Unlock audio on first user interaction.
+            window.addEventListener(
+                "click",
+                () => {
+                    if (Engine.audioEngine) {
+                        if (!Engine.audioEngine.unlocked) {
+                            Engine.audioEngine.unlock();
+                        }
+                    }
+                },
+                {once: true},
+            );
+        }
+
+
+    }
+
+    private lauchGameSound(): void {
+        if (this.pauseSound.isPlaying) {
+            this.pauseSound.stop();
+        }
+        if (!this.gameSound.isPlaying) {
+            this.gameSound.play();
+        }
+
+    }
+
+    private lauchPauseSound(): void {
+        if (this.gameSound.isPlaying) {
+            this.gameSound.stop();
+        }
+        if (!this.pauseSound.isPlaying) {
+            this.pauseSound.play();
+        }
+    }
+
+    public launchJumpSFX(): void {
+        if (!this.jumpSFX.isPlaying) {
+            this.jumpSFX.play();
+        }
+    }
+
+    public launchDashSFX(): void { 
+        if (!this.DashSFX.isPlaying) {
+            this.DashSFX.play();
+        }
+    }
+
+    public launchFireballSFX(): void {
+        if (!this.FireballSFX.isPlaying) {
+            this.FireballSFX.play();
+        }
+    }
+
+
+    private _prepareMobileScreen(): void {
+
+        //--GUI--
+        const guiMenu = AdvancedDynamicTexture.CreateFullscreenUI("UI");
+        guiMenu.idealHeight = 720;
+
+        //popup for mobile to rotate screen
+        const rect1 = new Rectangle();
+        rect1.height = 0.2;
+        rect1.width = 0.3;
+        rect1.verticalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        rect1.horizontalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+        rect1.background = "white";
+        rect1.alpha = 0.8;
+        guiMenu.addControl(rect1);
+
+        const rect = new Rectangle();
+        rect.height = 0.2;
+        rect.width = 0.3;
+        rect.verticalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        rect.horizontalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+        rect.color = "whites";
+        guiMenu.addControl(rect);
+
+        const stackPanel = new StackPanel();
+        stackPanel.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
+        rect.addControl(stackPanel);
+
+        //image
+        const image = new Image("rotate", "./sprites/rotate.png")
+        image.width = 0.4;
+        image.height = 0.6;
+        image.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+        rect.addControl(image);
+
+        const alert = new TextBlock("alert", "For the best experience, please rotate your device");
+        alert.fontSize = "16px";
+        alert.fontFamily = "Viga";
+        alert.color = "black";
+        alert.resizeToFit = true;
+        alert.textWrapping = true;
+        stackPanel.addControl(alert);
+
+        const closealert = Button.CreateSimpleButton("close", "X");
+        closealert.height = "24px";
+        closealert.width = "24px";
+        closealert.color = "black";
+        stackPanel.addControl(closealert);
+
+
+        closealert.onPointerUpObservable.add(() => {
+            guiMenu.removeControl(rect);
+            guiMenu.removeControl(rect1);
+
+            this._scene.getEngine().enterFullscreen(true);
+        })
     }
 }

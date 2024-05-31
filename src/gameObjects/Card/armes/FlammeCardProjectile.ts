@@ -1,30 +1,30 @@
 import {
-    UniversalCamera,
     Color3,
     Color4,
     Mesh,
     MeshBuilder,
     Observer,
     ParticleSystem,
-    Path3D,
     Scene,
     StandardMaterial,
     Texture,
+    UniversalCamera,
     Vector3
 } from "@babylonjs/core";
 import {SceneComponent} from "../../../scenes/SceneComponent.ts";
 import {Wall} from "../../Wall";
+import {DistanceEnemy} from "../../../character/enemy/distance.ts";
+import {TempleTorch} from "../../TempleTorch/index.ts";
 
 export class FlammeCardProjectile extends SceneComponent implements GameObject {
     canActOnCollision: boolean = true;
     canDetectCollision: boolean = true;
+    public damage!: number;
     private _scene!: Scene;
-    private _position!: Vector3;
     private _mesh!: Mesh;
     private _material!: StandardMaterial;
     private _loop_observer!: Observer<Scene>;
     private _isExpired: boolean = false;
-    public damage!: number;
 
     constructor() {
         super();
@@ -32,7 +32,6 @@ export class FlammeCardProjectile extends SceneComponent implements GameObject {
 
     init(scene: Scene, position: Vector3, damage: number) {
         this._scene = scene;
-        this._position = position;
         this.damage = damage;
         // Create the mesh
         let color1 = Color3.FromInts(249, 115, 0);
@@ -43,21 +42,9 @@ export class FlammeCardProjectile extends SceneComponent implements GameObject {
         this._material.alpha = 0.1;
 
 
-        // Calculate end position based on camera direction
-        let camera: UniversalCamera = <UniversalCamera>this._scene.activeCamera;
-        let start = this._position;
-        start.y += 1;
-
-        // Calculate end position based on camera direction
-        let end = camera.getTarget().subtract(camera.position).normalize().scaleInPlace(100).add(camera.position);
-        var angle = Math.atan2(start.z - end.z, start.x - end.x);
-
-
         this._mesh = MeshBuilder.CreateSphere("flammeCardProjectile", {diameter: 0.4}, this._scene);
-        this._mesh.position = this._position;
+        this._mesh.position = position;
         this._mesh.material = this._material;
-        this._mesh.position = start.clone();
-        this._mesh.rotation.y = Math.PI / 2 - angle;
 
         let texture = "https://raw.githubusercontent.com/oriongunning/t5c/main/public/textures/particle_01.png";
         let textureParticule = new Texture(texture);
@@ -85,26 +72,26 @@ export class FlammeCardProjectile extends SceneComponent implements GameObject {
         particleSystem.updateSpeed = 0.005;
         particleSystem.start();
 
-        var endVector = this._mesh.calcMovePOV(0, 0, 100).addInPlace(this._mesh.position);
-        var points = [start, endVector];
-        var path = new Path3D(points);
-        var i = 0;
+        // Get direction of the camera
+        let camera = <UniversalCamera>this._scene.activeCamera;
+        let direction = camera.getForwardRay().direction;
 
         this._loop_observer = this._scene.onBeforeRenderObservable.add(() => {
-            // Calcule le déplacement en fonction de la vitesse du projectile
-            let newPosition = path.getPointAt(i).subtract(this._mesh.position).normalize()
-            this._mesh.position.addInPlace(newPosition);
-            i += 0.003;
+            let moveStep = direction.scale(1);
+            this._mesh.position.addInPlace(moveStep);
         });
+
         setTimeout(() => {
             this._isExpired = true;
         }, 10000);
     }
 
     destroy() {
-        this._scene.onBeforeRenderObservable.remove(this._loop_observer);
-        this._material.dispose();
-        this._mesh.dispose();
+        if (this._scene) {
+            this._scene.onBeforeRenderObservable.remove(this._loop_observer);
+            this._material.dispose();
+            this._mesh.dispose();
+        }
     }
 
     public detectCollision(gameObjects: GameObject[]) {
@@ -114,16 +101,44 @@ export class FlammeCardProjectile extends SceneComponent implements GameObject {
             return;
         }
         for (let gameObject of gameObjects) {
+
             if (gameObject.canActOnCollision && gameObject instanceof Wall) {
                 if (!this._mesh) break;
                 if (this._mesh.intersectsMesh(gameObject.mesh)) {
-                    gameObject.onCollisionCallback(this);
-                    gameObjects.splice(gameObjects.indexOf(gameObject), 1);
+                    gameObject.onCollisionCallback(this); // Tell the wall they collided with a fireball
+                    gameObjects.splice(gameObjects.indexOf(this), 1);
                     this.destroy();
                 }
             }
-        }
 
+
+            if (gameObject instanceof DistanceEnemy) {
+                if (!this._mesh) break;
+                let distance = Vector3.Distance(this._mesh.position, gameObject.position);
+                if (distance <= 5) {
+                    gameObject.onCollisionCallback(this); // Tell the distance enemy they collided with a fireball
+                    gameObjects.splice(gameObjects.indexOf(this), 1);
+                    this.destroy();
+                }
+            }
+
+            if (gameObject instanceof TempleTorch) {
+                if (!this._mesh) break;
+                if (gameObject.fireball) {
+                    if (this._mesh.intersectsMesh(gameObject.fireball, false)) {
+                        gameObject.onCollisionCallback(this); // Tell the wall they collided with a fireball
+                        gameObjects.splice(gameObjects.indexOf(this), 1);
+                        this.destroy();
+                    }
+                }
+            }
+        }
+    }
+
+    public updateState() {
+        if (this._isExpired) {
+            this.destroy();
+        }
     }
 
     public onCollisionCallback() {

@@ -8,7 +8,7 @@ export class Stairs extends TransformNode {
     stairsMaterial: StandardMaterial;
 
     constructor(scene: Scene, name: string, steps: number, stepHeight: number, stepWidth: number, stepDepth: number,
-                position: Vector3|undefined = undefined, stairsMaterial: StandardMaterial|undefined = undefined) {
+                position: Vector3 | undefined = undefined, stairsMaterial: StandardMaterial | undefined = undefined) {
         super(name, scene);
         this.steps = steps;
         this.stepHeight = stepHeight;

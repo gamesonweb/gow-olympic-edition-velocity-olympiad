@@ -1,20 +1,9 @@
-import {
-    ActionManager,
-    ExecuteCodeAction,
-    Mesh,
-    MeshBuilder,
-    Scene,
-    StandardMaterial,
-    Texture,
-    Vector3,
-} from "@babylonjs/core";
+import {Mesh, MeshBuilder, Scene, StandardMaterial, Texture, Vector3,} from "@babylonjs/core";
 
 import * as GUI from "@babylonjs/gui";
 import {SceneComponent} from "../../scenes/SceneComponent.ts";
 
-export class Sign implements SceneComponent{
-    private _text: string;
-    private _position: Vector3;
+export class Sign implements SceneComponent {
     private scene: Scene;
     private advancedTexture: GUI.AdvancedDynamicTexture;
     private signMesh!: Mesh;
@@ -27,9 +16,13 @@ export class Sign implements SceneComponent{
         this.setup();
     }
 
+    private _text: string;
+
     get text(): string {
         return this._text;
     }
+
+    private _position: Vector3;
 
     get position(): Vector3 {
         return this._position;
@@ -39,49 +32,53 @@ export class Sign implements SceneComponent{
         const advancedTexture = this.advancedTexture;
 
         const rect = new GUI.Rectangle();
-        rect.width = 0.2;
-        rect.height = "40px";
+        rect.width = this.text.length * 200 + "px"; // Largeur du panneau en fonction de la longueur du texte
+        rect.height = "100px";
+        rect.top = "50px";
         rect.cornerRadius = 20;
-        rect.color = "Orange";
-        rect.thickness = 4;
-        rect.background = "green";
+        rect.color = "rgba(245, 245, 245, 0.8)"; // Couleur légèrement translucide pour simuler le marbre
+        rect.thickness = 2;
+        rect.background = "rgba(124,124,124,0.8)"; // Fond noir pour le contraste
         advancedTexture.addControl(rect);
 
         const label = new GUI.TextBlock();
         label.text = this.text;
-        label.color = "white";
+        label.color = "black";
         label.fontSize = 24;
+        label.fontStyle = "italic";
+        label.fontFamily = "Greconian";
+        label.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER; // Centrer le texte horizontalement
+        label.textVerticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_CENTER; // Centrer le texte verticalement
+        label.textWrapping = true; // Activer le retour à la ligne automatique
+
         rect.addControl(label);
 
         rect.isVisible = false; // Définir le panneau comme invisible initialement
 
         rect.linkOffsetY = -50;
-        const signMesh = this.createSignMesh();
+        this.createSignMesh();
 
-        // Associer les événements de survol de la souris pour afficher et masquer le panneau
-        signMesh.actionManager = new ActionManager(this.scene);
-        signMesh.actionManager.registerAction(
-            new ExecuteCodeAction(
-                ActionManager.OnPointerOverTrigger,
-                () => {
+        // Before rendering the scene, show the sign if the camera is close enough
+        this.scene.registerBeforeRender(() => {
+
+
+            if (this.scene.activeCamera) {
+                let camera = this.scene.activeCamera;
+                let distanceToShow = 10;
+                let distanceFromCamera = Vector3.Distance(camera.position, this.position);
+                if (distanceFromCamera < distanceToShow) {
                     rect.isVisible = true;
-                }
-            )
-        );
-        signMesh.actionManager.registerAction(
-            new ExecuteCodeAction(
-                ActionManager.OnPointerOutTrigger,
-                () => {
+                } else {
                     rect.isVisible = false;
                 }
-            )
-        );
+            }
+        });
+    }
 
 
-
-
-
-        console.log("Sign loaded at position: ", this.position.toString());
+    destroy() {
+        this.advancedTexture.dispose();
+        this.signMesh.dispose();
     }
 
     private createSignMesh(): Mesh {
@@ -92,12 +89,9 @@ export class Sign implements SceneComponent{
         material.diffuseTexture = new Texture("sprites/gameObject/sign.png", this.scene);
         this.signMesh.material = material;
 
+        this.signMesh.isVisible = false;
+
 
         return this.signMesh;
-    }
-
-    destroy() {
-        this.advancedTexture.dispose();
-        this.signMesh.dispose();
     }
 }

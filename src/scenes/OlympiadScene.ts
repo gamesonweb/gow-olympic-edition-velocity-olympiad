@@ -6,16 +6,15 @@ import {Engine, HavokPlugin, Scene, SceneOptions, Vector3} from '@babylonjs/core
 import {SceneComponent} from "./SceneComponent";
 import HavokPhysics from "@babylonjs/havok";
 import {Player} from "../character/players";
-import {Inspector} from '@babylonjs/inspector';
+import {EnemyManager} from "./EnemyManager.ts";
 
 
 export class OlympiadScene extends Scene {
 
-    private _sceneComponents: SceneComponent[] = [];
-    private _gameObjects: GameObject[] = [];
+    public player!: Player;
     protected engine: Engine;
     protected physicsEngine!: HavokPlugin;
-    protected player!: Player;
+    protected enemyManager!: EnemyManager;
 
     protected constructor(engine: Engine, options?: SceneOptions) {
         super(engine, options);
@@ -23,11 +22,25 @@ export class OlympiadScene extends Scene {
         this._enableDebug();
         this.onBeforeRenderObservable.add(() => {
             this._gameObjects.forEach((gameObject) => {
-                if (gameObject.canDetectCollision) {
+                if (gameObject && gameObject.canDetectCollision) {
                     gameObject.detectCollision(this._gameObjects);
                 }
+                gameObject.updateState();
+
             });
         });
+    }
+
+    private _sceneComponents: SceneComponent[] = [];
+
+    public get sceneComponents(): SceneComponent[] {
+        return this._sceneComponents;
+    }
+
+    private _gameObjects: GameObject[] = [];
+
+    public get gameObjects(): GameObject[] {
+        return this._gameObjects;
     }
 
     async _createPhysicsEngine() {
@@ -56,7 +69,11 @@ export class OlympiadScene extends Scene {
     // }
 
     public destroy(): void {
-        this._sceneComponents.forEach((component) => component.destroy());
+        this._sceneComponents.forEach((component) => {
+            if (component) {
+                component.destroy()
+            }
+        });
         this._sceneComponents = [];
         this.dispose();
     }
@@ -69,10 +86,25 @@ export class OlympiadScene extends Scene {
         this._gameObjects.push(gameObject);
     }
 
+    public render(updateCameras?: boolean, ignoreAnimations?: boolean) {
+        super.render(updateCameras, ignoreAnimations);
+    }
+
+    public restart() {
+        throw new Error("Method not implemented yet.");
+    }
+
+    public onPauseState() {
+        throw new Error("Method not implemented yet.");
+    }
+
+    public onResumeState() {
+        throw new Error("Method not implemented yet.");
+    }
+
     private _enableDebug(): void {
         if (import.meta.env.DEV) {
-            console.log("DEV MODE: Scene inspector enabled");
-            Inspector.Show(this, {embedMode: true});
+            // Inspector.Show(this, {embedMode: true});
             // this.debugLayer.show();
             // var viewer = new PhysicsViewer(this);
             // this.meshes.forEach((mesh) => {
@@ -81,9 +113,5 @@ export class OlympiadScene extends Scene {
             //     }
             // });
         }
-    }
-
-    public render(updateCameras?: boolean, ignoreAnimations?: boolean) {
-        super.render(updateCameras, ignoreAnimations);
     }
 }

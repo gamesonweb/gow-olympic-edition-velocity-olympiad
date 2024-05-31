@@ -1,34 +1,36 @@
-import {ActionManager, ExecuteCodeAction, Scalar, Scene} from '@babylonjs/core';
+import {ActionManager, ExecuteCodeAction, PointerEventTypes, Scalar, Scene} from '@babylonjs/core';
 import {Hud} from './ui';
 
 export class PlayerInput {
 
     public inputMap: any;
-    private readonly _scene: Scene;
-
     //simple movement
     public horizontal: number = 0;
     public vertical: number = 0;
     //tracks whether or not there is movement in that axis
     public horizontalAxis: number = 0;
     public verticalAxis: number = 0;
-
     //jumping and dashing
     public jumpKeyDown: boolean = false;
     public dashing: boolean = false;
-
     // spell casting
     public spell1: boolean = false;
     public spell2: boolean = false;
-
+    public swapCard: boolean = false;
+    public mobileLeft: boolean = false;
+    public mobileRight: boolean = false;
+    public mobileUp: boolean = false;
+    public mobileDown: boolean = false;
+    // Spell key press flags
+    private spell1Pressed: boolean = false;
+    private spell2Pressed: boolean = false;
+    private swapCardPressed: boolean = false;
+    private active: boolean = true;
+    private readonly _scene: Scene;
     //Mobile Input trackers
     private _ui: Hud;
-    public mobileLeft: boolean = false;
-    public mobileRight: boolean= false;
-    public mobileUp: boolean= false;
-    public mobileDown: boolean= false;
-    private _mobileJump: boolean= false;
-    private _mobileDash: boolean= false;
+    private _mobileJump: boolean = false;
+    private _mobileDash: boolean = false;
 
     //keyboard caracters default to azerty
     private _keyboardUpCaracter: string = "z";
@@ -45,7 +47,7 @@ export class PlayerInput {
     public init(): void {
         //scene action manager to detect inputs
         this._scene.actionManager = new ActionManager(this._scene);
-
+        if (!this.active) return;
         this.inputMap = {};
         this._scene.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnKeyDownTrigger, (evt) => {
             this.inputMap[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
@@ -69,6 +71,17 @@ export class PlayerInput {
         this._setKeyboardCaracters();
     }
 
+    public resetInputMap(): void {
+        this.inputMap = {};
+    }
+
+    // public desactivateInputs(): void {
+    //     this.active = false;
+    //     this.init();
+    // }
+
+    // Keyboard controls & Mobile controls
+
     private _setKeyboardCaracters(): void {
         if (this._ui.isAzerty) {
             this._keyboardUpCaracter = "z";
@@ -83,7 +96,6 @@ export class PlayerInput {
         }
     }
 
-    // Keyboard controls & Mobile controls
     //handles what is done when keys are pressed or if on mobile, when buttons are pressed
     private _updateFromKeyboard(): void {
 
@@ -110,11 +122,11 @@ export class PlayerInput {
         } else if ((this.inputMap["ArrowRight"] || this.inputMap[this._keyboardRightCaracter] || this.mobileRight) && !this._ui.gamePaused) {
             this.horizontal = Scalar.Lerp(this.horizontal, 1, 0.2);
             this.horizontalAxis = 1;
-        }
-        else {
+        } else {
             this.horizontal = 0;
             this.horizontalAxis = 0;
         }
+
 
         //dash
         if ((this.inputMap["Shift"] || this._mobileDash) && !this._ui.gamePaused) {
@@ -130,9 +142,54 @@ export class PlayerInput {
             this.jumpKeyDown = false;
         }
         // First Spell cast (a key)
-        this.spell1 = !!this.inputMap["a"];
+
+        if (this.inputMap["a"] && !this._ui.gamePaused) {
+            if (!this.spell1Pressed) {
+                this.spell1 = true;
+                this.spell1Pressed = true;
+            }
+
+        } else {
+            this.spell1 = false;
+            this.spell1Pressed = false;
+        }
+
         // Second Spell cast (e key)
-        this.spell2 = !!this.inputMap["e"];
+        if (this.inputMap["e"] && !this._ui.gamePaused) {
+            if (!this.spell2Pressed) {
+                this.spell2 = true;
+                this.spell2Pressed = true;
+            }
+        } else {
+            this.spell2 = false;
+            this.spell2Pressed = false;
+        }
+
+        // Swap Card (molette roulette)
+
+        this._scene.onPointerObservable.add((pointerInfo) => {
+                if (pointerInfo.type === PointerEventTypes.POINTERWHEEL) {
+                    const event = pointerInfo.event as WheelEvent;
+                    if (event.deltaY !== 0) {
+                        this.swapCard = true;
+                    }
+                } else {
+                    this.swapCard = false;
+                }
+            }
+        );
+        if (!this.swapCard){
+        if (this.inputMap["r"] && !this._ui.gamePaused) {
+            if (!this.swapCardPressed) {
+                this.swapCard = true;
+                this.swapCardPressed = true;
+            }
+        } else {
+            this.swapCard = false;
+            this.swapCardPressed = false;
+        }}
+
+
     }
 
     // Mobile controls
@@ -181,9 +238,5 @@ export class PlayerInput {
         this._ui.downBtn.onPointerUpObservable.add(() => {
             this.mobileDown = false;
         });
-    }
-
-    public resetInputMap(): void {
-        this.inputMap = {};
     }
 }
