@@ -20,15 +20,6 @@ export class OlympiadScene extends Scene {
         super(engine, options);
         this.engine = engine;
         this._enableDebug();
-        this.onBeforeRenderObservable.add(() => {
-            this._gameObjects.forEach((gameObject) => {
-                if (gameObject && gameObject.canDetectCollision) {
-                    gameObject.detectCollision(this._gameObjects);
-                }
-                gameObject.updateState();
-
-            });
-        });
     }
 
     private _sceneComponents: SceneComponent[] = [];
@@ -56,6 +47,15 @@ export class OlympiadScene extends Scene {
         await this._createPhysicsEngine();
         // this._createGUI();
         this.collisionsEnabled = true;
+        this.onBeforeRenderObservable.add(() => {
+            this._gameObjects.forEach((gameObject) => {
+                if (gameObject && gameObject.canDetectCollision) {
+                    gameObject.detectCollision(this._gameObjects);
+                }
+                gameObject.updateState();
+
+            });
+        });
     }
 
     // private _createGUI() {
