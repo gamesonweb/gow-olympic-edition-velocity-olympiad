@@ -156,6 +156,7 @@ export class Player extends SceneComponent implements GameObject {
     }
 
     public updateState() {
+        console.log("Player position: ", this.position);
         if (this.position.y < -10) {
             this.dead();
         }
