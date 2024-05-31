@@ -41,6 +41,7 @@ export class JumpCard implements ICard {
     }
 
     public firstSpell(_scene: Scene, position: Vector3): void {
+        position;
         let olympiadScene: OlympiadScene = <OlympiadScene>_scene;
         let _player: Player = olympiadScene.player;
         _player._increaseSpeedCap(this.damage);
@@ -50,6 +51,7 @@ export class JumpCard implements ICard {
     }
 
     public secondSpell(_scene: Scene, position: Vector3): void {
+        position;
         let olympiadScene: OlympiadScene = <OlympiadScene>_scene;
         let _player: Player = olympiadScene.player;
         _player._superJump();

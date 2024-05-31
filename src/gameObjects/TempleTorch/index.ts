@@ -80,7 +80,7 @@ export class TempleTorch extends SceneComponent implements GameObject {
     }
 
     onCollisionCallback(gameObject: GameObject) {
-        console.log("Temple Torch hit by fireball");
+    gameObject;
         this.mesh.forEach((mesh) => {
             if (mesh.name === "Fire") {
                 mesh.isVisible = true;
@@ -89,6 +89,7 @@ export class TempleTorch extends SceneComponent implements GameObject {
     };
 
     detectCollision(gameObjects: GameObject[]) {
+        gameObjects;
         return;
     }
 

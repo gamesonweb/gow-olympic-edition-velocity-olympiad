@@ -1018,5 +1018,5 @@ public updateHud(): void {
 
             this._scene.getEngine().enterFullscreen(true);
         })
-    }N
+    }
 }

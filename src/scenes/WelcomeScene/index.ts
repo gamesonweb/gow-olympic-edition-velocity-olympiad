@@ -19,7 +19,7 @@ export class WelcomeScene extends OlympiadScene {
 
     private _meshes: Mesh[] = [];
     private _materials: Material[] = [];
-    private readonly enemyManager: WelcomeEnemyManager;
+    protected readonly enemyManager: WelcomeEnemyManager;
 
     constructor(engine: Engine, playerState: PlayerState) {
 
