@@ -51,6 +51,8 @@ export class Sign implements SceneComponent {
         label.textVerticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_CENTER; // Centrer le texte verticalement
         rect.addControl(label);
 
+        rect.width = this.text.length * 0.01; // Ajuster la largeur du panneau en fonction de la longueur du texte
+
         rect.isVisible = false; // Définir le panneau comme invisible initialement
 
         rect.linkOffsetY = -50;
