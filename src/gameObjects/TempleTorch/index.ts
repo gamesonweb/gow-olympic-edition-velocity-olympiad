@@ -6,13 +6,12 @@ import {
     PhysicsMotionType,
     PhysicsShapeMesh,
     Scene,
-    Vector3
+    Vector3, SceneLoader
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import {SceneComponent} from "../../scenes/SceneComponent";
 import {OlympiadScene} from "../../scenes/OlympiadScene.ts";
 import {PublicAssetsModel} from "../../publicAssets/PublicAssetsModel.ts";
-import {OlympiadAssetsManager} from "../../publicAssets/OlympiadAssetsManager.ts";
 
 export class TempleTorch extends SceneComponent implements GameObject {
     public fireball: Nullable<Mesh>;
@@ -44,7 +43,7 @@ export class TempleTorch extends SceneComponent implements GameObject {
     init() {
         let _scene = this.scene as OlympiadScene;
         _scene.modelsLoaded["TorchTemple.glb"] = false;
-        OlympiadAssetsManager.ImportMesh("", PublicAssetsModel.ROOT_PATH, PublicAssetsModel.TorchTemple, this.scene, (meshes) => {
+        SceneLoader.ImportMesh("", PublicAssetsModel.ROOT_PATH, PublicAssetsModel.TorchTemple, this.scene, (meshes) => {
             const root = meshes[0];
             root.position = this.position;
             root.rotation = this.rotation;
