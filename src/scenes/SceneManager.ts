@@ -22,15 +22,24 @@ export class SceneManager {
         this.playerState = new PlayerState();
     }
 
-    public get assetLoaded(): boolean {
+    public get assetsLoaded(): boolean {
         if (!this.engine) return false;
         if (this.engine.scenes.length == 0) return false;
         return (this.engine.scenes[0] as OlympiadScene).isSceneReady;
     }
 
     public get playerReady(): boolean {
-        if(!this.assetLoaded) return false;
+        if(!this.assetsLoaded) return false;
         return !!this.engine.scenes[0].activeCamera;
+    }
+
+    public startTimer() {
+        console.log("Game started before!")
+        if (this.assetsLoaded && this.playerReady) {
+            let scene = this.engine.scenes[0] as OlympiadScene;
+            scene.player.ui.startTimer();
+            console.log("Game started!")
+        }
     }
 
     public renderScene() {
@@ -39,17 +48,17 @@ export class SceneManager {
         this.engine.runRenderLoop(() => {
             // Render the scene if not stopped
             let scene = this.engine.scenes[0] as OlympiadScene;
-            if (!this.assetLoaded || !this.playerReady) {
+            if (!this.assetsLoaded || !this.playerReady) {
                 let loopRenderSceneWhenReady = setInterval(() => {
-                    if (this.assetLoaded) {
+                    if (this.assetsLoaded) {
                         if (this.playerReady) {
                             clearInterval(loopRenderSceneWhenReady);
                             this.engine.scenes[0].render();
                         } else {
-                            console.log("Scene not ready yet: Player loading...")
+                            // console.log("Scene not ready yet: Player loading...")
                         }
                     } else {
-                        console.log("Scene not ready yet: Asset loading...");
+                        // console.log("Scene not ready yet: Asset loading...");
                     }
                 }, 1000);
             } else {

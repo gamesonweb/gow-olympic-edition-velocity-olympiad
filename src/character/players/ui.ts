@@ -55,10 +55,11 @@ export class Hud {
     private _activeCardStackPanel!: StackPanel;
     private _levelSelector!: Rectangle;
     private _winPanel!: Rectangle;
-    
+    private _autoStartTime: boolean = true;
 
-    constructor(scene: Scene) {
+    constructor(scene: Scene, autoStartTime?: boolean) {
         this._scene = scene;
+        this._autoStartTime = autoStartTime || true;
     }
 
     public init(): void {
@@ -177,7 +178,9 @@ export class Hud {
         this._createWinPanel();
         this._loadSounds(this._scene);
         this.startTimer();
-
+        if (!this._autoStartTime) {
+            this.stopTimer();
+        }
 
         this._scene.onBeforeRenderObservable.add(() => {
             this.updateHud();
@@ -576,7 +579,7 @@ export class Hud {
         pauseMenu.isVisible = false;
 
         //background image
-        const image = new Image("pause", "sprites/pause.jpeg");
+        const image = new Image("pause", "sprites/pause.webp");
         pauseMenu.addControl(image);
 
         //stack panel for the buttons
@@ -941,7 +944,7 @@ export class Hud {
         }
     }
 
-    public launchDashSFX(): void { 
+    public launchDashSFX(): void {
         if (!this.DashSFX.isPlaying) {
             this.DashSFX.play();
         }

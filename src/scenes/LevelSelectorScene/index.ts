@@ -37,7 +37,7 @@ export class LevelSelectorScene extends OlympiadScene {
         this.enemyManager = new FirstLevelEnemyManager(this);
         this.addComponent(this.enemyManager); // Ainsi, le manager sera détruit avec la scène
 
-        this.player = new Player(playerState, this);
+        this.player = new Player(playerState, this, false);
     }
 
     public async init(): Promise<void> {
