@@ -22,13 +22,14 @@ export class SceneManager {
         this.playerState = new PlayerState();
     }
 
-    get assetLoaded(): boolean {
+    public get assetLoaded(): boolean {
         return (this.engine.scenes[0] as OlympiadScene).isSceneReady;
     }
 
-    get playerReady(): boolean {
+    public get playerReady(): boolean {
         if(!this.assetLoaded) return false;
-        return !this.engine.scenes[0].activeCamera;
+        console.log("Player ready: ", !!this.engine.scenes[0].activeCamera)
+        return !!this.engine.scenes[0].activeCamera;
     }
 
     public renderScene() {
@@ -37,7 +38,7 @@ export class SceneManager {
         this.engine.runRenderLoop(() => {
             // Render the scene if not stopped
             let scene = this.engine.scenes[0] as OlympiadScene;
-            if (!this.assetLoaded) {
+            if (!this.assetLoaded || !this.playerReady) {
                 let loopRenderSceneWhenReady = setInterval(() => {
                     if (this.assetLoaded) {
                         if (this.playerReady) {
