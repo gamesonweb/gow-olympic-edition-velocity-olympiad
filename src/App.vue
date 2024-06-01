@@ -20,6 +20,7 @@ export default defineComponent({
   name: 'App',
   data() {
     return {
+      sceneManager: null as SceneManager | null,
       showOverlay: true,
       explanationText: `Bienvenue dans "Velocity Olympiad", une aventure épique au cœur de l'Antique Rome où vous incarnez le Flamme Éternelle, l'élu de la déesse Vesta. Vous avez été choisi pour une mission cruciale : ramener la lumière dans le cœur de Rome en rallumant les temples des dieux dispersés à travers l'empire, afin de permettre la tenue des Jeux Olympiques.
 
@@ -31,6 +32,7 @@ Préparez-vous à vivre une aventure palpitante, où chaque choix que vous ferez
   mounted() {
     const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
     const sceneManager = new SceneManager(canvas);
+    this.sceneManager =  sceneManager
 
 
     const levelSelectorScene = new LevelSelectorScene(sceneManager.engine, sceneManager.playerState);
@@ -56,6 +58,14 @@ Préparez-vous à vivre une aventure palpitante, où chaque choix que vous ferez
   },
   methods: {
     startGame() {
+      if (!this.sceneManager || !this.sceneManager!.assetLoaded) {
+        alert("Assets are still loading. Please wait a moment and try again.")
+        return;
+      }
+      if (!this.sceneManager || !this.sceneManager!.playerReady) {
+        alert("Player is not ready. Please wait a moment and try again.")
+        return;
+      }
       this.showOverlay = false;
     }
   }

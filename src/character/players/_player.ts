@@ -96,6 +96,17 @@ export class Player extends SceneComponent implements GameObject {
     }
 
     public init(initialPosition?: Vector3): void {
+        let loopInitInsteadSceneIsReadyInterval = setInterval(() => {
+            let _scene = this._scene as OlympiadScene;
+            console.log("Player Scene Ready: ", _scene.isSceneReady);
+            if (_scene.isSceneReady) {
+                clearInterval(loopInitInsteadSceneIsReadyInterval);
+                this._init(initialPosition);
+            }
+        }, 1000);
+    }
+
+    private _init(initialPosition?: Vector3): void {
         if (initialPosition) {
             this._initialPosition = initialPosition;
         }
@@ -107,6 +118,7 @@ export class Player extends SceneComponent implements GameObject {
         this._setupPhysics();
         // Update the player position and rotation based on the physics body
         this._scene.registerBeforeRender(this._callbackBeforeRenderScene.bind(this));
+        this._scene.registerAfterRender(this._updateState.bind(this));
     }
 
     public addCardToCart(card: ICard): void {
@@ -156,7 +168,10 @@ export class Player extends SceneComponent implements GameObject {
     }
 
     public updateState() {
-        // console.log("Player position: ", this.position);
+        // Check _updateState() that is call in _init() method
+    }
+
+    private _updateState() {
         if (this.position.y < -10) {
             this.dead();
         }

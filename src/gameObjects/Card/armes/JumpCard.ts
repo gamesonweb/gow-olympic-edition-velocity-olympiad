@@ -1,7 +1,7 @@
 import {ICard} from "../ICard.ts";
 import {RareteCard} from "../RareteCard.ts";
 import {Scene, Vector3} from "@babylonjs/core";
-
+import {PublicAssetsModel} from "../../../publicAssets/PublicAssetsModel.ts";
 import {Player} from "../../../character/players";
 import {OlympiadScene} from "../../../scenes/OlympiadScene.ts";
 
@@ -19,22 +19,22 @@ export class JumpCard implements ICard {
         this.rarete = rarete;
         switch (rarete) {
             case RareteCard.COMMON:
-                this.meshname = "BootCardGray.glb";
+                this.meshname = PublicAssetsModel.BootCardGray;
                 this.damage = 15;
                 this.durabilite = 1;
                 break;
             case RareteCard.RARE:
-                this.meshname = "BootCardBlue.glb"
+                this.meshname = PublicAssetsModel.BootCardBlue;
                 this.damage = 20;
                 this.durabilite = 2;
                 break;
             case RareteCard.EPIC:
-                this.meshname = "BootCardPurple.glb";
+                this.meshname = PublicAssetsModel.BootCardPurple;
                 this.damage = 25;
                 this.durabilite = 3;
                 break;
             case RareteCard.LEGENDARY:
-                this.meshname = "BootCardGold.glb";
+                this.meshname = PublicAssetsModel.BootCardGold;
                 this.damage = 30;
                 this.durabilite = 5;
                 break;

@@ -8,7 +8,6 @@ import {
     PhysicsBody,
     PhysicsMotionType,
     PhysicsShapeMesh,
-    SceneLoader,
     StandardMaterial,
     Texture,
     Vector3
@@ -23,6 +22,8 @@ import {RareteCard} from "../../gameObjects/Card/RareteCard";
 import {CardSocle} from "../../gameObjects/Card/CardSocle";
 import {Wall} from "../../gameObjects/Wall";
 import {TempleTorch} from "../../gameObjects/TempleTorch";
+import {PublicAssetsModel} from "../../publicAssets/PublicAssetsModel.ts";
+import {OlympiadAssetsManager} from "../../publicAssets/OlympiadAssetsManager";
 
 export class Level1Scene extends OlympiadScene {
     protected readonly enemyManager: Level1EnemyManager;
@@ -49,8 +50,7 @@ export class Level1Scene extends OlympiadScene {
         await super.init();
         this.player.init(new Vector3(0, 50, 0));
         this.enemyManager.init();
-        await this._buildlevelStatic();
-        this._createDynamic();
+        this._buildlevelStatic();
         this.addComponent(this.player);
         this.addGameObject(this.player);
     }
@@ -78,7 +78,7 @@ export class Level1Scene extends OlympiadScene {
     }
 
     private _buildlevelStatic(): void {
-        SceneLoader.ImportMesh("", "models/", "Level1.glb", this, (meshes) => {
+        OlympiadAssetsManager.ImportMesh("", PublicAssetsModel.ROOT_PATH, PublicAssetsModel.Level1, this,(meshes) => {
             const root = meshes[0];
             root.position = new Vector3(0, 0, 0);
             root.rotation = new Vector3(0, 0, 0);
@@ -91,8 +91,31 @@ export class Level1Scene extends OlympiadScene {
                 body.shape = new PhysicsShapeMesh(mesh, this)
             }
             // new PhysicsAggregate(root, PhysicsShapeType.BOX, {mass: 0}, this);
+            this._createSceneObjects();
         });
 
+        // SceneLoader.ImportMesh("", PublicAssetsModel.ROOT_PATH, PublicAssetsModel.Level1, this, (meshes) => {
+        //     const root = meshes[0];
+        //     root.position = new Vector3(0, 0, 0);
+        //     root.rotation = new Vector3(0, 0, 0);
+        //     root.scaling = new Vector3(1, 1, 1);
+        //     const childrens = root.getChildren();
+        //
+        //     for (let child of childrens) {
+        //         const mesh = child as Mesh;
+        //         const body = new PhysicsBody(mesh, PhysicsMotionType.STATIC, false, this);
+        //         body.shape = new PhysicsShapeMesh(mesh, this)
+        //     }
+        //     // new PhysicsAggregate(root, PhysicsShapeType.BOX, {mass: 0}, this);
+        //     this._createSceneObjects();
+        // });
+
+
+
+
+    }
+
+    private _createSceneObjects() {
         //Adding a Skybox
 
         const skybox = MeshBuilder.CreateBox("skyBox", {size: 1024}, this);
@@ -106,7 +129,7 @@ export class Level1Scene extends OlympiadScene {
         skybox.material = skyboxMaterial;
         skybox.infiniteDistance = true;
 
-
+        this._createDynamic();
     }
 
     private _createDynamic() {

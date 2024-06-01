@@ -1,9 +1,11 @@
-import {Engine, Mesh, Nullable, Quaternion, Scene, SceneLoader, Vector3} from "@babylonjs/core";
+import {Engine, Mesh, Nullable, Quaternion, Scene, Vector3} from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import {ICard} from "./ICard.ts";
 import {SceneComponent} from "../../scenes/SceneComponent";
 import {Player} from "../../character/players";
 import {OlympiadScene} from "../../scenes/OlympiadScene.ts";
+import {PublicAssetsModel} from "../../publicAssets/PublicAssetsModel.ts";
+import {OlympiadAssetsManager} from "../../publicAssets/OlympiadAssetsManager.ts";
 
 export class CardSocle extends SceneComponent implements GameObject {
     position: Vector3;
@@ -28,7 +30,7 @@ export class CardSocle extends SceneComponent implements GameObject {
         // Setup the socle
         let _scene = this.scene as OlympiadScene;
         _scene.modelsLoaded[this.card.meshname] = false;
-        SceneLoader.ImportMesh("", "./models/", this.card.meshname, this.scene, (meshes) => {
+        OlympiadAssetsManager.ImportMesh("", PublicAssetsModel.ROOT_PATH, this.card.meshname, this.scene, (meshes) => {
             this.mesh = meshes[0] as Mesh;
             this._meshes.push(this.mesh);
 
