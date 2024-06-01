@@ -6,14 +6,13 @@ import {
     PhysicsMotionType,
     PhysicsShapeMesh,
     Scene,
-    Vector3
+    Vector3, SceneLoader
 } from "@babylonjs/core";
 import {Character} from "../interfaces/Character.ts";
 import {FireballDistanceEnemy} from "../../gameObjects/Spell/FireballDistanceEnemy.ts";
 import {OlympiadScene} from "../../scenes/OlympiadScene.ts";
 import {Player} from "../players";
 import {PublicAssetsModel} from "../../publicAssets/PublicAssetsModel.ts";
-import {OlympiadAssetsManager} from "../../publicAssets/OlympiadAssetsManager.ts";
 
 
 export class DistanceEnemy implements Character, GameObject {
@@ -45,7 +44,7 @@ export class DistanceEnemy implements Character, GameObject {
 
     init(): void {
 
-    OlympiadAssetsManager.ImportMesh("", PublicAssetsModel.ROOT_PATH, PublicAssetsModel.EnemyDistance, this.scene, (meshes) => {
+        SceneLoader.ImportMesh("", PublicAssetsModel.ROOT_PATH, PublicAssetsModel.EnemyDistance, this.scene, (meshes) => {
         const root = meshes[0];
         root.position = this.position;
         let scale = 0.3;

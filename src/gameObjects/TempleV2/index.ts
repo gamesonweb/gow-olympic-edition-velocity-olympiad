@@ -6,7 +6,7 @@ import {
     PhysicsBody,
     PhysicsMotionType,
     PhysicsShapeMesh,
-    Vector3
+    Vector3, SceneLoader
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import {SceneComponent} from "../../scenes/SceneComponent";
@@ -14,7 +14,6 @@ import {OlympiadScene} from "../../scenes/OlympiadScene";
 import {Player} from "../../character/players";
 import {Level1Scene} from "../../scenes/Level1Scene";
 import {PublicAssetsModel} from "../../publicAssets/PublicAssetsModel.ts";
-import {OlympiadAssetsManager} from "../../publicAssets/OlympiadAssetsManager.ts";
 
 export class TempleV2 extends SceneComponent {
     private scene: OlympiadScene;
@@ -45,7 +44,7 @@ export class TempleV2 extends SceneComponent {
     init() {
         let _scene = this.scene as OlympiadScene;
         _scene.modelsLoaded["temple.glb"] = false;
-        OlympiadAssetsManager.ImportMesh("", PublicAssetsModel.ROOT_PATH, PublicAssetsModel.Temple, this.scene, (meshes) => {
+        SceneLoader.ImportMesh("", PublicAssetsModel.ROOT_PATH, PublicAssetsModel.Temple, this.scene, (meshes) => {
             const root = meshes[0];
             root.position = this.position;
             root.rotation = this.rotation;

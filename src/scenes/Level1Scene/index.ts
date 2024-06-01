@@ -10,7 +10,7 @@ import {
     PhysicsShapeMesh,
     StandardMaterial,
     Texture,
-    Vector3
+    Vector3, SceneLoader
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import {OlympiadScene} from "../OlympiadScene";
@@ -23,7 +23,6 @@ import {CardSocle} from "../../gameObjects/Card/CardSocle";
 import {Wall} from "../../gameObjects/Wall";
 import {TempleTorch} from "../../gameObjects/TempleTorch";
 import {PublicAssetsModel} from "../../publicAssets/PublicAssetsModel.ts";
-import {OlympiadAssetsManager} from "../../publicAssets/OlympiadAssetsManager";
 
 export class Level1Scene extends OlympiadScene {
     protected readonly enemyManager: Level1EnemyManager;
@@ -78,7 +77,7 @@ export class Level1Scene extends OlympiadScene {
     }
 
     private _buildlevelStatic(): void {
-        OlympiadAssetsManager.ImportMesh("", PublicAssetsModel.ROOT_PATH, PublicAssetsModel.Level1, this,(meshes) => {
+        SceneLoader.ImportMesh("", PublicAssetsModel.ROOT_PATH, PublicAssetsModel.Level1, this,(meshes) => {
             const root = meshes[0];
             root.position = new Vector3(0, 0, 0);
             root.rotation = new Vector3(0, 0, 0);
