@@ -2,14 +2,6 @@
   <div id="app">
     <canvas id="renderCanvas"></canvas>
     <div v-if="showOverlay" class="overlay">
-      <div class="overlay-header">
-        <button :disabled="!isLoading" @click="skip"
-                :class= "{
-                          'skip-button-ready': isLoading,
-                          'skip-button-not-ready': !isLoading
-                      }"
-        >SKIP</button>
-      </div>
       <div class="overlay-content">
         <img v-if="showImage" src="/game-intro.webp" alt="Game Intro" class="intro-image">
         <div v-else class="explanation-container">
@@ -128,6 +120,7 @@ export default defineComponent({
       this.showImage = false;
       this.splitText();
       this.revealText();
+      this.updateProgressBar(); // Mettre à jour la barre de progression après l'affichage du texte
     }, 2000);
   },
   methods: {
@@ -152,16 +145,18 @@ export default defineComponent({
       if (this.currentPart < this.textParts.length - 1) {
         this.currentPart += 1;
         this.revealText();
+        this.updateProgressBar(); // Mettre à jour la barre de progression
       }
     },
     prevPart() {
       if (this.currentPart > 0) {
         this.currentPart -= 1;
         this.revealText();
+        this.updateProgressBar(); // Mettre à jour la barre de progression
       }
     },
-    skip() {
-      this.showOverlay = false;
+    updateProgressBar() {
+      this.progressWidth = ((this.currentPart + 1) / this.textParts.length) * 100;
     }
   }
 });
@@ -244,12 +239,14 @@ export default defineComponent({
   border-radius: 5px;
   overflow: hidden;
   margin-bottom: 20px;
+  max-width: 800px; /* Taille maximale de la barre de progression */
 }
 
 .progress {
   height: 100%;
   background-color: #42b983;
   width: 0;
+  transition: width 0.5s ease; /* Animation de la mise à jour de la largeur */
 }
 
 .steps {
@@ -292,12 +289,7 @@ export default defineComponent({
   100% { transform: rotate(360deg); }
 }
 
-.skip-button-ready {
-  background-color: #42b983;
-}
-skip-button-not-ready {
-  background-color: #ff0000;
-}
+
 
 #renderCanvas {
   width: 100%;
