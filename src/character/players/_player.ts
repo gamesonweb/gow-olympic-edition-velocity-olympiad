@@ -56,11 +56,13 @@ export class Player extends SceneComponent implements GameObject {
     private _speedCap: number = 30;
     private _oldSpeedCap: number = 30;
     private hp: number = 100;
+    private _ui: Hud;
 
-    constructor(playerState: PlayerState, scene: Scene) {
+    constructor(playerState: PlayerState, scene: Scene, autoStartTime?: boolean) {
         super();
         this._scene = scene;
-        const ui = new Hud(scene);
+        autoStartTime = autoStartTime || true;
+        const ui = new Hud(scene, autoStartTime);
         this._ui = ui;
         this._input = new PlayerInput(scene, ui);
         this.playerState = playerState;
@@ -69,7 +71,6 @@ export class Player extends SceneComponent implements GameObject {
 
     // that detects collision on the player
 
-    private _ui: Hud;
 
     public get ui(): Hud {
         return this._ui;
