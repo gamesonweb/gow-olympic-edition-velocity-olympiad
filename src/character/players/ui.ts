@@ -55,10 +55,11 @@ export class Hud {
     private _activeCardStackPanel!: StackPanel;
     private _levelSelector!: Rectangle;
     private _winPanel!: Rectangle;
-    
+    private _autoStartTime: boolean = true;
 
-    constructor(scene: Scene) {
+    constructor(scene: Scene, autoStartTime?: boolean) {
         this._scene = scene;
+        this._autoStartTime = autoStartTime || true;
     }
 
     public init(): void {
@@ -177,7 +178,9 @@ export class Hud {
         this._createWinPanel();
         this._loadSounds(this._scene);
         this.startTimer();
-
+        if (!this._autoStartTime) {
+            this.stopTimer();
+        }
 
         this._scene.onBeforeRenderObservable.add(() => {
             this.updateHud();
@@ -576,7 +579,7 @@ export class Hud {
         pauseMenu.isVisible = false;
 
         //background image
-        const image = new Image("pause", "sprites/pause.jpeg");
+        const image = new Image("pause", "sprites/pause.webp");
         pauseMenu.addControl(image);
 
         //stack panel for the buttons
@@ -764,6 +767,20 @@ export class Hud {
         title.color = "white";
         winPanel.addControl(title);
 
+        // Afficher le texte du timer
+        let timertxt = this._clockTime!.text;
+        const timerText = new TextBlock("timerText", "you've finished in " + timertxt + " seconds");
+        timerText.resizeToFit = true;
+        timerText.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+        timerText.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        timerText.top = "50px";
+
+        timerText.fontFamily = "Arial";
+        timerText.fontSize = "24px";
+        timerText.color = "white";
+        winPanel.addControl(timerText);
+
+
         // Afficher le texte "Next level soon" et l'auteur
         const nextLevelText = new TextBlock("nextLevelText", "Next level soon\nby Samy Yassine & Jeff ");
         nextLevelText.resizeToFit = true;
@@ -927,7 +944,7 @@ export class Hud {
         }
     }
 
-    public launchDashSFX(): void { 
+    public launchDashSFX(): void {
         if (!this.DashSFX.isPlaying) {
             this.DashSFX.play();
         }

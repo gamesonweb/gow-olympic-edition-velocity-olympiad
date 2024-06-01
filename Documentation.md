@@ -8,6 +8,7 @@
 
 - [x] Vite.js
 - [x] Babylon.js
+- [x] AWS S3 (stockage des glb)
 
 ## Inspirations
 
