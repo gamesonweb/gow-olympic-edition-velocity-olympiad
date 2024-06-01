@@ -175,7 +175,7 @@ export class Hud {
         this._createPauseMenu();
         this._createControlsMenu();
         this._createLevelSelectorMenu();
-        this._createWinPanel();
+
         this._loadSounds(this._scene);
         this.startTimer();
         if (!this._autoStartTime) {
@@ -380,23 +380,25 @@ export class Hud {
         this._activeCardStackPanel.addControl(cardImage);
     }
 
+
+    private getTimeUpdate(): number {
+        return new Date().getTime() - this._startTime;
+    }
+
+    private formatTime(time: number): string {
+        let seconds = Math.floor(time / 1000);
+        let milliseconds = time % 1000;
+        milliseconds = Math.floor(milliseconds / 10);
+        let formattedMilliseconds = ("00" + milliseconds).slice(-2);
+        return `${seconds}.${formattedMilliseconds}`;
+    }
+
     public updateHud(): void {
         if (!this._stopTimer && this._startTime != null) {
-            let curTime = new Date().getTime() - this._startTime;
-
-            // Convertir le temps écoulé en secondes et millisecondes
-            let seconds = Math.floor(curTime / 1000);
-            let milliseconds = curTime % 1000;
-
-            milliseconds = Math.floor(milliseconds / 10); // Arrondir à deux chiffres
-
-            // Mettre à jour le temps écoulé
-            this.time = curTime;
-
-            // Mettre à jour l'affichage
-            // Formater les millisecondes avec trois chiffres
-            let formattedMilliseconds = ("00" + milliseconds).slice(-2);
-            this._clockTime!.text = `${seconds}.${formattedMilliseconds}`;
+            let time = this.getTimeUpdate();
+            this.time = time;
+            let formattedTime = this.formatTime(time);
+            this._clockTime!.text = formattedTime;
         }
     }
 
@@ -471,6 +473,7 @@ export class Hud {
     //---- Sparkler Timers ----
 
     public showWinPanel(): void {
+        this._createWinPanel();
         this._winPanel.isVisible = true;
         this._playerUI.addControl(this._winPanel);
         this._pauseMenu.isVisible = false;
