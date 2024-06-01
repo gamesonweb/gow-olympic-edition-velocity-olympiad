@@ -782,7 +782,7 @@ export class Hud {
 
 
         // Afficher le texte "Next level soon" et l'auteur
-        const nextLevelText = new TextBlock("nextLevelText", "Next level soon\nby Samy Yassine & Jeff ");
+        const nextLevelText = new TextBlock("nextLevelText", "Next level soon\nby Samy, Yassine & Jeff ");
         nextLevelText.resizeToFit = true;
         nextLevelText.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
         nextLevelText.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
