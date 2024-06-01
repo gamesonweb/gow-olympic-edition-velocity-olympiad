@@ -31,13 +31,14 @@ Préparez-vous à vivre une aventure palpitante, où chaque choix que vous ferez
   },
   mounted() {
     const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
-    this.sceneManager =  new SceneManager(canvas);;
+    const sceneManager = new SceneManager(canvas);
+    this.sceneManager =  sceneManager
 
 
-    const levelSelectorScene = new LevelSelectorScene(this.sceneManager.engine, this.sceneManager.playerState);
+    const levelSelectorScene = new LevelSelectorScene(sceneManager.engine, sceneManager.playerState);
 
     levelSelectorScene.init().then(() => {
-      this.sceneManager.renderScene();
+      sceneManager.renderScene();
     });
 
 

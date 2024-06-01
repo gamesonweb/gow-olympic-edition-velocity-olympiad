@@ -23,12 +23,13 @@ export class SceneManager {
     }
 
     public get assetLoaded(): boolean {
+        if (!this.engine) return false;
+        if (this.engine.scenes.length == 0) return false;
         return (this.engine.scenes[0] as OlympiadScene).isSceneReady;
     }
 
     public get playerReady(): boolean {
         if(!this.assetLoaded) return false;
-        console.log("Player ready: ", !!this.engine.scenes[0].activeCamera)
         return !!this.engine.scenes[0].activeCamera;
     }
 
