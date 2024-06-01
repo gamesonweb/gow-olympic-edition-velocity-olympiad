@@ -6,13 +6,14 @@ import {
     PhysicsMotionType,
     PhysicsShapeMesh,
     Scene,
-    SceneLoader,
     Vector3
 } from "@babylonjs/core";
 import {Character} from "../interfaces/Character.ts";
 import {FireballDistanceEnemy} from "../../gameObjects/Spell/FireballDistanceEnemy.ts";
 import {OlympiadScene} from "../../scenes/OlympiadScene.ts";
 import {Player} from "../players";
+import {PublicAssetsModel} from "../../publicAssets/PublicAssetsModel.ts";
+import {OlympiadAssetsManager} from "../../publicAssets/OlympiadAssetsManager.ts";
 
 
 export class DistanceEnemy implements Character, GameObject {
@@ -44,32 +45,54 @@ export class DistanceEnemy implements Character, GameObject {
 
     init(): void {
 
+    OlympiadAssetsManager.ImportMesh("", PublicAssetsModel.ROOT_PATH, PublicAssetsModel.EnemyDistance, this.scene, (meshes) => {
+        const root = meshes[0];
+        root.position = this.position;
+        let scale = 0.3;
+        root.scaling = new Vector3(scale, scale, scale);
 
-        SceneLoader.ImportMesh("", "models/character/enemy/", "enemy_distance.glb", this.scene, (meshes) => {
-            const root = meshes[0];
-            root.position = this.position;
-            let scale = 0.3;
-            root.scaling = new Vector3(scale, scale, scale);
+        const childMeshes = root.getChildMeshes();
 
-            const childMeshes = root.getChildMeshes();
+        for (let child of childMeshes) {
+            const mesh = child as Mesh;
+            const body = new PhysicsBody(mesh, PhysicsMotionType.STATIC, false, this.scene);
+            body.shape = new PhysicsShapeMesh(mesh, this.scene);
 
-            for (let child of childMeshes) {
-                const mesh = child as Mesh;
-                const body = new PhysicsBody(mesh, PhysicsMotionType.STATIC, false, this.scene);
-                body.shape = new PhysicsShapeMesh(mesh, this.scene);
-
-                //     si c'est l'oeil on le fait look at le joueur
-                if (mesh.name.includes("Eye")) {
-                    mesh.parent = null;
-                    mesh.position = this.position;
-                    mesh.scaling = new Vector3(scale, scale, scale);
-                    this.meshEye.push(mesh);
-                }
+            //     si c'est l'oeil on le fait look at le joueur
+            if (mesh.name.includes("Eye")) {
+                mesh.parent = null;
+                mesh.position = this.position;
+                mesh.scaling = new Vector3(scale, scale, scale);
+                this.meshEye.push(mesh);
             }
-            this.mesh = root;
+        }
+        this.mesh = root;
+    });
 
-
-        });
+    //
+    // SceneLoader.ImportMesh("", PublicAssetsModel.ROOT_PATH, PublicAssetsModel.EnemyDistance, this.scene, (meshes) => {
+    //         const root = meshes[0];
+    //         root.position = this.position;
+    //         let scale = 0.3;
+    //         root.scaling = new Vector3(scale, scale, scale);
+    //
+    //         const childMeshes = root.getChildMeshes();
+    //
+    //         for (let child of childMeshes) {
+    //             const mesh = child as Mesh;
+    //             const body = new PhysicsBody(mesh, PhysicsMotionType.STATIC, false, this.scene);
+    //             body.shape = new PhysicsShapeMesh(mesh, this.scene);
+    //
+    //             //     si c'est l'oeil on le fait look at le joueur
+    //             if (mesh.name.includes("Eye")) {
+    //                 mesh.parent = null;
+    //                 mesh.position = this.position;
+    //                 mesh.scaling = new Vector3(scale, scale, scale);
+    //                 this.meshEye.push(mesh);
+    //             }
+    //         }
+    //         this.mesh = root;
+    //     });
 
 
         //     make him attack if he is in range of the player

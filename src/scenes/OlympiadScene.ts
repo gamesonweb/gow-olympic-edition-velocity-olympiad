@@ -29,6 +29,17 @@ export class OlympiadScene extends Scene {
         return this._sceneComponents;
     }
 
+    get isSceneReady(): boolean {
+        let sceneReady: boolean = true;
+        for (let key in this.modelsLoaded) {
+            if (!this.modelsLoaded[key]) {
+                sceneReady = false;
+                break;
+            }
+        }
+        return sceneReady;
+    }
+
     private _gameObjects: GameObject[] = [];
 
     public get gameObjects(): GameObject[] {
@@ -50,20 +61,13 @@ export class OlympiadScene extends Scene {
         this.collisionsEnabled = true;
         this.onBeforeRenderObservable.add(() => {
             // all element is modelLoaded == true
-            let sceneReady: boolean = true;
-            for (let key in this.modelsLoaded) {
-                if (!this.modelsLoaded[key]) {
-                    sceneReady = false;
-                    break;
-                }
-            }
             // console.log("sceneReady", sceneReady);
             // console.log("modelsLoaded", this.modelsLoaded);
             this._gameObjects.forEach((gameObject) => {
                 if (gameObject && gameObject.canDetectCollision) {
                     gameObject.detectCollision(this._gameObjects);
                 }
-                if (sceneReady) gameObject.updateState();
+                if (this.isSceneReady) gameObject.updateState();
             });
         });
     }

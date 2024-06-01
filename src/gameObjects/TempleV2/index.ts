@@ -6,7 +6,6 @@ import {
     PhysicsBody,
     PhysicsMotionType,
     PhysicsShapeMesh,
-    SceneLoader,
     Vector3
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
@@ -14,6 +13,8 @@ import {SceneComponent} from "../../scenes/SceneComponent";
 import {OlympiadScene} from "../../scenes/OlympiadScene";
 import {Player} from "../../character/players";
 import {Level1Scene} from "../../scenes/Level1Scene";
+import {PublicAssetsModel} from "../../publicAssets/PublicAssetsModel.ts";
+import {OlympiadAssetsManager} from "../../publicAssets/OlympiadAssetsManager.ts";
 
 export class TempleV2 extends SceneComponent {
     private scene: OlympiadScene;
@@ -44,7 +45,7 @@ export class TempleV2 extends SceneComponent {
     init() {
         let _scene = this.scene as OlympiadScene;
         _scene.modelsLoaded["temple.glb"] = false;
-        SceneLoader.ImportMesh("", "models/", "temple.glb", this.scene, (meshes) => {
+        OlympiadAssetsManager.ImportMesh("", PublicAssetsModel.ROOT_PATH, PublicAssetsModel.Temple, this.scene, (meshes) => {
             const root = meshes[0];
             root.position = this.position;
             root.rotation = this.rotation;
@@ -85,7 +86,7 @@ export class TempleV2 extends SceneComponent {
             if (this.asTP) return;
             if (gameObject instanceof Player) {
                 if (this.teleportPad) {
-                    if (this.teleportPad.intersectsMesh(gameObject.mesh, false)) {
+                    if (gameObject.mesh && this.teleportPad.intersectsMesh(gameObject.mesh, false)) {
                         this.asTP = true;
                         let nextScene = new Level1Scene(this.engine, gameObject.playerState);
                         nextScene.init().then(() => {

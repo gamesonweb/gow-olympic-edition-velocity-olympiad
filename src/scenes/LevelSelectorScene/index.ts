@@ -7,7 +7,6 @@ import {
     PhysicsBody,
     PhysicsMotionType,
     PhysicsShapeMesh,
-    SceneLoader,
     StandardMaterial,
     Texture,
     Vector3
@@ -23,6 +22,8 @@ import {FlammeCard} from "../../gameObjects/Card/armes/FlammeCard";
 import {RareteCard} from "../../gameObjects/Card/RareteCard";
 import {CardSocle} from "../../gameObjects/Card/CardSocle";
 import {Wall} from "../../gameObjects/Wall/index.ts";
+import {PublicAssetsModel} from "../../publicAssets/PublicAssetsModel.ts";
+import {OlympiadAssetsManager} from "../../publicAssets/OlympiadAssetsManager.ts";
 
 export class LevelSelectorScene extends OlympiadScene {
     protected readonly enemyManager: FirstLevelEnemyManager
@@ -42,9 +43,9 @@ export class LevelSelectorScene extends OlympiadScene {
 
     public async init(): Promise<void> {
         await super.init();
-        this.player.init(new Vector3(0, 100, -80));
         this.enemyManager.init();
-        await this._buildlevelStatic();
+        this._buildlevelStatic();
+        this.player.init(new Vector3(0, 100, -80));
         this.addComponent(this.player);
         this.addGameObject(this.player);
     }
@@ -70,11 +71,11 @@ export class LevelSelectorScene extends OlympiadScene {
         });
     }
 
-    private async _buildlevelStatic(): Promise<void> {
+    private _buildlevelStatic(): void {
         let _scene = this as OlympiadScene;
-        _scene.modelsLoaded["SelectLevelScene.glb"] = false;
+        _scene.modelsLoaded[PublicAssetsModel.SelectLevelScene] = false;
 
-        await SceneLoader.ImportMesh("", "models/", "SelectLevelScene.glb", this, (meshes) => {
+        OlympiadAssetsManager.ImportMesh("", PublicAssetsModel.ROOT_PATH, PublicAssetsModel.SelectLevelScene, this, (meshes) => {
             const root = meshes[0];
             root.position = new Vector3(0, 0, 0);
             root.rotation = new Vector3(0, 0, 0);
@@ -87,11 +88,13 @@ export class LevelSelectorScene extends OlympiadScene {
                 body.shape = new PhysicsShapeMesh(mesh, this)
             }
             // new PhysicsAggregate(root, PhysicsShapeType.BOX, {mass: 0}, this);
-            _scene.modelsLoaded["SelectLevelScene.glb"] = true;
+            _scene.modelsLoaded[PublicAssetsModel.SelectLevelScene] = true;
+            this._createSceneObjects();
         });
+    }
 
+    private _createSceneObjects() {
         //Adding a Skybox
-
         const skybox = MeshBuilder.CreateBox("skyBox", {size: 1024}, this);
         skybox.renderingGroupId = 0;
         const skyboxMaterial = new StandardMaterial("skyBox", this);
@@ -186,7 +189,6 @@ export class LevelSelectorScene extends OlympiadScene {
         ennemis.forEach(position => {
             this.enemyManager.addDistanceEnemy(position);
         });
-
 
     }
 }
