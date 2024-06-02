@@ -12,8 +12,8 @@
 
 ## Inspirations
 
-- [x] **Projet SummerFestival de Babylon.js
-  ** ([SummerFestival sur GitHub](https://github.com/BabylonJS/SummerFestival)) : Nous nous sommes inspirés de :
+- [x] **Projet SummerFestival de Babylon.js**
+   ([SummerFestival sur GitHub](https://github.com/BabylonJS/SummerFestival)) : Nous nous sommes inspirés de :
     - La gestion des entrées utilisateurs (input)
     - La gestion de l'interface utilisateur (UI)
     - La jouabilité du jeu sur mobile
