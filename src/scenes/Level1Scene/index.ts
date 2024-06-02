@@ -77,6 +77,8 @@ export class Level1Scene extends OlympiadScene {
     }
 
     private _buildlevelStatic(): void {
+        let _scene = this as OlympiadScene;
+        _scene.modelsLoaded[PublicAssetsModel.Level1] = false;
         SceneLoader.ImportMesh("", PublicAssetsModel.ROOT_PATH, PublicAssetsModel.Level1, this,(meshes) => {
             const root = meshes[0];
             root.position = new Vector3(0, 0, 0);
@@ -90,6 +92,7 @@ export class Level1Scene extends OlympiadScene {
                 body.shape = new PhysicsShapeMesh(mesh, this)
             }
             // new PhysicsAggregate(root, PhysicsShapeType.BOX, {mass: 0}, this);
+            _scene.modelsLoaded[PublicAssetsModel.Level1] = true;
             this._createSceneObjects();
         });
 
