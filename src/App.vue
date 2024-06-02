@@ -2,51 +2,48 @@
   <div id="app">
     <canvas id="renderCanvas"></canvas>
     <div v-if="showOverlay" class="overlay">
-      <div class="overlay-header">
-        <button :disabled="!isLoading" @click="skip"
-                :class= "{
-                          'skip-button-ready': isLoading,
-                          'skip-button-not-ready': !isLoading
-                      }"
-        >SKIP</button>
-      </div>
       <div class="overlay-content">
         <img v-if="showImage" src="/game-intro.webp" alt="Game Intro" class="intro-image">
         <div v-else class="explanation-container">
           <p class="explanation-text">{{ visibleText }}</p>
-          <div class="navigation-buttons">
-            <button @click="prevPart" :disabled="currentPart === 0">Précédent</button>
-            <button @click="nextPart" :disabled="currentPart === textParts.length - 1">Suivant</button>
-          </div>
-          <div class="progress-bar">
-            <div class="progress" :style="{ width: progressWidth + '%' }"></div>
-          </div>
         </div>
+
         <div class="steps">
           <p v-if="!assetsLoaded">Step 1: Téléchargement des assets ...</p>
           <p v-if="assetsLoaded && !playerReady">Step 2: Création du player ...</p>
         </div>
-        <div class="button-container">
-          <button
-              :disabled="!isLoading"
-              @click="startGame"
-              :class="{ 'button-ready': isLoading }">
-            <div v-if="!isLoading">
-                  <span>Chargement ...</span>
-                  <span class="loader"></span>
-            </div>
-            <span v-else>Commencer</span>
-          </button>
+      </div>
+      <div class="progress-bar-container">
+
+      <div class="navigation-buttons">
+        <button @click="prevPart" :disabled="currentPart === 0">Précédent</button>
+        <button @click="nextPart" :disabled="currentPart === textParts.length - 1">Suivant</button>
+      </div>
+      <div class="progress-bar">
+        <div class="progress" :style="{ width: progressWidth + '%' }"></div>
+      </div>
         </div>
+      <div class="button-container">
+        <button
+            :disabled="!isLoading"
+            @click="startGame"
+            :class="{ 'button-ready': isLoading }">
+          <div v-if="!isLoading">
+            <span>Chargement ...</span>
+            <span class="loader"></span>
+          </div>
+          <span v-else>Commencer</span>
+        </button>
       </div>
     </div>
   </div>
+
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { SceneManager } from "./scenes/SceneManager";
-import { LevelSelectorScene } from './scenes/LevelSelectorScene';
+import {defineComponent} from 'vue';
+import {SceneManager} from "./scenes/SceneManager";
+import {LevelSelectorScene} from './scenes/LevelSelectorScene';
 
 export default defineComponent({
   name: 'App',
@@ -128,6 +125,7 @@ export default defineComponent({
       this.showImage = false;
       this.splitText();
       this.revealText();
+      this.updateProgressBar(); // Mettre à jour la barre de progression après l'affichage du texte
     }, 2000);
   },
   methods: {
@@ -152,16 +150,18 @@ export default defineComponent({
       if (this.currentPart < this.textParts.length - 1) {
         this.currentPart += 1;
         this.revealText();
+        this.updateProgressBar(); // Mettre à jour la barre de progression
       }
     },
     prevPart() {
       if (this.currentPart > 0) {
         this.currentPart -= 1;
         this.revealText();
+        this.updateProgressBar(); // Mettre à jour la barre de progression
       }
     },
-    skip() {
-      this.showOverlay = false;
+    updateProgressBar() {
+      this.progressWidth = ((this.currentPart + 1) / this.textParts.length) * 100;
     }
   }
 });
@@ -189,20 +189,7 @@ export default defineComponent({
   cursor: pointer;
 }
 
-.overlay-header {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-}
 
-.skip-button {
-  background-color: #42b983;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
-}
 
 .overlay-content {
   color: white;
@@ -231,10 +218,19 @@ export default defineComponent({
   overflow-y: auto;
 }
 
+
+.progress-bar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 50%;
+}
+
 .navigation-buttons {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-between; /* Aligne les éléments au début et à la fin du conteneur */
   margin-bottom: 20px;
+  width: 100%;
 }
 
 .progress-bar {
@@ -244,12 +240,14 @@ export default defineComponent({
   border-radius: 5px;
   overflow: hidden;
   margin-bottom: 20px;
+  max-width: 800px; /* Taille maximale de la barre de progression */
 }
 
 .progress {
   height: 100%;
   background-color: #42b983;
   width: 0;
+  transition: width 0.5s ease; /* Animation de la mise à jour de la largeur */
 }
 
 .steps {
@@ -288,16 +286,14 @@ export default defineComponent({
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
-.skip-button-ready {
-  background-color: #42b983;
-}
-skip-button-not-ready {
-  background-color: #ff0000;
-}
 
 #renderCanvas {
   width: 100%;

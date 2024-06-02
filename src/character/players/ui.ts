@@ -5,6 +5,7 @@ import {RareteCard} from "../../gameObjects/Card/RareteCard";
 import {OlympiadScene} from "../../scenes/OlympiadScene.ts";
 import {LevelSelectorScene} from "../../scenes/LevelSelectorScene";
 import {PlayerState} from "./index.ts";
+import {Level1Scene} from "../../scenes/Level1Scene";
 
 export class Hud {
     //Game Timer
@@ -29,6 +30,9 @@ export class Hud {
     public rightBtn!: Button;
     public upBtn!: Button;
     public downBtn!: Button;
+    public spell1Btn!: Button;
+    public spell2Btn!: Button;
+
     // public spaceBtn!: Button;
     // keyboard
     public isAzerty: boolean | null = null;
@@ -175,7 +179,7 @@ export class Hud {
         this._createPauseMenu();
         this._createControlsMenu();
         this._createLevelSelectorMenu();
-        this._createWinPanel();
+
         this._loadSounds(this._scene);
         this.startTimer();
         if (!this._autoStartTime) {
@@ -228,8 +232,24 @@ export class Hud {
             jumpBtn.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
             this.jumpBtn = jumpBtn;
 
-            actionGrid.addControl(dashBtn, 0, 1);
+
+            const spell1Btn = Button.CreateImageOnlyButton("spell1", "./sprites/spell.png");
+            spell1Btn.thickness = 0;
+            spell1Btn.alpha = 0.8;
+            spell1Btn.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+            this.spell1Btn = spell1Btn;
+
+            const spell2Btn = Button.CreateImageOnlyButton("spell2", "./sprites/spell.png");
+            spell2Btn.thickness = 0;
+            spell2Btn.alpha = 0.8;
+            spell2Btn.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
+            this.spell2Btn = spell2Btn;
+
+
+            actionGrid.addControl(dashBtn, 1, 1);
             actionGrid.addControl(jumpBtn, 1, 0);
+            actionGrid.addControl(spell1Btn,0, 0);
+            actionGrid.addControl(spell2Btn,    0, 1);
 
             //--MOVEMENT BUTTONS--
             // container for movement buttons (section left side of screen)
@@ -380,23 +400,25 @@ export class Hud {
         this._activeCardStackPanel.addControl(cardImage);
     }
 
+
+    private getTimeUpdate(): number {
+        return new Date().getTime() - this._startTime;
+    }
+
+    private formatTime(time: number): string {
+        let seconds = Math.floor(time / 1000);
+        let milliseconds = time % 1000;
+        milliseconds = Math.floor(milliseconds / 10);
+        let formattedMilliseconds = ("00" + milliseconds).slice(-2);
+        return `${seconds}.${formattedMilliseconds}`;
+    }
+
     public updateHud(): void {
         if (!this._stopTimer && this._startTime != null) {
-            let curTime = new Date().getTime() - this._startTime;
-
-            // Convertir le temps écoulé en secondes et millisecondes
-            let seconds = Math.floor(curTime / 1000);
-            let milliseconds = curTime % 1000;
-
-            milliseconds = Math.floor(milliseconds / 10); // Arrondir à deux chiffres
-
-            // Mettre à jour le temps écoulé
-            this.time = curTime;
-
-            // Mettre à jour l'affichage
-            // Formater les millisecondes avec trois chiffres
-            let formattedMilliseconds = ("00" + milliseconds).slice(-2);
-            this._clockTime!.text = `${seconds}.${formattedMilliseconds}`;
+            let time = this.getTimeUpdate();
+            this.time = time;
+            let formattedTime = this.formatTime(time);
+            this._clockTime!.text = formattedTime;
         }
     }
 
@@ -471,6 +493,7 @@ export class Hud {
     //---- Sparkler Timers ----
 
     public showWinPanel(): void {
+        this._createWinPanel();
         this._winPanel.isVisible = true;
         this._playerUI.addControl(this._winPanel);
         this._pauseMenu.isVisible = false;
@@ -782,7 +805,7 @@ export class Hud {
 
 
         // Afficher le texte "Next level soon" et l'auteur
-        const nextLevelText = new TextBlock("nextLevelText", "Next level soon\nby Samy Yassine & Jeff ");
+        const nextLevelText = new TextBlock("nextLevelText", "Next level soon\nby Samy, Yassine & Jeff ");
         nextLevelText.resizeToFit = true;
         nextLevelText.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
         nextLevelText.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
@@ -832,7 +855,7 @@ export class Hud {
         });
 
         //level buttons
-        const level1Btn = Button.CreateSimpleButton("level1", "LEVEL 1");
+        const level1Btn = Button.CreateSimpleButton("level1", "LEVEL Tutorial");
         level1Btn.width = 0.18;
         level1Btn.height = "44px";
         level1Btn.color = "white";
@@ -854,6 +877,30 @@ export class Hud {
                 }
             );
         });
+
+        const level2Btn = Button.CreateSimpleButton("level2", "LEVEL 1");
+        level2Btn.width = 0.18;
+        level2Btn.height = "44px";
+        level2Btn.color = "white";
+        level2Btn.fontFamily = "Viga";
+        level2Btn.paddingBottom = "14px";
+        level2Btn.cornerRadius = 14;
+        level2Btn.fontSize = "12px";
+        level2Btn.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+        level2Btn.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
+        levelSelector.addControl(level2Btn);
+
+        //when the button is down, make a new scene
+        level2Btn.onPointerDownObservable.add(() => {
+            let actualScene = <OlympiadScene>this._scene;
+            let playerState = new PlayerState()
+            let nextScene = new Level1Scene(actualScene.getEngine(), playerState);
+            nextScene.init().then(() => {
+                    actualScene.dispose();
+                }
+            );
+        });
+
 
 
     }

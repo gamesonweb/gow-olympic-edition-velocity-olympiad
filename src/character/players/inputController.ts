@@ -37,6 +37,8 @@ export class PlayerInput {
     private _keyboardDownCaracter: string = "s"
     private _keyboardLeftCaracter: string = "q";
     private _keyboardRightCaracter: string = "d";
+    private _keyboardSpell1Caracter: string = "a";
+    private _keyboardSpell2Caracter: string = "e";
 
     constructor(scene: Scene, ui: Hud) {
 
@@ -88,11 +90,15 @@ export class PlayerInput {
             this._keyboardDownCaracter = "s";
             this._keyboardLeftCaracter = "q";
             this._keyboardRightCaracter = "d";
+            this._keyboardSpell1Caracter = "a";
+            this._keyboardSpell2Caracter = "e";
         } else {
             this._keyboardUpCaracter = "w";
             this._keyboardDownCaracter = "s";
             this._keyboardLeftCaracter = "a";
             this._keyboardRightCaracter = "d";
+            this._keyboardSpell1Caracter = "q";
+            this._keyboardSpell2Caracter = "e";
         }
     }
 
@@ -143,7 +149,7 @@ export class PlayerInput {
         }
         // First Spell cast (a key)
 
-        if (this.inputMap["a"] && !this._ui.gamePaused) {
+        if (this.inputMap[this._keyboardSpell1Caracter] && !this._ui.gamePaused) {
             if (!this.spell1Pressed) {
                 this.spell1 = true;
                 this.spell1Pressed = true;
@@ -155,7 +161,7 @@ export class PlayerInput {
         }
 
         // Second Spell cast (e key)
-        if (this.inputMap["e"] && !this._ui.gamePaused) {
+        if (this.inputMap[this._keyboardSpell2Caracter] && !this._ui.gamePaused) {
             if (!this.spell2Pressed) {
                 this.spell2 = true;
                 this.spell2Pressed = true;
@@ -238,5 +244,32 @@ export class PlayerInput {
         this._ui.downBtn.onPointerUpObservable.add(() => {
             this.mobileDown = false;
         });
+
+        //Spell Buttons
+        this._ui.spell1Btn.onPointerDownObservable.add(() => {
+            if (!this.spell1Pressed) {
+                this.spell1 = true;
+                this.spell1Pressed = true;
+            }
+        }
+        );
+        this._ui.spell1Btn.onPointerUpObservable.add(() => {
+            this.spell1 = false;
+            this.spell1Pressed = false;
+        });
+
+        this._ui.spell2Btn.onPointerDownObservable.add(() => {
+            if (!this.spell2Pressed) {
+                this.spell2 = true;
+                this.spell2Pressed = true;
+            }
+        }
+        );
+
+        this._ui.spell2Btn.onPointerUpObservable.add(() => {
+            this.spell2 = false;
+            this.spell2Pressed = false;
+        });
+
     }
 }
