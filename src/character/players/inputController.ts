@@ -244,5 +244,32 @@ export class PlayerInput {
         this._ui.downBtn.onPointerUpObservable.add(() => {
             this.mobileDown = false;
         });
+
+        //Spell Buttons
+        this._ui.spell1Btn.onPointerDownObservable.add(() => {
+
+                this.spell1 = true;
+                this.spell1Pressed = true;
+
+        }
+        );
+        this._ui.spell1Btn.onPointerUpObservable.add(() => {
+            this.spell1 = false;
+            this.spell1Pressed = false;
+        });
+
+        this._ui.spell2Btn.onPointerDownObservable.add(() => {
+
+                this.spell2 = true;
+                this.spell2Pressed = true;
+
+        }
+        );
+
+        this._ui.spell2Btn.onPointerUpObservable.add(() => {
+            this.spell2 = false;
+            this.spell2Pressed = false;
+        });
+
     }
 }

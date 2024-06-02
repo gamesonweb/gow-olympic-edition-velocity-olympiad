@@ -30,6 +30,9 @@ export class Hud {
     public rightBtn!: Button;
     public upBtn!: Button;
     public downBtn!: Button;
+    public spell1Btn!: Button;
+    public spell2Btn!: Button;
+
     // public spaceBtn!: Button;
     // keyboard
     public isAzerty: boolean | null = null;
@@ -229,8 +232,24 @@ export class Hud {
             jumpBtn.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
             this.jumpBtn = jumpBtn;
 
-            actionGrid.addControl(dashBtn, 0, 1);
+
+            const spell1Btn = Button.CreateImageOnlyButton("spell1", "./sprites/spell.png");
+            spell1Btn.thickness = 0;
+            spell1Btn.alpha = 0.8;
+            spell1Btn.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+            this.spell1Btn = spell1Btn;
+
+            const spell2Btn = Button.CreateImageOnlyButton("spell2", "./sprites/spell.png");
+            spell2Btn.thickness = 0;
+            spell2Btn.alpha = 0.8;
+            spell2Btn.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
+            this.spell2Btn = spell2Btn;
+
+
+            actionGrid.addControl(dashBtn, 1, 1);
             actionGrid.addControl(jumpBtn, 1, 0);
+            actionGrid.addControl(spell1Btn,0, 0);
+            actionGrid.addControl(spell2Btn,    0, 1);
 
             //--MOVEMENT BUTTONS--
             // container for movement buttons (section left side of screen)
