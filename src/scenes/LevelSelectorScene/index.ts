@@ -23,7 +23,6 @@ import {RareteCard} from "../../gameObjects/Card/RareteCard";
 import {CardSocle} from "../../gameObjects/Card/CardSocle";
 import {Wall} from "../../gameObjects/Wall/index.ts";
 import {PublicAssetsModel} from "../../publicAssets/PublicAssetsModel.ts";
-import {Level1Scene} from "../Level1Scene";
 
 export class LevelSelectorScene extends OlympiadScene {
     protected readonly enemyManager: FirstLevelEnemyManager
@@ -151,7 +150,7 @@ export class LevelSelectorScene extends OlympiadScene {
                     position: new Vector3(175, 88, 312)
                 },
             ]
-        } 
+        }
         else {
             signs = [
                 {text: "Appuiez sur WASD pour vous Deplacer", position: new Vector3(0, 8.5, -78)},
