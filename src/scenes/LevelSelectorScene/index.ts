@@ -127,28 +127,53 @@ export class LevelSelectorScene extends OlympiadScene {
 
 
         //Signs
-
-        let signs = [
-            {text: "Appuiez sur ZQSD pour vous Deplacer", position: new Vector3(0, 8.5, -78)},
-            {text: "Appuiez sur \"Espace\" pour Sauter", position: new Vector3(-1.7, 8.5, -35)},
-            {text: "Appuiez sur \"Maj Gauche\" pour vous propulser dans les airs", position: new Vector3(-92, 22, 91)},
-            {
-                text: "Ceci est un Pouvoir de Vitesse \n Appuiez sur \"E\" Afin d'accomplir un Double Saut , Vous pouvez l'uiliser autant de fois que ça durabilité vous le permet",
-                position: new Vector3(-95, 29, 188)
-            },
-            {
-                text: "Les Pouvoirs possèdent aussi une utilisation Consommant toute leur durabilité d'un coup appuiez sur \"A\" \nAvec ce Pouvoir de vitesse pour augementer votre vitesse de Déplacement pendant un cours Laps de temps",
-                position: new Vector3(-43, 58, 196)
-            },
-            {
-                text: "Voici La Torche, celle-ci permet d'envoyer des boules de feu avec son \"A\" et d'effectuer une propulstion capable de battre des ennemis avec \"E\"",
-                position: new Vector3(78, 88, 273)
-            },
-            {
-                text: "Une fois être rentré dans le temple, votre but va être de raviver la Flamme dans le temple de l'Olympe \nVous allez devoir allumer le foyer situé dans le temple , Bonne Chance !",
-                position: new Vector3(175, 88, 312)
-            },
-        ]
+        let signs = []
+        if (this.player.ui.isAzerty) {
+            signs = [
+                {text: "Appuiez sur ZQSD pour vous Deplacer", position: new Vector3(0, 8.5, -78)},
+                {text: "Appuiez sur \"Espace\" pour Sauter", position: new Vector3(-1.7, 8.5, -35)},
+                {text: "Appuiez sur \"Maj Gauche\" pour vous propulser dans les airs", position: new Vector3(-92, 22, 91)},
+                {
+                    text: "Ceci est un Pouvoir de Vitesse \n Appuiez sur \"E\" Afin d'accomplir un Double Saut , Vous pouvez l'uiliser autant de fois que ça durabilité vous le permet",
+                    position: new Vector3(-95, 29, 188)
+                },
+                {
+                    text: "Les Pouvoirs possèdent aussi une utilisation Consommant toute leur durabilité d'un coup appuiez sur \"A\" \nAvec ce Pouvoir de vitesse pour augementer votre vitesse de Déplacement pendant un cours Laps de temps",
+                    position: new Vector3(-43, 58, 196)
+                },
+                {
+                    text: "Voici La Torche, celle-ci permet d'envoyer des boules de feu avec son \"A\" et d'effectuer une propulstion capable de battre des ennemis avec \"E\"",
+                    position: new Vector3(78, 88, 273)
+                },
+                {
+                    text: "Une fois être rentré dans le temple, votre but va être de raviver la Flamme dans le temple de l'Olympe \nVous allez devoir allumer le foyer situé dans le temple , Bonne Chance !",
+                    position: new Vector3(175, 88, 312)
+                },
+            ]
+        } 
+        else {
+            signs = [
+                {text: "Appuiez sur WASD pour vous Deplacer", position: new Vector3(0, 8.5, -78)},
+                {text: "Appuiez sur \"Espace\" pour Sauter", position: new Vector3(-1.7, 8.5, -35)},
+                {text: "Appuiez sur \"Maj Gauche\" pour vous propulser dans les airs", position: new Vector3(-92, 22, 91)},
+                {
+                    text: "Ceci est un Pouvoir de Vitesse \n Appuiez sur \"E\" Afin d'accomplir un Double Saut , Vous pouvez l'uiliser autant de fois que ça durabilité vous le permet",
+                    position: new Vector3(-95, 29, 188)
+                },
+                {
+                    text: "Les Pouvoirs possèdent aussi une utilisation Consommant toute leur durabilité d'un coup appuiez sur \"Q\" \nAvec ce Pouvoir de vitesse pour augementer votre vitesse de Déplacement pendant un cours Laps de temps",
+                    position: new Vector3(-43, 58, 196)
+                },
+                {
+                    text: "Voici La Torche, celle-ci permet d'envoyer des boules de feu avec son \"Q\" et d'effectuer une propulstion capable de battre des ennemis avec \"E\"",
+                    position: new Vector3(78, 88, 273)
+                },
+                {
+                    text: "Une fois être rentré dans le temple, votre but va être de raviver la Flamme dans le temple de l'Olympe \nVous allez devoir allumer le foyer situé dans le temple , Bonne Chance !",
+                    position: new Vector3(175, 88, 312)
+                },
+            ]
+        }
 
 
         signs.forEach(element => {
