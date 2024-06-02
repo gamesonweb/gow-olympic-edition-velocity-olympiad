@@ -247,10 +247,10 @@ export class PlayerInput {
 
         //Spell Buttons
         this._ui.spell1Btn.onPointerDownObservable.add(() => {
-
+            if (!this.spell1Pressed) {
                 this.spell1 = true;
                 this.spell1Pressed = true;
-
+            }
         }
         );
         this._ui.spell1Btn.onPointerUpObservable.add(() => {
@@ -259,10 +259,10 @@ export class PlayerInput {
         });
 
         this._ui.spell2Btn.onPointerDownObservable.add(() => {
-
+            if (!this.spell2Pressed) {
                 this.spell2 = true;
                 this.spell2Pressed = true;
-
+            }
         }
         );
 
