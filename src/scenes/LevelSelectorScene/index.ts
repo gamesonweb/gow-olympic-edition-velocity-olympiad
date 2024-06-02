@@ -23,6 +23,7 @@ import {RareteCard} from "../../gameObjects/Card/RareteCard";
 import {CardSocle} from "../../gameObjects/Card/CardSocle";
 import {Wall} from "../../gameObjects/Wall/index.ts";
 import {PublicAssetsModel} from "../../publicAssets/PublicAssetsModel.ts";
+import {Level1Scene} from "../Level1Scene";
 
 export class LevelSelectorScene extends OlympiadScene {
     protected readonly enemyManager: FirstLevelEnemyManager

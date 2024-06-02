@@ -31,6 +31,8 @@ export class PlayerInput {
     private _ui: Hud;
     private _mobileJump: boolean = false;
     private _mobileDash: boolean = false;
+    private _mobileSpell1: boolean = false;
+    private _mobileSpell2: boolean = false;
 
     //keyboard caracters default to azerty
     private _keyboardUpCaracter: string = "z";
@@ -71,10 +73,6 @@ export class PlayerInput {
 
         // Set up the keyboard controls
         this._setKeyboardCaracters();
-    }
-
-    public resetInputMap(): void {
-        this.inputMap = {};
     }
 
     // public desactivateInputs(): void {
@@ -149,7 +147,7 @@ export class PlayerInput {
         }
         // First Spell cast (a key)
 
-        if (this.inputMap[this._keyboardSpell1Caracter] && !this._ui.gamePaused) {
+        if ((this.inputMap[this._keyboardSpell1Caracter] || this._mobileSpell1) && !this._ui.gamePaused) {
             if (!this.spell1Pressed) {
                 this.spell1 = true;
                 this.spell1Pressed = true;
@@ -161,7 +159,7 @@ export class PlayerInput {
         }
 
         // Second Spell cast (e key)
-        if (this.inputMap[this._keyboardSpell2Caracter] && !this._ui.gamePaused) {
+        if ((this.inputMap[this._keyboardSpell2Caracter] || this._mobileSpell2) && !this._ui.gamePaused) {
             if (!this.spell2Pressed) {
                 this.spell2 = true;
                 this.spell2Pressed = true;
@@ -247,28 +245,18 @@ export class PlayerInput {
 
         //Spell Buttons
         this._ui.spell1Btn.onPointerDownObservable.add(() => {
-            if (!this.spell1Pressed) {
-                this.spell1 = true;
-                this.spell1Pressed = true;
-            }
-        }
-        );
+            this._mobileSpell1 = false;
+        });
         this._ui.spell1Btn.onPointerUpObservable.add(() => {
-            this.spell1 = false;
-            this.spell1Pressed = false;
+            this._mobileSpell1 = true;
         });
 
         this._ui.spell2Btn.onPointerDownObservable.add(() => {
-            if (!this.spell2Pressed) {
-                this.spell2 = true;
-                this.spell2Pressed = true;
-            }
-        }
-        );
+            this._mobileSpell2 = false;
+        });
 
         this._ui.spell2Btn.onPointerUpObservable.add(() => {
-            this.spell2 = false;
-            this.spell2Pressed = false;
+            this._mobileSpell2 = true;
         });
 
     }

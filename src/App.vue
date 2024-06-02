@@ -2,20 +2,15 @@
   <div id="app">
     <canvas id="renderCanvas"></canvas>
     <div v-if="showOverlay" class="overlay">
-      <div class="overlay-content">
+      <div class="overlay-content greconian-policy">
         <img v-if="showImage" src="/game-intro.webp" alt="Game Intro" class="intro-image">
         <div v-else class="explanation-container">
           <p class="explanation-text">{{ visibleText }}</p>
         </div>
-
-        <div class="steps">
-          <p v-if="!assetsLoaded">Step 1: Téléchargement des assets ...</p>
-          <p v-if="assetsLoaded && !playerReady">Step 2: Création du player ...</p>
-        </div>
       </div>
       <div class="progress-bar-container">
 
-      <div class="navigation-buttons">
+      <div v-if="firstTime" class="navigation-buttons">
         <button @click="prevPart" :disabled="currentPart === 0">Précédent</button>
         <button @click="nextPart" :disabled="currentPart === textParts.length - 1">Suivant</button>
       </div>
@@ -29,11 +24,15 @@
             @click="startGame"
             :class="{ 'button-ready': isLoading }">
           <div v-if="!isLoading">
-            <span>Chargement ...</span>
+            <span class="greconian-policy" >Chargement ...</span>
             <span class="loader"></span>
           </div>
-          <span v-else>Commencer</span>
+          <span v-else class="greconian-policy">Commencer</span>
         </button>
+      </div>
+      <div class="steps greconian-policy">
+        <p v-if="!assetsLoaded">Step 1: Téléchargement des assets ...</p>
+        <p v-if="assetsLoaded && !playerReady">Step 2: Création du player ...</p>
       </div>
     </div>
   </div>
@@ -82,6 +81,7 @@ export default defineComponent({
       visibleText: '',
       currentPart: 0,
       textParts: [] as string[],
+      firstTime: true
     };
   },
   mounted() {
@@ -95,17 +95,21 @@ export default defineComponent({
       sceneManager.renderScene();
     });
 
-    const checkSceneStates = setInterval(() => {
-      if (sceneManager.playerReady) {
-        this.playerReady = true;
-      }
+    setInterval(() => {
+      this.playerReady = sceneManager.playerReady;
       // console.log("Assets loaded: ", sceneManager.assetsLoaded, "Player ready: ", sceneManager.playerReady)
-      if (sceneManager.assetsLoaded) {
-        this.assetsLoaded = true;
-      }
+      this.assetsLoaded = sceneManager.assetsLoaded;
       if (this.assetsLoaded && this.playerReady) {
         this.isLoading = true;
-        clearInterval(checkSceneStates);
+        if (!this.firstTime) {
+          this.showOverlay = false;
+        }
+      } else {
+        this.isLoading = false;
+        if (!this.firstTime) {
+          this.visibleText = "Chargement du prochain niveau"
+          this.showOverlay = true;
+        }
       }
     }, 100);
 
@@ -138,6 +142,7 @@ export default defineComponent({
         return;
       }
       this.showOverlay = false;
+      this.firstTime = false;
       this.sceneManager?.startTimer();
     },
     splitText() {
@@ -190,6 +195,10 @@ export default defineComponent({
 }
 
 
+.greconian-policy {
+  font-family: Greconian;
+  font-style: italic;
+}
 
 .overlay-content {
   color: white;
