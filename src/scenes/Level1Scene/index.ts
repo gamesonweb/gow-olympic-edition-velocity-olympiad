@@ -47,7 +47,7 @@ export class Level1Scene extends OlympiadScene {
 
     public async init(): Promise<void> {
         await super.init();
-        this.player.init(new Vector3(0, 60, 0));
+        this.player.init(new Vector3(0, 100, 0));
         this.enemyManager.init();
         this._buildlevelStatic();
         this.addComponent(this.player);
@@ -79,6 +79,7 @@ export class Level1Scene extends OlympiadScene {
     private _buildlevelStatic(): void {
         let _scene = this as OlympiadScene;
         _scene.modelsLoaded[PublicAssetsModel.Level1] = false;
+
         SceneLoader.ImportMesh("", PublicAssetsModel.ROOT_PATH, PublicAssetsModel.Level1, this,(meshes) => {
             const root = meshes[0];
             root.position = new Vector3(0, 0, 0);
