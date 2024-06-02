@@ -5,6 +5,7 @@ import {RareteCard} from "../../gameObjects/Card/RareteCard";
 import {OlympiadScene} from "../../scenes/OlympiadScene.ts";
 import {LevelSelectorScene} from "../../scenes/LevelSelectorScene";
 import {PlayerState} from "./index.ts";
+import {Level1Scene} from "../../scenes/Level1Scene";
 
 export class Hud {
     //Game Timer
@@ -835,7 +836,7 @@ export class Hud {
         });
 
         //level buttons
-        const level1Btn = Button.CreateSimpleButton("level1", "LEVEL 1");
+        const level1Btn = Button.CreateSimpleButton("level1", "LEVEL Tutorial");
         level1Btn.width = 0.18;
         level1Btn.height = "44px";
         level1Btn.color = "white";
@@ -857,6 +858,30 @@ export class Hud {
                 }
             );
         });
+
+        const level2Btn = Button.CreateSimpleButton("level2", "LEVEL 1");
+        level2Btn.width = 0.18;
+        level2Btn.height = "44px";
+        level2Btn.color = "white";
+        level2Btn.fontFamily = "Viga";
+        level2Btn.paddingBottom = "14px";
+        level2Btn.cornerRadius = 14;
+        level2Btn.fontSize = "12px";
+        level2Btn.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+        level2Btn.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
+        levelSelector.addControl(level2Btn);
+
+        //when the button is down, make a new scene
+        level2Btn.onPointerDownObservable.add(() => {
+            let actualScene = <OlympiadScene>this._scene;
+            let playerState = new PlayerState()
+            let nextScene = new Level1Scene(actualScene.getEngine(), playerState);
+            nextScene.init().then(() => {
+                    actualScene.dispose();
+                }
+            );
+        });
+
 
 
     }
